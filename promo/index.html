@@ -1,0 +1,484 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Resolve Promo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+  body { font-family: 'Inter', 'Inter Display', sans-serif; -webkit-font-smoothing: antialiased; color: #111; }
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; will-change: transform, opacity, filter; }
+  .center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+
+  #bg { background: radial-gradient(ellipse 120% 70% at 50% 46%, #ffffff 0%, #f6f6f6 38%, #dcdcdc 100%); }
+  #dark { background: #000; }
+
+  #ball { width: 120px; height: 120px; border-radius: 50%; left: 0; top: 0; }
+  #wipe { width: 100px; height: 100px; border-radius: 50%; background: #000; left: 0; top: 0; }
+
+  #word { display: flex; align-items: center; gap: 22px; font-size: 96px; font-weight: 500; letter-spacing: -2px; white-space: nowrap; }
+  #wordIcon { width: 84px; height: 84px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  #wordIcon svg { width: 50px; height: 50px; }
+
+  #morph { background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  #morphText { color: #fff; font-family: 'Inter Display', 'Inter'; font-size: 132px; font-weight: 600; letter-spacing: -3px; white-space: nowrap; display: flex; }
+  #morphText span { display: inline-block; }
+
+  .chip { height: 132px; border-radius: 66px; background: #fff; box-shadow: 0 18px 50px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06), inset 0 -3px 0 rgba(0,0,0,.04); display: flex; align-items: center; overflow: hidden; }
+  #chipTextWrap { position: relative; height: 132px; flex: 1; }
+  .chipText { position: absolute; left: 50px; top: 50%; font-size: 64px; font-weight: 500; letter-spacing: -1px; white-space: nowrap; }
+  #chipIcon { position: absolute; width: 72px; height: 72px; }
+  #dots { display: flex; gap: 14px; }
+  #dots i { width: 14px; height: 14px; border-radius: 50%; background: #bdbdbd; display: block; }
+
+  #issueHead { font-size: 50px; font-weight: 600; letter-spacing: -1px; display: flex; align-items: center; gap: 16px; white-space: nowrap; }
+  #issueCard { width: 860px; height: 190px; border-radius: 26px; background: #efefef; box-shadow: 0 20px 60px rgba(0,0,0,.08), inset 0 1px 0 #fff; overflow: hidden; }
+  .entry { position: absolute; left: 40px; right: 120px; top: 0; height: 190px; display: flex; align-items: center; gap: 30px; }
+  .entry .ico { width: 70px; height: 70px; flex: none; border-radius: 20px; background: #111; display: flex; align-items: center; justify-content: center; }
+  .entry .ico svg { width: 40px; height: 40px; }
+  .entry b { display: block; font-size: 44px; font-weight: 600; letter-spacing: -.8px; white-space: nowrap; }
+  .entry small { display: block; font-size: 29px; color: #9a6b6b; margin-top: 6px; white-space: nowrap; }
+  #radio { position: absolute; right: 48px; top: 50%; width: 44px; height: 44px; margin-top: -22px; border-radius: 50%; border: 4px solid #111; }
+  #radioDot { position: absolute; inset: 7px; border-radius: 50%; background: #111; }
+
+  #ticket { width: 920px; height: 820px; border-radius: 34px; background: linear-gradient(180deg, #f3f3f3, #e4e4e4); box-shadow: 0 40px 90px rgba(0,0,0,.14), inset 0 1px 0 #fff; overflow: hidden; }
+  #ticket .brand { position: absolute; left: 44px; top: 36px; font-size: 34px; font-weight: 700; letter-spacing: -.5px; }
+  #ticket h1 { position: absolute; left: 0; right: 0; top: 96px; text-align: center; font-size: 60px; font-weight: 600; letter-spacing: -1.4px; }
+  #ticket h2 { position: absolute; left: 0; right: 0; top: 176px; text-align: center; font-size: 32px; font-weight: 400; color: #777; }
+  .field { position: absolute; left: 50px; width: 400px; height: 96px; border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.05); display: flex; align-items: center; gap: 20px; padding: 0 22px; }
+  .field .fi { width: 44px; height: 44px; border-radius: 12px; background: #111; flex: none; display: flex; align-items: center; justify-content: center; }
+  .field .fi svg { width: 26px; height: 26px; }
+  .field small { display: block; font-size: 22px; color: #888; }
+  .field b { display: block; font-size: 30px; font-weight: 600; letter-spacing: -.4px; white-space: nowrap; }
+  #illus { position: absolute; right: 50px; top: 270px; width: 380px; height: 300px; }
+  #btn { position: absolute; left: 70px; right: 70px; bottom: 60px; height: 140px; border-radius: 26px; background: #0b0b0b; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 600; letter-spacing: -.6px; }
+  #btnLabel { position: absolute; }
+  #spinner { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 6px solid rgba(255,255,255,.18); border-top-color: #fff; }
+
+  .stat { width: 900px; height: 300px; border-radius: 32px; background: linear-gradient(180deg, #f7f7f7, #ececec); box-shadow: 0 40px 90px rgba(0,0,0,.13), inset 0 1px 0 #fff; overflow: hidden; }
+  .stat h1 { position: absolute; left: 0; right: 0; top: 54px; text-align: center; font-size: 76px; font-weight: 600; letter-spacing: -2px; white-space: nowrap; }
+  .stat h2 { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-size: 40px; font-weight: 400; color: #888; white-space: nowrap; }
+  .track { position: absolute; left: 70px; right: 70px; bottom: 54px; height: 14px; border-radius: 7px; background: #fff; overflow: hidden; }
+  .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 7px; }
+  #resolvedCard { border: 4px solid #e0e0e0; }
+
+  #rate { width: 1000px; height: 300px; }
+  #avatar { position: absolute; left: 30px; top: 70px; width: 170px; height: 170px; border-radius: 50%; background: linear-gradient(160deg, #2b2b2b, #000); box-shadow: 0 20px 40px rgba(0,0,0,.18); display: flex; align-items: center; justify-content: center; }
+  #avatar svg { width: 96px; height: 96px; }
+  #rate h1 { position: absolute; left: 240px; top: 76px; font-size: 68px; font-weight: 600; letter-spacing: -1.8px; white-space: nowrap; }
+  #rate h2 { position: absolute; left: 242px; top: 168px; font-size: 38px; color: #888; white-space: nowrap; display: flex; align-items: center; gap: 14px; }
+  .star { width: 40px; height: 40px; }
+
+  #outroGray { font-family: 'Inter Display', 'Inter'; font-size: 140px; font-weight: 600; letter-spacing: -3px; color: #8a8a8a; white-space: nowrap; }
+  #outroMark { display: flex; flex-direction: column; align-items: center; gap: 26px; }
+  #outroWord { font-family: 'Inter Display', 'Inter'; font-size: 168px; font-weight: 900; letter-spacing: -6px; color: #fff; white-space: nowrap; display: flex; align-items: baseline; }
+  #outroDot { width: 34px; height: 34px; border-radius: 50%; background: #2fd07a; margin-left: 8px; display: inline-block; }
+  #outroTag { font-size: 46px; font-weight: 400; color: #9a9a9a; letter-spacing: -.5px; white-space: nowrap; }
+
+  #cursor { width: 64px; height: 64px; left: 0; top: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
+  #grain { pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg" class="layer"></div>
+  <div id="dark" class="layer"></div>
+  <div id="ball" class="abs"></div>
+
+  <div id="word" class="abs"><span id="wordText">Fast</span><span id="wordIcon"></span></div>
+
+  <div id="wipe" class="abs"></div>
+
+  <div id="morph" class="abs"><div id="morphText"></div></div>
+
+  <div id="chip" class="chip abs">
+    <div id="chipTextWrap"></div>
+  </div>
+  <div id="chipIcon" class="abs"></div>
+  <div id="dots" class="abs"><i></i><i></i><i></i></div>
+
+  <div id="issueHead" class="abs">Your issue
+    <svg width="40" height="40" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7.5 2.5L13 21z" fill="#111"/></svg>
+  </div>
+  <div id="issueCard" class="abs">
+    <div id="entries"></div>
+    <div id="radio"><div id="radioDot"></div></div>
+  </div>
+
+  <div id="ticket" class="abs">
+    <div class="brand">Resolve</div>
+    <h1>New Ticket</h1>
+    <h2>We’re here to help, 24/7</h2>
+    <div class="field" style="top:300px">
+      <div class="fi"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20z" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 10v4M12 17v.2" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+      <div><small>Issue</small><b>App crashes on upload</b></div>
+    </div>
+    <div class="field" style="top:416px">
+      <div class="fi"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="#fff"/></svg></div>
+      <div><small>Priority</small><b>High</b></div>
+    </div>
+    <svg id="illus" viewBox="0 0 380 300">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d9d9d9"/></linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a3a"/><stop offset="1" stop-color="#050505"/></linearGradient>
+        <filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="14" stdDeviation="12" flood-opacity=".22"/></filter>
+      </defs>
+      <g filter="url(#sh)">
+        <path d="M40 40h200a28 28 0 0 1 28 28v90a28 28 0 0 1-28 28H110l-46 36 8-36H40a28 28 0 0 1-28-28V68a28 28 0 0 1 28-28z" fill="url(#g1)"/>
+        <rect x="52" y="82" width="150" height="16" rx="8" fill="#cfcfcf"/>
+        <rect x="52" y="116" width="104" height="16" rx="8" fill="#e0e0e0"/>
+      </g>
+      <g filter="url(#sh)">
+        <path d="M190 128h150a26 26 0 0 1 26 26v66a26 26 0 0 1-26 26h-20l6 30-38-30h-98a26 26 0 0 1-26-26v-66a26 26 0 0 1 26-26z" fill="url(#g2)"/>
+        <path d="M226 190l20 20 40-42" fill="none" stroke="#2fd07a" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </svg>
+    <div id="btn"><span id="btnLabel">Submit Ticket</span><div id="spinner"></div></div>
+  </div>
+
+  <div id="assignCard" class="stat abs">
+    <h1>Assigning Agent</h1>
+    <h2 id="assignSub">Finding the best expert</h2>
+    <div class="track"><div id="assignFill" class="fill" style="background:#1d5ccf"></div></div>
+  </div>
+
+  <div id="resolvedCard" class="stat abs">
+    <h1>Ticket Resolved</h1>
+    <h2>Closed by Maya · Support</h2>
+    <div class="track" style="background:#f0f0f0"><div id="resolvedFill" class="fill" style="background:#7aa51a"></div></div>
+  </div>
+
+  <div id="rate" class="abs">
+    <div id="avatar"><svg viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="#fff" stroke-width="1.8"/><rect x="3" y="12.5" width="4" height="6" rx="1.6" fill="#fff"/><rect x="17" y="12.5" width="4" height="6" rx="1.6" fill="#fff"/><path d="M19 18.5c0 2-2 3-5 3" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="13.5" cy="21.5" r="1.3" fill="#2fd07a"/></svg></div>
+    <h1>Solved in 4 minutes</h1>
+    <h2 id="stars"></h2>
+  </div>
+
+  <div id="outroGray" class="abs">Resolve</div>
+  <div id="outroMark" class="abs">
+    <div id="outroWord">Resolve<span id="outroDot"></span></div>
+    <div id="outroTag">Support, solved.</div>
+  </div>
+
+  <svg id="cursor" class="abs" viewBox="0 0 32 32"><path d="M6 3v23l6.2-5.8 4.1 9 4-1.8-4-8.8H25z" fill="#111" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+</div>
+
+<script>
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const E = {
+  lin: k => k,
+  outCubic: k => 1 - Math.pow(1 - k, 3),
+  inCubic: k => k * k * k,
+  inOutCubic: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  outExpo: k => k === 1 ? 1 : 1 - Math.pow(2, -10 * k),
+  inExpo: k => k === 0 ? 0 : Math.pow(2, 10 * k - 10),
+  inOutExpo: k => k === 0 ? 0 : k === 1 ? 1 : k < .5 ? Math.pow(2, 20 * k - 10) / 2 : (2 - Math.pow(2, -20 * k + 10)) / 2,
+  outBack: k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); },
+  outQuint: k => 1 - Math.pow(1 - k, 5),
+};
+// animated value over [a,b] with easing from v0 to v1
+const tw = (t, a, b, v0, v1, ease = E.outCubic) => lerp(v0, v1, ease(prog(t, a, b)));
+
+function S(el, o) {
+  const s = el.style;
+  s.display = o.hide ? 'none' : '';
+  if (o.hide) return;
+  s.opacity = o.o ?? 1;
+  const x = o.x ?? 540, y = o.y ?? 960;
+  s.left = x + 'px'; s.top = y + 'px';
+  s.transform = `translate(-50%, -50%) ${o.tf || ''} scale(${o.s ?? 1})`;
+  s.filter = o.blur ? `blur(${o.blur}px)` : 'none';
+}
+function hideAll() {
+  for (const id of ['ball','word','wipe','morph','chip','chipIcon','dots','issueHead','issueCard','ticket','assignCard','resolvedCard','rate','outroGray','outroMark','cursor'])
+    $(id).style.display = 'none';
+}
+
+// ---------- icons ----------
+const ICON = {
+  bolt: c => `<svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.5h6L10 22l9-12.5h-6z" fill="${c}"/></svg>`,
+  check: c => `<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="${c}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  chat: c => `<svg viewBox="0 0 24 24"><path d="M4 5h16v11H10l-5 4v-4H4z" fill="${c}" stroke="${c}" stroke-width="1.2" stroke-linejoin="round"/></svg>`,
+  card: c => `<svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="${c}"/><rect x="2.5" y="8.5" width="19" height="2.6" fill="#fff"/></svg>`,
+  wrench: c => `<svg viewBox="0 0 24 24"><path d="M14.7 3.3a5 5 0 0 0-6 6.3L3 15.3 5.7 18l1 1 5.7-5.7a5 5 0 0 0 6.3-6l-3 3-2.8-.6-.6-2.8z" fill="${c}"/></svg>`,
+  user: c => `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.2" fill="${c}"/><path d="M3.5 21a8.5 7 0 0 1 17 0z" fill="${c}"/></svg>`,
+  lock: c => `<svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="11" rx="2.5" fill="${c}"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="${c}" stroke-width="2.4"/></svg>`,
+  refresh: c => `<svg viewBox="0 0 24 24"><path d="M19 8a8 8 0 1 0 1 6" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/><path d="M20 3v6h-6z" fill="${c}"/></svg>`,
+  alert: c => `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="${c}"/><path d="M12 7v6M12 16.5v.3" stroke="#111" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  star: c => `<svg class="star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z" fill="${c}"/></svg>`,
+};
+
+// ---------- data ----------
+const WORDS = [
+  { text: 'Fast',     icon: 'bolt',  dark: false },
+  { text: 'Reliable', icon: 'check', dark: true  },
+  { text: 'Human',    icon: 'chat',  dark: false },
+];
+const W_T0 = 0.0, W_DUR = 0.72;
+
+const LABELS = [
+  { text: 'Billing',   icon: 'card'   },
+  { text: 'Technical', icon: 'wrench' },
+  { text: 'Account',   icon: 'user'   },
+];
+const L_T = [4.45, 4.95, 5.45, 6.0];
+
+const ENTRIES = [
+  { t: 'Payment failed',        s: 'Order #48213 · Card declined',     i: 'card'    },
+  { t: 'Can’t sign in',         s: '2FA code not arriving · Account',  i: 'lock'    },
+  { t: 'Refund pending',        s: 'Order #39102 · 6 days ago',        i: 'refresh' },
+  { t: 'App crashes on upload', s: 'iOS 18 · Version 4.2.1',           i: 'alert'   },
+];
+const E_T = [6.05, 6.32, 6.56, 6.80, 99];
+
+// ---------- build DOM ----------
+const ctx = document.createElement('canvas').getContext('2d');
+function textW(font, txt) { ctx.font = font; return ctx.measureText(txt).width; }
+let labelW = [];
+
+function build() {
+  const mt = $('morphText');
+  mt.innerHTML = [...'Resolve'].map(c => `<span>${c}</span>`).join('');
+  $('chipTextWrap').innerHTML = LABELS.map((l, i) => `<div class="chipText" id="lt${i}">${l.text}</div>`).join('');
+  labelW = LABELS.map(l => textW('500 64px Inter', l.text));
+  $('entries').innerHTML = ENTRIES.map((e, i) =>
+    `<div class="entry" id="en${i}"><div class="ico">${ICON[e.i]('#fff')}</div><div><b>${e.t}</b><small>${e.s}</small></div></div>`).join('');
+  $('stars').innerHTML = '<span>Maya · Support</span>' + [0,1,2,3,4].map(i => `<span id="st${i}" style="display:inline-flex">${ICON.star('#d0d0d0')}</span>`).join('');
+}
+
+// ---------- scenes ----------
+function sceneWords(t) {
+  const idx = Math.floor((t - W_T0) / W_DUR);
+  if (idx < 0 || idx > 2) return null;
+  const w = WORDS[idx];
+  const lt = (t - W_T0) - idx * W_DUR;          // local time in segment
+  const fg = w.dark ? '#fff' : '#111', bgc = w.dark ? '#111' : '#fff';
+  $('wordText').textContent = w.text;
+  $('wordText').style.color = fg;
+  const wi = $('wordIcon');
+  wi.style.background = fg;
+  if (wi.dataset.k !== w.icon + bgc) { wi.innerHTML = ICON[w.icon](bgc); wi.dataset.k = w.icon + bgc; }
+  // word pop
+  const inK = prog(lt, 0, 0.22), outK = prog(lt, W_DUR - 0.12, W_DUR);
+  const s = lerp(0.86, 1, E.outBack(inK)) * lerp(1, 1.06, E.inCubic(outK));
+  const blur = lerp(14, 0, E.outCubic(inK)) + lerp(0, 10, E.inCubic(outK));
+  const o = clamp(inK * 1.6) * (idx === 2 ? 1 - E.inCubic(outK) * 0 : 1 - outK);
+  S($('word'), { s, blur, o: idx === 2 ? clamp(inK * 1.6) * (1 - prog(t, 2.05, 2.2)) : o, y: 900 });
+  // icon spin
+  wi.style.transform = `rotate(${lerp(-120, 0, E.outBack(prog(lt, 0.05, 0.35)))}deg) scale(${lerp(0, 1, E.outBack(prog(lt, 0.05, 0.32)))})`;
+  // ball (motion blurred blob)
+  const paths = [
+    [[1180, 1180], [-140, 1560]],
+    [[-140, 1500], [1180, 1080]],
+    [[1180, 1620], [540, 1150]],
+  ];
+  const [[x0, y0], [x1, y1]] = paths[idx];
+  const bk = idx === 2 ? E.outExpo(prog(lt, 0, 0.6)) : E.inOutCubic(prog(lt, 0, W_DUR));
+  const speed = idx === 2 ? (1 - bk) : Math.sin(Math.PI * prog(lt, 0, W_DUR));
+  const ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+  const b = $('ball');
+  b.style.background = fg;
+  S(b, { x: lerp(x0, x1, bk), y: lerp(y0, y1, bk), tf: `rotate(${ang}deg) scaleX(${1 + speed * 1.6}) scaleY(${1 - speed * 0.25})`, blur: 2 + speed * 16, s: idx === 2 ? lerp(1, 0.6, bk) : 1 });
+  return w.dark;
+}
+
+function render(t) {
+  hideAll();
+  // background state
+  let dark = 0;
+
+  // 1) keyword flashes 0 – 2.16
+  if (t < 2.16) {
+    dark = sceneWords(t) ? 1 : 0;
+  }
+  // 2) circle wipe 2.05 – 2.6
+  if (t >= 2.05 && t < 2.62) {
+    const k = E.inExpo(prog(t, 2.05, 2.55));
+    const d = lerp(40, 4600, k);
+    S($('wipe'), { x: 540, y: 1150 + (960 - 1150) * k, tf: `scale(${d / 100})` });
+    if (t < 2.16) { S($('ball'), { x: 540, y: 1150, s: 0.6, blur: 2 }); $('ball').style.background = '#111'; }
+  }
+  // 3) logo type-in on black, then morph to app icon 2.55 – 4.6
+  if (t >= 2.55 && t < 4.62) {
+    const m = $('morph');
+    const k = E.inOutExpo(prog(t, 3.32, 3.95));
+    const w = lerp(1080, 330, k), h = lerp(1920, 330, k);
+    m.style.width = w + 'px'; m.style.height = h + 'px';
+    m.style.borderRadius = lerp(0, 78, k) + 'px';
+    m.style.boxShadow = `0 ${30 * k}px ${80 * k}px rgba(0,0,0,${0.25 * k})`;
+    // pop after morph + exit
+    const pop = 1 + 0.06 * Math.sin(Math.PI * prog(t, 3.9, 4.15));
+    const outK = prog(t, 4.3, 4.55);
+    S(m, { s: pop * lerp(1, 0.55, E.inCubic(outK)), blur: lerp(0, 18, E.inCubic(outK)), o: 1 - E.inCubic(outK) });
+    const mt = $('morphText');
+    mt.style.transform = `scale(${lerp(1, 0.48, k)})`;
+    [...mt.children].forEach((sp, i) => {
+      const a = 2.62 + i * 0.065, kk = prog(t, a, a + 0.28);
+      sp.style.opacity = E.outCubic(kk);
+      sp.style.transform = `translateY(${lerp(50, 0, E.outExpo(kk))}px)`;
+      sp.style.filter = `blur(${lerp(12, 0, E.outCubic(kk))}px)`;
+    });
+    if (t < 3.32) dark = 1;
+  }
+  // 4) category chip 4.45 – 6.05
+  if (t >= 4.4 && t < 6.1) {
+    let li = L_T.findIndex((a, i) => t >= a && t < L_T[i + 1]); if (li < 0) li = 0;
+    const prevW = labelW[Math.max(0, li - 1)];
+    const wk = li === 0 ? 1 : E.outExpo(prog(t, L_T[li], L_T[li] + 0.3));
+    const tw0 = lerp(prevW, labelW[li], wk);
+    const chipW = tw0 + 100;
+    const inK = prog(t, 4.42, 4.75), outK = prog(t, 5.88, 6.08);
+    const s = lerp(0.6, 1, E.outBack(inK)) * lerp(1, 0.85, E.inCubic(outK));
+    const blur = lerp(16, 0, E.outCubic(inK)) + lerp(0, 16, E.inCubic(outK));
+    const o = clamp(inK * 2) * (1 - outK);
+    const chip = $('chip');
+    chip.style.width = chipW + 'px';
+    const cx = 540 - 60;
+    S(chip, { x: cx, y: 930, s, blur, o });
+    LABELS.forEach((l, i) => {
+      const el = $('lt' + i);
+      let y = 60, op = 0, b = 0;
+      if (i === li) { const k = li === 0 ? 1 : E.outExpo(prog(t, L_T[i], L_T[i] + 0.3)); y = lerp(60, 0, k); op = k; b = lerp(10, 0, k); }
+      if (i === li - 1) { const k = E.outExpo(prog(t, L_T[li], L_T[li] + 0.25)); y = lerp(0, -60, k); op = 1 - k; b = lerp(0, 10, k); }
+      el.style.opacity = op; el.style.transform = `translateY(calc(-50% + ${y}px))`; el.style.filter = `blur(${b}px)`;
+      el.style.left = (chipW - labelW[i]) / 2 + 'px';
+    });
+    const ci = $('chipIcon');
+    if (ci.dataset.k != li) { ci.innerHTML = ICON[LABELS[li].icon]('#111'); ci.dataset.k = li; }
+    const ik = li === 0 ? E.outBack(prog(t, 4.55, 4.85)) : E.outBack(prog(t, L_T[li] + 0.05, L_T[li] + 0.35));
+    S(ci, { x: cx + chipW / 2 + 70, y: 922, s: ik * (1 - outK), o: ik * (1 - outK), tf: `rotate(${lerp(-40, 0, ik)}deg)`, blur: lerp(0, 12, outK) });
+    const dots = $('dots');
+    S(dots, { x: cx, y: 1050, o: o, blur });
+    [...dots.children].forEach((d, i) => { d.style.background = i === li ? '#111' : '#c4c4c4'; d.style.transform = `scale(${i === li ? 1.15 : 1})`; });
+  }
+  // 5) issue picker 6.0 – 7.32
+  if (t >= 6.0 && t < 7.35) {
+    const inK = prog(t, 6.0, 6.3), outK = prog(t, 7.12, 7.32);
+    const blur = lerp(18, 0, E.outCubic(inK)) + lerp(0, 22, E.inCubic(outK));
+    const o = clamp(inK * 1.8) * (1 - outK);
+    const s = lerp(0.9, 1, E.outCubic(inK)) * lerp(1, 1.08, E.inCubic(outK));
+    S($('issueHead'), { x: 540, y: 820, s, blur, o });
+    const press = Math.sin(Math.PI * prog(t, 6.98, 7.18));
+    const card = $('issueCard');
+    card.style.background = `rgb(${lerp(239, 168, prog(t, 6.98, 7.08))},${lerp(239, 168, prog(t, 6.98, 7.08))},${lerp(239, 168, prog(t, 6.98, 7.08))})`;
+    S(card, { x: 540, y: 960, s: s * (1 - press * 0.035), blur, o });
+    let ei = E_T.findIndex((a, i) => t >= a && t < E_T[i + 1]); if (ei < 0) ei = 0;
+    ENTRIES.forEach((_, i) => {
+      const el = $('en' + i);
+      let y = 190, op = 0, b = 0;
+      if (i === ei) { const k = i === 0 ? 1 : E.outExpo(prog(t, E_T[i], E_T[i] + 0.2)); y = lerp(110, 0, k); op = k; b = lerp(12, 0, k); }
+      if (i === ei - 1) { const k = E.outExpo(prog(t, E_T[ei], E_T[ei] + 0.18)); y = lerp(0, -110, k); op = 1 - k; b = lerp(0, 12, k); }
+      el.style.opacity = op; el.style.transform = `translateY(${y}px)`; el.style.filter = `blur(${b}px)`;
+    });
+    $('radioDot').style.transform = `scale(${E.outBack(prog(t, 6.98, 7.12))})`;
+    // cursor
+    const ck = E.inOutCubic(prog(t, 6.62, 6.96));
+    const click = Math.sin(Math.PI * prog(t, 6.96, 7.1));
+    if (t > 6.6) S($('cursor'), { x: lerp(1040, 914, ck) + 20, y: lerp(1260, 960, ck) + 22, s: 1 - click * 0.18, o: (1 - outK) * clamp((t - 6.6) * 8), blur: lerp(0, 10, outK) });
+  }
+  // 6) new ticket card 7.28 – 8.85 (with 3D flip out)
+  if (t >= 7.28 && t < 8.9) {
+    const inK = prog(t, 7.28, 7.62);
+    const flip = prog(t, 8.5, 8.82);
+    const s = lerp(0.88, 1, E.outCubic(inK)) * lerp(1, 0.72, E.inCubic(flip));
+    const blur = lerp(20, 0, E.outCubic(inK)) + lerp(0, 8, E.inCubic(flip));
+    const o = clamp(inK * 1.8) * (1 - E.inExpo(flip));
+    S($('ticket'), { x: 540 - 60 * E.inCubic(flip), y: 960, s, blur, o, tf: `perspective(1600px) rotateY(${lerp(0, 72, E.inCubic(flip))}deg) rotateZ(${lerp(0, -6, E.inCubic(flip))}deg)` });
+    // button press + spinner
+    const press = prog(t, 8.04, 8.12);
+    const rel = prog(t, 8.12, 8.24);
+    const btn = $('btn');
+    btn.style.transform = `scale(${1 - 0.04 * E.outCubic(press) + 0.04 * E.outCubic(rel)})`;
+    const g = Math.round(lerp(11, 92, press) - lerp(0, 81, rel));
+    btn.style.background = `rgb(${g},${g},${g})`;
+    $('btnLabel').style.opacity = 1 - prog(t, 8.1, 8.2);
+    $('btnLabel').style.filter = `blur(${lerp(0, 8, prog(t, 8.1, 8.2))}px)`;
+    const sp = $('spinner');
+    sp.style.opacity = prog(t, 8.16, 8.26);
+    sp.style.transform = `rotate(${(t - 8.1) * 900}deg) scale(${lerp(0.4, 1, E.outBack(prog(t, 8.16, 8.3)))})`;
+    // cursor
+    const ck = E.inOutCubic(prog(t, 7.62, 8.02));
+    const click = Math.sin(Math.PI * prog(t, 8.02, 8.16));
+    if (t > 7.55 && t < 8.5) S($('cursor'), { x: lerp(1080, 600, ck) + 20, y: lerp(1500, 1270, ck) + 22, s: 1 - click * 0.18, o: clamp((t - 7.55) * 8) * (1 - prog(t, 8.3, 8.45)) });
+    // illus float
+    $('illus').style.transform = `translateY(${Math.sin(t * 3) * 6}px)`;
+  }
+  // 7) assigning agent 8.68 – 10.12
+  if (t >= 8.68 && t < 10.12) {
+    const inK = prog(t, 8.68, 9.12), outK = prog(t, 9.92, 10.1);
+    const k = E.outQuint(inK);
+    const s = lerp(0.8, 1, k) * lerp(1, 0.9, E.inCubic(outK));
+    const blur = lerp(16, 0, E.outCubic(inK)) + lerp(0, 18, E.inCubic(outK));
+    S($('assignCard'), { x: lerp(470, 540, k), y: lerp(1020, 960, k), s, blur, o: clamp(inK * 2) * (1 - outK),
+      tf: `perspective(1600px) rotateX(${lerp(38, 0, k)}deg) rotateY(${lerp(-40, 0, k)}deg) rotateZ(${lerp(16, 0, k)}deg)` });
+    const p = t < 9.55 ? 0.74 * E.outCubic(prog(t, 8.95, 9.5)) : lerp(0.74, 1, E.inOutCubic(prog(t, 9.6, 9.85)));
+    $('assignFill').style.width = (p * 100) + '%';
+    const sub = $('assignSub');
+    const sw = prog(t, 9.5, 9.62);
+    sub.textContent = t < 9.56 ? 'Finding the best expert' : 'Agent found!';
+    sub.style.color = t < 9.56 ? '#888' : '#1d5ccf';
+    sub.style.opacity = t < 9.56 ? 1 - sw * 2 : prog(t, 9.56, 9.66);
+    sub.style.filter = `blur(${t < 9.56 ? sw * 8 : (1 - prog(t, 9.56, 9.66)) * 8}px)`;
+  }
+  // 8) ticket resolved 10.05 – 10.95
+  if (t >= 10.04 && t < 10.98) {
+    const inK = prog(t, 10.04, 10.34), outK = prog(t, 10.78, 10.96);
+    const k = E.outQuint(inK);
+    S($('resolvedCard'), { x: lerp(380, 540, k), y: lerp(1100, 960, k), s: lerp(0.85, 1, k) * lerp(1, 1.04, outK), blur: lerp(20, 0, E.outCubic(inK)) + lerp(0, 16, E.inCubic(outK)), o: clamp(inK * 2) * (1 - outK) });
+    $('resolvedFill').style.width = (E.inOutCubic(prog(t, 10.18, 10.62)) * 100) + '%';
+  }
+  // 9) solved in 4 minutes + rating 10.9 – 11.85
+  if (t >= 10.9 && t < 11.9) {
+    const inK = prog(t, 10.9, 11.15), outK = prog(t, 11.55, 11.85);
+    const o = clamp(inK * 2) * (1 - E.inCubic(outK));
+    S($('rate'), { x: 540, y: 960, s: lerp(0.94, 1, E.outCubic(inK)) * lerp(1, 0.97, outK), blur: lerp(14, 0, E.outCubic(inK)) + lerp(0, 14, E.inCubic(outK)), o });
+    const av = $('avatar');
+    const ak = E.outExpo(prog(t, 10.92, 11.3));
+    av.style.transform = `translateX(${lerp(-260, 0, ak)}px) rotate(${lerp(-90, 0, ak)}deg)`;
+    av.style.filter = `blur(${lerp(10, 0, ak)}px)`;
+    for (let i = 0; i < 5; i++) {
+      const sk = prog(t, 11.08 + i * 0.06, 11.2 + i * 0.06);
+      const st = $('st' + i);
+      st.querySelector('path').setAttribute('fill', sk > 0.5 ? '#f5b301' : '#d0d0d0');
+      st.style.transform = `scale(${1 + 0.35 * Math.sin(Math.PI * sk)})`;
+    }
+  }
+  // fade to black 11.7 – 12.0
+  if (t >= 11.7) dark = Math.max(dark, E.inOutCubic(prog(t, 11.7, 12.0)));
+  // 10) outro 11.95 – end
+  if (t >= 11.95) {
+    const gk = prog(t, 11.98, 12.38);
+    if (t < 12.62) S($('outroGray'), { s: lerp(0.92, 1, E.outCubic(gk)) * lerp(1, 1.02, prog(t, 12.38, 12.62)), blur: lerp(18, 0, E.outCubic(gk)), o: E.outCubic(gk) });
+    if (t >= 12.62) {
+      const mk = prog(t, 12.62, 12.8);
+      const z = lerp(1, 1.035, E.outCubic(prog(t, 12.62, 13.8)));
+      S($('outroMark'), { s: lerp(1.12, 1, E.outExpo(mk)) * z, blur: lerp(6, 0, E.outCubic(mk)), y: 960 });
+      const dk = prog(t, 12.72, 12.95);
+      $('outroDot').style.transform = `scale(${E.outBack(dk)})`;
+      const tk = prog(t, 12.9, 13.25);
+      const tag = $('outroTag');
+      tag.style.opacity = E.outCubic(tk);
+      tag.style.transform = `translateY(${lerp(24, 0, E.outCubic(tk))}px)`;
+      tag.style.filter = `blur(${lerp(8, 0, tk)}px)`;
+    }
+  }
+  $('dark').style.opacity = dark;
+}
+
+window.DURATION = 14.0;
+window.seek = t => render(t);
+window.ready = document.fonts.ready.then(() => { build(); render(0); return true; });
+
+// preview mode: open in a browser to watch it loop
+if (!navigator.webdriver) {
+  window.ready.then(() => { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % window.DURATION); requestAnimationFrame(loop); }; loop(); });
+}
+</script>
+</body>
+</html>
