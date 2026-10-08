@@ -2,11 +2,13 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Resolve Promo</title>
+<title>Rasolv Promo</title>
 <style>
+  @font-face { font-family: 'Rubik'; src: url('fonts/Rubik.woff2') format('woff2'); font-weight: 300 900; }
+  :root { --or: #FF6E05; --ink: #0A0A0A; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
-  body { font-family: 'Inter', 'Inter Display', sans-serif; -webkit-font-smoothing: antialiased; color: #111; }
+  body { font-family: 'Rubik', sans-serif; -webkit-font-smoothing: antialiased; color: #111; }
   #stage { position: absolute; inset: 0; overflow: hidden; }
   .abs { position: absolute; }
   .layer { position: absolute; inset: 0; will-change: transform, opacity, filter; }
@@ -14,6 +16,7 @@
 
   #bg { background: radial-gradient(ellipse 120% 70% at 50% 46%, #ffffff 0%, #f6f6f6 38%, #dcdcdc 100%); }
   #dark { background: #000; }
+  #orange { background: var(--or); }
 
   #ball { width: 120px; height: 120px; border-radius: 50%; left: 0; top: 0; }
   #wipe { width: 100px; height: 100px; border-radius: 50%; background: #000; left: 0; top: 0; }
@@ -22,8 +25,9 @@
   #wordIcon { width: 84px; height: 84px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
   #wordIcon svg { width: 50px; height: 50px; }
 
-  #morph { background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  #morphText { color: #fff; font-family: 'Inter Display', 'Inter'; font-size: 132px; font-weight: 600; letter-spacing: -3px; white-space: nowrap; display: flex; }
+  #morph { background: var(--ink); overflow: hidden; }
+  #morphLogo { position: absolute; width: 440px; height: 440px; }
+  #morphText { position: absolute; color: #fff; font-size: 128px; font-weight: 600; letter-spacing: 2px; white-space: nowrap; display: flex; }
   #morphText span { display: inline-block; }
 
   .chip { height: 132px; border-radius: 66px; background: #fff; box-shadow: 0 18px 50px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06), inset 0 -3px 0 rgba(0,0,0,.04); display: flex; align-items: center; overflow: hidden; }
@@ -41,10 +45,11 @@
   .entry b { display: block; font-size: 44px; font-weight: 600; letter-spacing: -.8px; white-space: nowrap; }
   .entry small { display: block; font-size: 29px; color: #9a6b6b; margin-top: 6px; white-space: nowrap; }
   #radio { position: absolute; right: 48px; top: 50%; width: 44px; height: 44px; margin-top: -22px; border-radius: 50%; border: 4px solid #111; }
-  #radioDot { position: absolute; inset: 7px; border-radius: 50%; background: #111; }
+  #radioDot { position: absolute; inset: 7px; border-radius: 50%; background: var(--or); }
 
   #ticket { width: 920px; height: 820px; border-radius: 34px; background: linear-gradient(180deg, #f3f3f3, #e4e4e4); box-shadow: 0 40px 90px rgba(0,0,0,.14), inset 0 1px 0 #fff; overflow: hidden; }
-  #ticket .brand { position: absolute; left: 44px; top: 36px; font-size: 34px; font-weight: 700; letter-spacing: -.5px; }
+  #ticket .brand { position: absolute; left: 40px; top: 30px; font-size: 32px; font-weight: 600; letter-spacing: 1px; display: flex; align-items: center; gap: 12px; }
+  #ticket .brand svg { width: 52px; height: 52px; }
   #ticket h1 { position: absolute; left: 0; right: 0; top: 96px; text-align: center; font-size: 60px; font-weight: 600; letter-spacing: -1.4px; }
   #ticket h2 { position: absolute; left: 0; right: 0; top: 176px; text-align: center; font-size: 32px; font-weight: 400; color: #777; }
   .field { position: absolute; left: 50px; width: 400px; height: 96px; border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.05); display: flex; align-items: center; gap: 20px; padding: 0 22px; }
@@ -62,7 +67,8 @@
   .stat h2 { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-size: 40px; font-weight: 400; color: #888; white-space: nowrap; }
   .track { position: absolute; left: 70px; right: 70px; bottom: 54px; height: 14px; border-radius: 7px; background: #fff; overflow: hidden; }
   .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 7px; }
-  #resolvedCard { border: 4px solid #e0e0e0; }
+  #resolvedCard { background: linear-gradient(180deg, #1a1a1a, #050505); color: #fff; }
+  #resolvedCard h2 { color: #8c8c8c; }
 
   #rate { width: 1000px; height: 300px; }
   #avatar { position: absolute; left: 30px; top: 70px; width: 170px; height: 170px; border-radius: 50%; background: linear-gradient(160deg, #2b2b2b, #000); box-shadow: 0 20px 40px rgba(0,0,0,.18); display: flex; align-items: center; justify-content: center; }
@@ -71,11 +77,11 @@
   #rate h2 { position: absolute; left: 242px; top: 168px; font-size: 38px; color: #888; white-space: nowrap; display: flex; align-items: center; gap: 14px; }
   .star { width: 40px; height: 40px; }
 
-  #outroGray { font-family: 'Inter Display', 'Inter'; font-size: 140px; font-weight: 600; letter-spacing: -3px; color: #8a8a8a; white-space: nowrap; }
-  #outroMark { display: flex; flex-direction: column; align-items: center; gap: 26px; }
-  #outroWord { font-family: 'Inter Display', 'Inter'; font-size: 168px; font-weight: 900; letter-spacing: -6px; color: #fff; white-space: nowrap; display: flex; align-items: baseline; }
-  #outroDot { width: 34px; height: 34px; border-radius: 50%; background: #2fd07a; margin-left: 8px; display: inline-block; }
-  #outroTag { font-size: 46px; font-weight: 400; color: #9a9a9a; letter-spacing: -.5px; white-space: nowrap; }
+  #outroGray { font-size: 132px; font-weight: 600; letter-spacing: 2px; color: #6e6e6e; white-space: nowrap; }
+  #outroMark { display: flex; flex-direction: column; align-items: center; }
+  #outroLogo { width: 400px; height: 400px; margin-bottom: 30px; }
+  #outroWord { font-size: 156px; font-weight: 600; letter-spacing: 3px; color: #fff; white-space: nowrap; line-height: 1; }
+  #outroTag { font-size: 52px; font-weight: 400; color: #bdbdbd; white-space: nowrap; margin-top: 26px; }
 
   #cursor { width: 64px; height: 64px; left: 0; top: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
   #grain { pointer-events: none; }
@@ -85,13 +91,14 @@
 <div id="stage">
   <div id="bg" class="layer"></div>
   <div id="dark" class="layer"></div>
+  <div id="orange" class="layer"></div>
   <div id="ball" class="abs"></div>
 
   <div id="word" class="abs"><span id="wordText">Fast</span><span id="wordIcon"></span></div>
 
   <div id="wipe" class="abs"></div>
 
-  <div id="morph" class="abs"><div id="morphText"></div></div>
+  <div id="morph" class="abs"><svg id="morphLogo" viewBox="-110 -110 220 220"></svg><div id="morphText"></div></div>
 
   <div id="chip" class="chip abs">
     <div id="chipTextWrap"></div>
@@ -108,7 +115,7 @@
   </div>
 
   <div id="ticket" class="abs">
-    <div class="brand">Resolve</div>
+    <div class="brand"><svg class="apSmall" viewBox="-110 -110 220 220"></svg>RASOLV</div>
     <h1>New Ticket</h1>
     <h2>We’re here to help, 24/7</h2>
     <div class="field" style="top:300px">
@@ -132,7 +139,7 @@
       </g>
       <g filter="url(#sh)">
         <path d="M190 128h150a26 26 0 0 1 26 26v66a26 26 0 0 1-26 26h-20l6 30-38-30h-98a26 26 0 0 1-26-26v-66a26 26 0 0 1 26-26z" fill="url(#g2)"/>
-        <path d="M226 190l20 20 40-42" fill="none" stroke="#2fd07a" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M226 190l20 20 40-42" fill="none" stroke="#FF6E05" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
     </svg>
     <div id="btn"><span id="btnLabel">Submit Ticket</span><div id="spinner"></div></div>
@@ -141,25 +148,26 @@
   <div id="assignCard" class="stat abs">
     <h1>Assigning Agent</h1>
     <h2 id="assignSub">Finding the best expert</h2>
-    <div class="track"><div id="assignFill" class="fill" style="background:#1d5ccf"></div></div>
+    <div class="track"><div id="assignFill" class="fill" style="background:#FF6E05"></div></div>
   </div>
 
   <div id="resolvedCard" class="stat abs">
-    <h1>Ticket Resolved</h1>
+    <h1>Ticket Solved</h1>
     <h2>Closed by Maya · Support</h2>
-    <div class="track" style="background:#f0f0f0"><div id="resolvedFill" class="fill" style="background:#7aa51a"></div></div>
+    <div class="track" style="background:#2a2a2a"><div id="resolvedFill" class="fill" style="background:#FF6E05"></div></div>
   </div>
 
   <div id="rate" class="abs">
-    <div id="avatar"><svg viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="#fff" stroke-width="1.8"/><rect x="3" y="12.5" width="4" height="6" rx="1.6" fill="#fff"/><rect x="17" y="12.5" width="4" height="6" rx="1.6" fill="#fff"/><path d="M19 18.5c0 2-2 3-5 3" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="13.5" cy="21.5" r="1.3" fill="#2fd07a"/></svg></div>
+    <div id="avatar"><svg viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="#fff" stroke-width="1.8"/><rect x="3" y="12.5" width="4" height="6" rx="1.6" fill="#fff"/><rect x="17" y="12.5" width="4" height="6" rx="1.6" fill="#fff"/><path d="M19 18.5c0 2-2 3-5 3" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="13.5" cy="21.5" r="1.3" fill="#FF6E05"/></svg></div>
     <h1>Solved in 4 minutes</h1>
     <h2 id="stars"></h2>
   </div>
 
-  <div id="outroGray" class="abs">Resolve</div>
+  <div id="outroGray" class="abs">RASOLV</div>
   <div id="outroMark" class="abs">
-    <div id="outroWord">Resolve<span id="outroDot"></span></div>
-    <div id="outroTag">Support, solved.</div>
+    <svg id="outroLogo" viewBox="-110 -110 220 220"></svg>
+    <div id="outroWord">RASOLV</div>
+    <div id="outroTag">Vision That Solves</div>
   </div>
 
   <svg id="cursor" class="abs" viewBox="0 0 32 32"><path d="M6 3v23l6.2-5.8 4.1 9 4-1.8-4-8.8H25z" fill="#111" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -200,6 +208,64 @@ function hideAll() {
     $(id).style.display = 'none';
 }
 
+// ---------- RASOLV aperture mark (procedural so the iris can animate) ----------
+// r: inner hole radius, rot: blade rotation (deg), bp: blueprint draw progress 0..1, grow: blade scale-in 0..1
+function aperture({ r = 37, rot = 0, bp = 1, grow = 1, color = '#FF6E05', gap = '#0A0A0A', R = 80, lines = true } = {}) {
+  const P = (a, rad) => [rad * Math.cos(a * Math.PI / 180), rad * Math.sin(a * Math.PI / 180)];
+  const O = [...Array(6)].map((_, i) => P(-90 + 60 * i, R));
+  const I = [...Array(6)].map((_, i) => P(-60 + 60 * i + rot, Math.max(r, 0.01)));
+  const ang = q => (Math.atan2(q[1], q[0]) * 180 / Math.PI + 360) % 360;
+  // intersect ray (p + t d) with the outer hexagon
+  const hit = (p, d) => {
+    let best = null;
+    for (let k = 0; k < 6; k++) {
+      const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]];
+      const den = d[0] * e[1] - d[1] * e[0]; if (Math.abs(den) < 1e-9) continue;
+      const t = ((a[0] - p[0]) * e[1] - (a[1] - p[1]) * e[0]) / den;
+      const u = ((a[0] - p[0]) * d[1] - (a[1] - p[1]) * d[0]) / den;
+      if (t > 1e-6 && u >= -1e-6 && u <= 1 + 1e-6 && (!best || t < best.t)) best = { t, q: [p[0] + t * d[0], p[1] + t * d[1]] };
+    }
+    return best.q;
+  };
+  const Pt = I.map((q, i) => { const pr = I[(i + 5) % 6]; return hit(q, [q[0] - pr[0], q[1] - pr[1]]); });
+  const f = q => q[0].toFixed(2) + ',' + q[1].toFixed(2);
+  let blades = '', seps = '';
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6, a0 = ang(Pt[i]), span = (ang(Pt[j]) - a0 + 360) % 360;
+    const mids = O.filter(v => { const d = (ang(v) - a0 + 360) % 360; return d > 1e-3 && d < span - 1e-3; })
+                  .sort((u, v) => ((ang(v) - a0 + 360) % 360) - ((ang(u) - a0 + 360) % 360));
+    const poly = [I[i], I[j], Pt[j], ...mids, Pt[i]];
+    const c = poly.reduce((m, q) => [m[0] + q[0] / poly.length, m[1] + q[1] / poly.length], [0, 0]);
+    const g = 0.6 + 0.4 * clamp(grow * 1.6 - i * 0.12);
+    const o = clamp(grow * 2 - i * 0.18);
+    blades += `<polygon points="${poly.map(f).join(' ')}" fill="${color}" opacity="${o}" transform="translate(${f(c)}) scale(${g}) translate(${f([-c[0], -c[1]])})"/>`;
+    seps += `<line x1="${f(I[i]).replace(',', '" y1="')}" x2="${f(Pt[i]).replace(',', '" y2="')}" stroke="${gap}" stroke-width="4.2" stroke-linecap="square"/>`;
+    if (lines && (i === 0 || i === 3)) { // thick accent slash
+      const s0 = [I[i][0] + (I[j][0] - I[i][0]) * 0.55, I[i][1] + (I[j][1] - I[i][1]) * 0.55];
+      const d = [Pt[i][0] - I[i][0], Pt[i][1] - I[i][1]];
+      seps += `<line x1="${s0[0] + d[0] * 0.08}" y1="${s0[1] + d[1] * 0.08}" x2="${s0[0] + d[0] * 0.62}" y2="${s0[1] + d[1] * 0.62}" stroke="${gap}" stroke-width="3.6"/>`;
+    }
+    if (lines && (i === 1 || i === 4)) // fine construction line
+      seps += `<line x1="${f(I[j]).replace(',', '" y1="')}" x2="${f(O[(i + 2) % 6]).replace(',', '" y2="')}" stroke="${gap}" stroke-width="0.9"/>`;
+  }
+  // blueprint dimension lines around the hexagon
+  let bpS = '';
+  if (bp > 0) {
+    for (let k = 0; k < 6; k++) {
+      const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(...e);
+      const n = [e[1] / L, -e[0] / L]; const off = 13; const kk = clamp(bp * 1.4 - k * 0.07);
+      const a1 = [a[0] + n[0] * off + e[0] * 0.08, a[1] + n[1] * off + e[1] * 0.08];
+      const b1 = [a1[0] + e[0] * 0.84 * kk, a1[1] + e[1] * 0.84 * kk];
+      const tick = (q, s) => `<line x1="${q[0] - n[0] * 4 * s}" y1="${q[1] - n[1] * 4 * s}" x2="${q[0] + n[0] * 4 * s}" y2="${q[1] + n[1] * 4 * s}"/>`;
+      bpS += `<line x1="${f(a1).replace(',', '" y1="')}" x2="${f(b1).replace(',', '" y2="')}"/>` + tick(a1, kk) + tick(b1, kk);
+      const ra = P(-90 + 60 * k, R + 6), rb = P(-90 + 60 * k, R + 6 + 12 * kk);
+      bpS += `<line x1="${f(ra).replace(',', '" y1="')}" x2="${f(rb).replace(',', '" y2="')}"/>`;
+    }
+    bpS = `<g stroke="${color}" stroke-width="1.3" fill="none" opacity="${clamp(bp * 3)}">${bpS}</g>`;
+  }
+  return bpS + `<g>${blades}${seps}</g>`;
+}
+
 // ---------- icons ----------
 const ICON = {
   bolt: c => `<svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.5h6L10 22l9-12.5h-6z" fill="${c}"/></svg>`,
@@ -216,9 +282,9 @@ const ICON = {
 
 // ---------- data ----------
 const WORDS = [
-  { text: 'Fast',     icon: 'bolt',  dark: false },
-  { text: 'Reliable', icon: 'check', dark: true  },
-  { text: 'Human',    icon: 'chat',  dark: false },
+  { text: 'Fast',     icon: 'bolt',  bg: 'light'  },
+  { text: 'Reliable', icon: 'check', bg: 'dark'   },
+  { text: 'Human',    icon: 'chat',  bg: 'orange' },
 ];
 const W_T0 = 0.0, W_DUR = 0.72;
 
@@ -243,13 +309,14 @@ function textW(font, txt) { ctx.font = font; return ctx.measureText(txt).width; 
 let labelW = [];
 
 function build() {
+  document.querySelectorAll('.apSmall').forEach(el => el.innerHTML = aperture({ bp: 0, lines: false, gap: '#efefef' }));
   const mt = $('morphText');
-  mt.innerHTML = [...'Resolve'].map(c => `<span>${c}</span>`).join('');
+  mt.innerHTML = [...'RASOLV'].map(c => `<span>${c}</span>`).join('');
   $('chipTextWrap').innerHTML = LABELS.map((l, i) => `<div class="chipText" id="lt${i}">${l.text}</div>`).join('');
-  labelW = LABELS.map(l => textW('500 64px Inter', l.text));
+  labelW = LABELS.map(l => textW('500 64px Rubik', l.text));
   $('entries').innerHTML = ENTRIES.map((e, i) =>
     `<div class="entry" id="en${i}"><div class="ico">${ICON[e.i]('#fff')}</div><div><b>${e.t}</b><small>${e.s}</small></div></div>`).join('');
-  $('stars').innerHTML = '<span>Maya · Support</span>' + [0,1,2,3,4].map(i => `<span id="st${i}" style="display:inline-flex">${ICON.star('#d0d0d0')}</span>`).join('');
+  $('stars').innerHTML = '<span>Maya · Rasolv Support</span>' + [0,1,2,3,4].map(i => `<span id="st${i}" style="display:inline-flex">${ICON.star('#d0d0d0')}</span>`).join('');
 }
 
 // ---------- scenes ----------
@@ -258,7 +325,7 @@ function sceneWords(t) {
   if (idx < 0 || idx > 2) return null;
   const w = WORDS[idx];
   const lt = (t - W_T0) - idx * W_DUR;          // local time in segment
-  const fg = w.dark ? '#fff' : '#111', bgc = w.dark ? '#111' : '#fff';
+  const fg = w.bg === 'dark' ? '#fff' : '#0A0A0A', bgc = { light: '#fff', dark: '#0A0A0A', orange: '#FF6E05' }[w.bg];
   $('wordText').textContent = w.text;
   $('wordText').style.color = fg;
   const wi = $('wordIcon');
@@ -283,26 +350,27 @@ function sceneWords(t) {
   const speed = idx === 2 ? (1 - bk) : Math.sin(Math.PI * prog(lt, 0, W_DUR));
   const ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
   const b = $('ball');
-  b.style.background = fg;
+  b.style.background = w.bg === 'dark' ? '#FF6E05' : '#0A0A0A';
   S(b, { x: lerp(x0, x1, bk), y: lerp(y0, y1, bk), tf: `rotate(${ang}deg) scaleX(${1 + speed * 1.6}) scaleY(${1 - speed * 0.25})`, blur: 2 + speed * 16, s: idx === 2 ? lerp(1, 0.6, bk) : 1 });
-  return w.dark;
+  return w.bg;
 }
 
 function render(t) {
   hideAll();
   // background state
-  let dark = 0;
+  let dark = 0, orange = 0;
 
   // 1) keyword flashes 0 – 2.16
   if (t < 2.16) {
-    dark = sceneWords(t) ? 1 : 0;
+    const bgk = sceneWords(t); dark = bgk === 'dark' ? 1 : 0; orange = bgk === 'orange' ? 1 : 0;
   }
   // 2) circle wipe 2.05 – 2.6
   if (t >= 2.05 && t < 2.62) {
     const k = E.inExpo(prog(t, 2.05, 2.55));
     const d = lerp(40, 4600, k);
     S($('wipe'), { x: 540, y: 1150 + (960 - 1150) * k, tf: `scale(${d / 100})` });
-    if (t < 2.16) { S($('ball'), { x: 540, y: 1150, s: 0.6, blur: 2 }); $('ball').style.background = '#111'; }
+    if (t < 2.16) { S($('ball'), { x: 540, y: 1150, s: 0.6, blur: 2 }); $('ball').style.background = '#0A0A0A'; }
+    if (t < 2.62) orange = 1;
   }
   // 3) logo type-in on black, then morph to app icon 2.55 – 4.6
   if (t >= 2.55 && t < 4.62) {
@@ -316,10 +384,19 @@ function render(t) {
     const pop = 1 + 0.06 * Math.sin(Math.PI * prog(t, 3.9, 4.15));
     const outK = prog(t, 4.3, 4.55);
     S(m, { s: pop * lerp(1, 0.55, E.inCubic(outK)), blur: lerp(0, 18, E.inCubic(outK)), o: 1 - E.inCubic(outK) });
+    const ik = E.outExpo(prog(t, 2.58, 3.15));
+    $('morphLogo').innerHTML = aperture({ r: lerp(4, 37, ik), rot: lerp(-75, 0, ik), grow: prog(t, 2.56, 2.95), bp: E.outCubic(prog(t, 2.8, 3.3)) * (1 - prog(t, 3.3, 3.55)) });
+    const lg = $('morphLogo');
+    lg.style.left = (w / 2 - 220) + 'px';
+    lg.style.top = (h / 2 - 220 + lerp(-120, 0, k)) + 'px';
+    lg.style.transform = `scale(${lerp(1, 0.62, k)}) rotate(${lerp(0, 0, k)}deg)`;
     const mt = $('morphText');
-    mt.style.transform = `scale(${lerp(1, 0.48, k)})`;
+    mt.style.left = (w / 2) + 'px';
+    mt.style.top = (h / 2 + lerp(220, 120, k)) + 'px';
+    mt.style.transform = `translate(-50%, -50%) scale(${lerp(1, 0.6, k)})`;
+    mt.style.opacity = 1 - E.outCubic(prog(t, 3.3, 3.55));
     [...mt.children].forEach((sp, i) => {
-      const a = 2.62 + i * 0.065, kk = prog(t, a, a + 0.28);
+      const a = 2.9 + i * 0.06, kk = prog(t, a, a + 0.28);
       sp.style.opacity = E.outCubic(kk);
       sp.style.transform = `translateY(${lerp(50, 0, E.outExpo(kk))}px)`;
       sp.style.filter = `blur(${lerp(12, 0, E.outCubic(kk))}px)`;
@@ -355,7 +432,7 @@ function render(t) {
     S(ci, { x: cx + chipW / 2 + 70, y: 922, s: ik * (1 - outK), o: ik * (1 - outK), tf: `rotate(${lerp(-40, 0, ik)}deg)`, blur: lerp(0, 12, outK) });
     const dots = $('dots');
     S(dots, { x: cx, y: 1050, o: o, blur });
-    [...dots.children].forEach((d, i) => { d.style.background = i === li ? '#111' : '#c4c4c4'; d.style.transform = `scale(${i === li ? 1.15 : 1})`; });
+    [...dots.children].forEach((d, i) => { d.style.background = i === li ? '#FF6E05' : '#c4c4c4'; d.style.transform = `scale(${i === li ? 1.15 : 1})`; });
   }
   // 5) issue picker 6.0 – 7.32
   if (t >= 6.0 && t < 7.35) {
@@ -422,7 +499,7 @@ function render(t) {
     const sub = $('assignSub');
     const sw = prog(t, 9.5, 9.62);
     sub.textContent = t < 9.56 ? 'Finding the best expert' : 'Agent found!';
-    sub.style.color = t < 9.56 ? '#888' : '#1d5ccf';
+    sub.style.color = t < 9.56 ? '#888' : '#FF6E05';
     sub.style.opacity = t < 9.56 ? 1 - sw * 2 : prog(t, 9.56, 9.66);
     sub.style.filter = `blur(${t < 9.56 ? sw * 8 : (1 - prog(t, 9.56, 9.66)) * 8}px)`;
   }
@@ -445,7 +522,7 @@ function render(t) {
     for (let i = 0; i < 5; i++) {
       const sk = prog(t, 11.08 + i * 0.06, 11.2 + i * 0.06);
       const st = $('st' + i);
-      st.querySelector('path').setAttribute('fill', sk > 0.5 ? '#f5b301' : '#d0d0d0');
+      st.querySelector('path').setAttribute('fill', sk > 0.5 ? '#FF6E05' : '#d0d0d0');
       st.style.transform = `scale(${1 + 0.35 * Math.sin(Math.PI * sk)})`;
     }
   }
@@ -459,8 +536,8 @@ function render(t) {
       const mk = prog(t, 12.62, 12.8);
       const z = lerp(1, 1.035, E.outCubic(prog(t, 12.62, 13.8)));
       S($('outroMark'), { s: lerp(1.12, 1, E.outExpo(mk)) * z, blur: lerp(6, 0, E.outCubic(mk)), y: 960 });
-      const dk = prog(t, 12.72, 12.95);
-      $('outroDot').style.transform = `scale(${E.outBack(dk)})`;
+      const ok = E.outExpo(prog(t, 12.6, 13.05));
+      $('outroLogo').innerHTML = aperture({ r: lerp(8, 37, ok), rot: lerp(-60, 0, ok), grow: 1, bp: E.outCubic(prog(t, 12.75, 13.3)) });
       const tk = prog(t, 12.9, 13.25);
       const tag = $('outroTag');
       tag.style.opacity = E.outCubic(tk);
@@ -469,6 +546,7 @@ function render(t) {
     }
   }
   $('dark').style.opacity = dark;
+  $('orange').style.opacity = orange;
 }
 
 window.DURATION = 14.0;

@@ -1,4 +1,4 @@
-"""Synthesises the soundtrack (ambient pad + UI sound design) synced to index.html's timeline.
+"""Synthesises the RASOLV soundtrack (ambient pad + UI sound design) synced to index.html's timeline.
 Usage: python3 sfx.py out.wav"""
 import sys, wave
 import numpy as np
