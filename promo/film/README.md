@@ -22,6 +22,6 @@ SKIP_VO=1 ./build.sh                          # reuse existing voiceover/caption
 VOICE=am_michael KOKORO_DIR=... ./build.sh    # different Kokoro voice
 ```
 
-To change narration, edit `LINES` in `vo.py` (start time, caption text, optional spoken text — "RASOLV"
-is spoken as "Resolve"). The scene timings in `index.html` and cues in `score.py` are keyed to those start times.
+To change narration, edit `LINES` in `vo.py` (start time, caption text, optional spoken text; "Rasolv"
+is forced to *rah-ZOLV* via the `BRAND` phonemes, matching `../vo.py`). The scene timings in `index.html` and cues in `score.py` are keyed to those start times.
 The numbers shown in the film (4m resolution, 98% CSAT, 24 tickets) are illustrative placeholders.
