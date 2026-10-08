@@ -5,182 +5,213 @@
 <title>Rasolv Promo</title>
 <style>
   @font-face { font-family: 'Rubik'; src: url('fonts/Rubik.woff2') format('woff2'); font-weight: 300 900; }
-  :root { --or: #FF6E05; --ink: #0A0A0A; }
+  :root { --or: #FF6E05; --or2: #FF9A3D; --ink: #070707; --card: #161616; --card2: #1d1d1d; --mut: #8a8a8a; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
-  body { font-family: 'Rubik', sans-serif; -webkit-font-smoothing: antialiased; color: #111; }
-  #stage { position: absolute; inset: 0; overflow: hidden; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+  body { font-family: 'Rubik', sans-serif; -webkit-font-smoothing: antialiased; color: #fff; }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: var(--ink); }
   .abs { position: absolute; }
-  .layer { position: absolute; inset: 0; will-change: transform, opacity, filter; }
-  .center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .fill { position: absolute; inset: 0; }
 
-  #bg { background: radial-gradient(ellipse 120% 70% at 50% 46%, #ffffff 0%, #f6f6f6 38%, #dcdcdc 100%); }
-  #dark { background: #000; }
-  #orange { background: var(--or); }
+  .glow { position: absolute; border-radius: 50%; pointer-events: none; }
+  #glowA { width: 1700px; height: 1700px; background: radial-gradient(circle, rgba(255,110,5,.55) 0%, rgba(255,110,5,.22) 30%, rgba(255,110,5,0) 65%); }
+  #glowB { width: 1300px; height: 1300px; background: radial-gradient(circle, rgba(255,140,40,.28) 0%, rgba(255,110,5,.08) 35%, rgba(255,110,5,0) 65%); }
+  #vignette { background: radial-gradient(ellipse 85% 65% at 50% 50%, rgba(0,0,0,0) 40%, rgba(0,0,0,.65) 100%); pointer-events: none; }
 
-  #ball { width: 120px; height: 120px; border-radius: 50%; left: 0; top: 0; }
-  #wipe { width: 100px; height: 100px; border-radius: 50%; background: #000; left: 0; top: 0; }
+  #cam { position: absolute; inset: 0; transform-origin: 540px 960px; }
+  .scene { position: absolute; inset: 0; }
 
-  #word { display: flex; align-items: center; gap: 22px; font-size: 96px; font-weight: 500; letter-spacing: -2px; white-space: nowrap; }
-  #wordIcon { width: 84px; height: 84px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-  #wordIcon svg { width: 50px; height: 50px; }
+  /* ---------- phone ---------- */
+  #phone { position: absolute; left: 260px; top: 380px; width: 560px; height: 1160px; border-radius: 92px; background: linear-gradient(145deg, #3a3a3a, #0c0c0c 40%, #222 70%, #4a4a4a); padding: 14px; box-shadow: 0 60px 140px rgba(0,0,0,.7), 0 0 0 2px #555 inset; }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 80px; overflow: hidden; background: #050505; }
+  #wall { position: absolute; inset: 0; }
+  #island { position: absolute; left: 50%; top: 22px; width: 160px; height: 46px; margin-left: -80px; border-radius: 23px; background: #000; z-index: 5; }
+  #status { position: absolute; left: 52px; right: 44px; top: 26px; display: flex; justify-content: space-between; font-size: 26px; font-weight: 600; z-index: 4; }
+  #lockTime { position: absolute; left: 0; right: 0; top: 110px; text-align: center; font-size: 150px; font-weight: 500; letter-spacing: -4px; color: rgba(255,255,255,.92); }
+  #lockDate { position: absolute; left: 0; right: 0; top: 96px; text-align: center; font-size: 28px; font-weight: 500; color: rgba(255,255,255,.75); }
+  #apps { position: absolute; left: 34px; right: 34px; top: 560px; display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 34px; justify-items: center; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 19px; color: rgba(255,255,255,.9); }
+  .app .ic { width: 100px; height: 100px; border-radius: 26px; overflow: hidden; position: relative; box-shadow: 0 8px 18px rgba(0,0,0,.35); }
+  .app .ic svg { width: 100%; height: 100%; display: block; }
+  #dock { position: absolute; left: 22px; right: 22px; bottom: 26px; height: 150px; border-radius: 52px; background: rgba(255,255,255,.12); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; }
+  #dock .ic { width: 100px; height: 100px; border-radius: 26px; overflow: hidden; }
+  #live { position: absolute; left: 22px; right: 22px; top: 150px; height: 300px; border-radius: 46px; background: rgba(18,18,18,.82); border: 1.5px solid rgba(255,255,255,.08); padding: 28px 30px; z-index: 6; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  .liveHead { display: flex; align-items: center; gap: 14px; }
+  .liveHead .mk { width: 54px; height: 54px; border-radius: 15px; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
+  .liveHead .mk svg { width: 46px; height: 46px; }
+  .liveHead b { font-size: 30px; font-weight: 600; letter-spacing: 1.5px; }
+  .liveTag { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 600; letter-spacing: 1px; padding: 8px 16px; border-radius: 22px; border: 1.5px solid rgba(255,255,255,.18); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--or); display: inline-block; box-shadow: 0 0 12px var(--or); }
+  #live h3 { font-size: 34px; font-weight: 500; margin-top: 18px; }
+  #live p { font-size: 23px; color: var(--mut); margin-top: 4px; }
+  .liveFoot { display: flex; align-items: center; gap: 14px; margin-top: 18px; font-size: 23px; color: #cfcfcf; }
+  .stack { display: flex; }
+  .stack .av { margin-left: -14px; border: 3px solid #121212; }
+  .stack .av:first-child { margin-left: 0; }
 
-  #morph { background: var(--ink); overflow: hidden; }
-  #morphLogo { position: absolute; width: 440px; height: 440px; }
-  #morphText { position: absolute; color: #fff; font-size: 128px; font-weight: 600; letter-spacing: 2px; white-space: nowrap; display: flex; }
-  #morphText span { display: inline-block; }
+  /* ---------- avatars ---------- */
+  .av { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; position: relative; flex: none; overflow: hidden; }
+  .av svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-  .chip { height: 132px; border-radius: 66px; background: #fff; box-shadow: 0 18px 50px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06), inset 0 -3px 0 rgba(0,0,0,.04); display: flex; align-items: center; overflow: hidden; }
-  #chipTextWrap { position: relative; height: 132px; flex: 1; }
-  .chipText { position: absolute; left: 50px; top: 50%; font-size: 64px; font-weight: 500; letter-spacing: -1px; white-space: nowrap; }
-  #chipIcon { position: absolute; width: 72px; height: 72px; }
-  #dots { display: flex; gap: 14px; }
-  #dots i { width: 14px; height: 14px; border-radius: 50%; background: #bdbdbd; display: block; }
+  /* ---------- ui scene ---------- */
+  .pill { height: 88px; padding: 0 40px; border-radius: 44px; display: flex; align-items: center; font-size: 36px; font-weight: 500; background: #262626; color: #ddd; white-space: nowrap; border: 2px solid transparent; }
+  #pillRow { position: absolute; left: 90px; top: 560px; display: flex; gap: 20px; align-items: center; }
+  #pillHi { position: absolute; height: 88px; border-radius: 44px; background: var(--or); box-shadow: 0 0 40px rgba(255,110,5,.45); }
+  .pill.tx { position: relative; background: transparent; z-index: 2; }
+  .pill.bg { position: absolute; z-index: 0; }
+  .svc { position: absolute; width: 440px; height: 160px; border-radius: 26px; background: var(--card); display: flex; align-items: center; gap: 26px; padding: 0 22px; border: 1.5px solid rgba(255,255,255,.05); }
+  .svc .tile { width: 116px; height: 116px; border-radius: 18px; background: #f4f1ec; flex: none; overflow: hidden; }
+  .svc .tile svg { width: 100%; height: 100%; }
+  .svc b { font-size: 44px; font-weight: 600; letter-spacing: -.5px; }
+  #onlineCard { position: absolute; left: 90px; top: 1150px; width: 900px; height: 230px; border-radius: 34px; background: linear-gradient(135deg, rgba(255,110,5,.28), rgba(255,110,5,.08) 60%, rgba(255,110,5,.04)); border: 2px solid rgba(255,110,5,.35); padding: 34px 40px; }
+  #onlineCard .t { display: flex; align-items: center; gap: 14px; font-size: 30px; color: #ffd2ad; }
+  #onlineCard .orow { display: flex; align-items: center; justify-content: space-between; margin-top: 30px; }
+  .chip { display: flex; align-items: center; gap: 12px; height: 70px; padding: 0 30px; border-radius: 35px; background: rgba(0,0,0,.45); font-size: 30px; }
 
-  #issueHead { font-size: 50px; font-weight: 600; letter-spacing: -1px; display: flex; align-items: center; gap: 16px; white-space: nowrap; }
-  #issueCard { width: 860px; height: 190px; border-radius: 26px; background: #efefef; box-shadow: 0 20px 60px rgba(0,0,0,.08), inset 0 1px 0 #fff; overflow: hidden; }
-  .entry { position: absolute; left: 40px; right: 120px; top: 0; height: 190px; display: flex; align-items: center; gap: 30px; }
-  .entry .ico { width: 70px; height: 70px; flex: none; border-radius: 20px; background: #111; display: flex; align-items: center; justify-content: center; }
-  .entry .ico svg { width: 40px; height: 40px; }
-  .entry b { display: block; font-size: 44px; font-weight: 600; letter-spacing: -.8px; white-space: nowrap; }
-  .entry small { display: block; font-size: 29px; color: #9a6b6b; margin-top: 6px; white-space: nowrap; }
-  #radio { position: absolute; right: 48px; top: 50%; width: 44px; height: 44px; margin-top: -22px; border-radius: 50%; border: 4px solid #111; }
-  #radioDot { position: absolute; inset: 7px; border-radius: 50%; background: var(--or); }
+  /* ---------- list scene ---------- */
+  #listHead { position: absolute; left: 90px; right: 90px; top: 430px; display: flex; justify-content: space-between; align-items: baseline; }
+  #listHead b { font-size: 46px; font-weight: 600; }
+  #listHead span { font-size: 30px; color: var(--mut); }
+  .row { position: absolute; left: 90px; width: 900px; border-radius: 30px; background: var(--card); border: 1.5px solid rgba(255,255,255,.05); overflow: hidden; }
+  .rowTop { height: 160px; display: flex; align-items: center; gap: 28px; padding: 0 34px; }
+  .rowTop .nm b { display: block; font-size: 38px; font-weight: 600; }
+  .rowTop .nm span { display: block; font-size: 27px; color: var(--mut); margin-top: 4px; }
+  .stars { display: flex; gap: 4px; margin-top: 8px; }
+  .stars svg { width: 24px; height: 24px; }
+  .chev { margin-left: auto; width: 40px; height: 40px; }
+  .online { position: absolute; right: 2px; bottom: 2px; width: 26px; height: 26px; border-radius: 50%; background: #34d058; border: 4px solid var(--card); }
+  .exp { padding: 0 34px; }
+  .exp h4 { font-size: 26px; color: var(--mut); font-weight: 500; margin: 6px 0 14px; }
+  .reacts { display: flex; gap: 14px; }
+  .react { height: 56px; padding: 0 22px; border-radius: 28px; background: #262626; display: flex; align-items: center; gap: 10px; font-size: 26px; }
+  .react svg { width: 30px; height: 30px; }
+  .cmt { display: flex; align-items: center; gap: 18px; margin-top: 16px; font-size: 28px; }
+  .cmt i { font-style: normal; color: var(--mut); font-size: 24px; display: block; }
+  #reply { margin: 26px 0 0; height: 90px; border-radius: 45px; background: #0c0c0c; display: flex; align-items: center; padding: 0 12px 0 34px; font-size: 27px; color: #6a6a6a; }
+  #send { margin-left: auto; width: 70px; height: 70px; border-radius: 50%; background: var(--or); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(255,110,5,.6); }
+  #send svg { width: 36px; height: 36px; }
+  #recent { position: absolute; left: 90px; font-size: 38px; font-weight: 500; color: #bbb; }
 
-  #ticket { width: 920px; height: 820px; border-radius: 34px; background: linear-gradient(180deg, #f3f3f3, #e4e4e4); box-shadow: 0 40px 90px rgba(0,0,0,.14), inset 0 1px 0 #fff; overflow: hidden; }
-  #ticket .brand { position: absolute; left: 40px; top: 30px; font-size: 32px; font-weight: 600; letter-spacing: 1px; display: flex; align-items: center; gap: 12px; }
-  #ticket .brand svg { width: 52px; height: 52px; }
-  #ticket h1 { position: absolute; left: 0; right: 0; top: 96px; text-align: center; font-size: 60px; font-weight: 600; letter-spacing: -1.4px; }
-  #ticket h2 { position: absolute; left: 0; right: 0; top: 176px; text-align: center; font-size: 32px; font-weight: 400; color: #777; }
-  .field { position: absolute; left: 50px; width: 400px; height: 96px; border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.05); display: flex; align-items: center; gap: 20px; padding: 0 22px; }
-  .field .fi { width: 44px; height: 44px; border-radius: 12px; background: #111; flex: none; display: flex; align-items: center; justify-content: center; }
-  .field .fi svg { width: 26px; height: 26px; }
-  .field small { display: block; font-size: 22px; color: #888; }
-  .field b { display: block; font-size: 30px; font-weight: 600; letter-spacing: -.4px; white-space: nowrap; }
-  #illus { position: absolute; right: 50px; top: 270px; width: 380px; height: 300px; }
-  #btn { position: absolute; left: 70px; right: 70px; bottom: 60px; height: 140px; border-radius: 26px; background: #0b0b0b; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 600; letter-spacing: -.6px; }
-  #btnLabel { position: absolute; }
-  #spinner { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 6px solid rgba(255,255,255,.18); border-top-color: #fff; }
+  #zoomDisc { position: absolute; border-radius: 50%; background: var(--or); }
 
-  .stat { width: 900px; height: 300px; border-radius: 32px; background: linear-gradient(180deg, #f7f7f7, #ececec); box-shadow: 0 40px 90px rgba(0,0,0,.13), inset 0 1px 0 #fff; overflow: hidden; }
-  .stat h1 { position: absolute; left: 0; right: 0; top: 54px; text-align: center; font-size: 76px; font-weight: 600; letter-spacing: -2px; white-space: nowrap; }
-  .stat h2 { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-size: 40px; font-weight: 400; color: #888; white-space: nowrap; }
-  .track { position: absolute; left: 70px; right: 70px; bottom: 54px; height: 14px; border-radius: 7px; background: #fff; overflow: hidden; }
-  .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 7px; }
-  #resolvedCard { background: linear-gradient(180deg, #1a1a1a, #050505); color: #fff; }
-  #resolvedCard h2 { color: #8c8c8c; }
+  /* ---------- type ---------- */
+  #type { position: absolute; left: 60px; right: 60px; top: 0; height: 1920px; display: flex; align-items: center; justify-content: center; }
+  .phrase { position: absolute; left: 0; right: 0; text-align: center; font-size: 108px; font-weight: 600; letter-spacing: -3px; line-height: 1.08; }
+  .phrase .w { display: inline-block; white-space: pre; }
+  .phrase .hl { color: var(--or); text-shadow: 0 0 40px rgba(255,110,5,.45); }
 
-  #rate { width: 1000px; height: 300px; }
-  #avatar { position: absolute; left: 30px; top: 70px; width: 170px; height: 170px; border-radius: 50%; background: linear-gradient(160deg, #2b2b2b, #000); box-shadow: 0 20px 40px rgba(0,0,0,.18); display: flex; align-items: center; justify-content: center; }
-  #avatar svg { width: 96px; height: 96px; }
-  #rate h1 { position: absolute; left: 240px; top: 76px; font-size: 68px; font-weight: 600; letter-spacing: -1.8px; white-space: nowrap; }
-  #rate h2 { position: absolute; left: 242px; top: 168px; font-size: 38px; color: #888; white-space: nowrap; display: flex; align-items: center; gap: 14px; }
-  .star { width: 40px; height: 40px; }
+  /* ---------- logo ---------- */
+  #logoMark { position: absolute; width: 300px; height: 300px; }
+  #logoWordWrap { position: absolute; overflow: hidden; height: 190px; }
+  #logoWord { font-size: 150px; font-weight: 600; letter-spacing: 4px; white-space: nowrap; line-height: 190px; }
+  #logoTag { position: absolute; left: 0; right: 0; text-align: center; font-size: 46px; color: #bdbdbd; letter-spacing: 1px; }
+  #logoTag b { color: var(--or); font-weight: 500; }
 
-  #outroGray { font-size: 132px; font-weight: 600; letter-spacing: 2px; color: #6e6e6e; white-space: nowrap; }
-  #outroMark { display: flex; flex-direction: column; align-items: center; }
-  #outroLogo { width: 400px; height: 400px; margin-bottom: 30px; }
-  #outroWord { font-size: 156px; font-weight: 600; letter-spacing: 3px; color: #fff; white-space: nowrap; line-height: 1; }
-  #outroTag { font-size: 52px; font-weight: 400; color: #bdbdbd; white-space: nowrap; margin-top: 26px; }
-
-  #cursor { width: 64px; height: 64px; left: 0; top: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
-  #grain { pointer-events: none; }
+  #flash { background: #fff; pointer-events: none; }
+  #grain { position: absolute; inset: 0; width: 1080px; height: 1920px; mix-blend-mode: overlay; opacity: .09; pointer-events: none; }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB"><feGaussianBlur id="mbBlur" stdDeviation="0 0"/></filter>
+</svg>
 <div id="stage">
-  <div id="bg" class="layer"></div>
-  <div id="dark" class="layer"></div>
-  <div id="orange" class="layer"></div>
-  <div id="ball" class="abs"></div>
+  <div id="glowA" class="glow"></div>
+  <div id="glowB" class="glow"></div>
 
-  <div id="word" class="abs"><span id="wordText">Fast</span><span id="wordIcon"></span></div>
-
-  <div id="wipe" class="abs"></div>
-
-  <div id="morph" class="abs"><svg id="morphLogo" viewBox="-110 -110 220 220"></svg><div id="morphText"></div></div>
-
-  <div id="chip" class="chip abs">
-    <div id="chipTextWrap"></div>
-  </div>
-  <div id="chipIcon" class="abs"></div>
-  <div id="dots" class="abs"><i></i><i></i><i></i></div>
-
-  <div id="issueHead" class="abs">Your issue
-    <svg width="40" height="40" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7.5 2.5L13 21z" fill="#111"/></svg>
-  </div>
-  <div id="issueCard" class="abs">
-    <div id="entries"></div>
-    <div id="radio"><div id="radioDot"></div></div>
-  </div>
-
-  <div id="ticket" class="abs">
-    <div class="brand"><svg class="apSmall" viewBox="-110 -110 220 220"></svg>RASOLV</div>
-    <h1>New Ticket</h1>
-    <h2>We’re here to help, 24/7</h2>
-    <div class="field" style="top:300px">
-      <div class="fi"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20z" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 10v4M12 17v.2" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div>
-      <div><small>Issue</small><b>App crashes on upload</b></div>
+  <div id="cam">
+    <!-- 1. phone -->
+    <div id="phoneScene" class="scene">
+      <div id="phone"><div id="screen">
+        <svg id="wall" viewBox="0 0 532 1132" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <radialGradient id="wg1" cx="0.2" cy="0.85" r="0.9"><stop offset="0" stop-color="#ff7a12"/><stop offset=".45" stop-color="#7a2a00"/><stop offset="1" stop-color="#090505"/></radialGradient>
+            <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b1b1b"/><stop offset="1" stop-color="#050505"/></linearGradient>
+            <linearGradient id="wg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb066"/><stop offset=".5" stop-color="#ff6e05"/><stop offset="1" stop-color="#5a1d00"/></linearGradient>
+          </defs>
+          <rect width="532" height="1132" fill="url(#wg1)"/>
+          <circle cx="620" cy="260" r="520" fill="url(#wg2)"/>
+          <circle cx="-120" cy="1180" r="460" fill="url(#wg3)" opacity=".85"/>
+          <circle cx="620" cy="260" r="520" fill="none" stroke="#ff9a3d" stroke-width="2" opacity=".55"/>
+          <circle cx="-120" cy="1180" r="460" fill="none" stroke="#ffd0a0" stroke-width="2" opacity=".5"/>
+        </svg>
+        <div id="island"></div>
+        <div id="status"><span>9:41</span><span>●●● ▮</span></div>
+        <div id="lockDate">Thursday, October 8</div>
+        <div id="lockTime">9:41</div>
+        <div id="apps"></div>
+        <div id="dock"></div>
+        <div id="live">
+          <div class="liveHead"><div class="mk"><svg class="apM" viewBox="-110 -110 220 220"></svg></div><b>RASOLV</b><div class="liveTag"><span class="dot"></span>LIVE</div></div>
+          <h3>An expert is on it</h3>
+          <p>Ticket #4821 · reply in ~2 min</p>
+          <div class="liveFoot"><div class="stack" id="liveStack"></div><span>3 experts reviewing</span><svg style="margin-left:auto" width="30" height="30" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="#9a9a9a" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+        </div>
+      </div></div>
     </div>
-    <div class="field" style="top:416px">
-      <div class="fi"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="#fff"/></svg></div>
-      <div><small>Priority</small><b>High</b></div>
+
+    <!-- 2. services -->
+    <div id="uiScene" class="scene">
+      <div id="pillRow">
+        <div class="av" id="meAv" style="width:96px;height:96px"></div>
+        <div style="position:relative; display:flex; gap:20px;">
+          <div id="pillHi"></div>
+          <div class="pill tx" id="p0">me</div>
+          <div class="pill tx" id="p1">tickets</div>
+          <div class="pill tx" id="p2">live chat</div>
+        </div>
+      </div>
+      <div class="svc" id="s0" style="left:90px; top:720px"><div class="tile"></div><b>Billing</b></div>
+      <div class="svc" id="s1" style="left:550px; top:720px"><div class="tile"></div><b>Tech help</b></div>
+      <div class="svc" id="s2" style="left:90px; top:910px"><div class="tile"></div><b>Account</b></div>
+      <div class="svc" id="s3" style="left:550px; top:910px"><div class="tile"></div><b>Orders</b></div>
+      <div id="onlineCard">
+        <div class="t"><span class="dot"></span>experts reviewing your ticket</div>
+        <div class="orow"><div class="stack" id="onStack"></div><div class="chip"><span class="dot" style="background:#34d058;box-shadow:0 0 12px #34d058"></span>4 online</div></div>
+      </div>
     </div>
-    <svg id="illus" viewBox="0 0 380 300">
-      <defs>
-        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d9d9d9"/></linearGradient>
-        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a3a"/><stop offset="1" stop-color="#050505"/></linearGradient>
-        <filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="14" stdDeviation="12" flood-opacity=".22"/></filter>
-      </defs>
-      <g filter="url(#sh)">
-        <path d="M40 40h200a28 28 0 0 1 28 28v90a28 28 0 0 1-28 28H110l-46 36 8-36H40a28 28 0 0 1-28-28V68a28 28 0 0 1 28-28z" fill="url(#g1)"/>
-        <rect x="52" y="82" width="150" height="16" rx="8" fill="#cfcfcf"/>
-        <rect x="52" y="116" width="104" height="16" rx="8" fill="#e0e0e0"/>
-      </g>
-      <g filter="url(#sh)">
-        <path d="M190 128h150a26 26 0 0 1 26 26v66a26 26 0 0 1-26 26h-20l6 30-38-30h-98a26 26 0 0 1-26-26v-66a26 26 0 0 1 26-26z" fill="url(#g2)"/>
-        <path d="M226 190l20 20 40-42" fill="none" stroke="#FF6E05" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-      </g>
-    </svg>
-    <div id="btn"><span id="btnLabel">Submit Ticket</span><div id="spinner"></div></div>
+
+    <!-- 3. agents list -->
+    <div id="listScene" class="scene">
+      <div id="listHead"><b>Active now</b><span>See all</span></div>
+      <div class="row" id="r0" style="top:530px">
+        <div class="rowTop"><div class="av" style="width:104px;height:104px" data-av="0"></div><div class="nm"><b>Maya Haddad</b><span>Billing expert</span><div class="stars" data-stars="5"></div></div><svg class="chev" viewBox="0 0 24 24"><path id="chev0" d="M6 9l6 6 6-6" fill="none" stroke="#9a9a9a" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+        <div class="exp">
+          <h4>Reactions</h4>
+          <div class="reacts" id="reacts"></div>
+          <h4 style="margin-top:22px">Comments</h4>
+          <div class="cmt"><div class="av" style="width:54px;height:54px" data-av="3"></div><div><i>Sam · just now</i>Refund issued in 4 minutes</div></div>
+          <div class="cmt"><div class="av" style="width:54px;height:54px" data-av="4"></div><div><i>Nora · 2m</i>Fast, kind, and actually fixed it</div></div>
+          <div id="reply">Say thanks to Maya…<div id="send"><svg viewBox="0 0 24 24"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+        </div>
+      </div>
+      <div class="row" id="r1" style="top:710px"><div class="rowTop"><div class="av" style="width:104px;height:104px" data-av="1"></div><div class="nm"><b>Omar Khalil</b><span>Tech support</span><div class="stars" data-stars="5"></div></div><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="#9a9a9a" stroke-width="2.4" stroke-linecap="round"/></svg></div></div>
+      <div class="row" id="r2" style="top:890px"><div class="rowTop"><div class="av" style="width:104px;height:104px" data-av="2"></div><div class="nm"><b>Lina Saeed</b><span>Accounts</span><div class="stars" data-stars="4"></div></div><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="#9a9a9a" stroke-width="2.4" stroke-linecap="round"/></svg></div></div>
+      <div id="recent">Recently solved</div>
+    </div>
+    <div id="zoomDisc"></div>
   </div>
 
-  <div id="assignCard" class="stat abs">
-    <h1>Assigning Agent</h1>
-    <h2 id="assignSub">Finding the best expert</h2>
-    <div class="track"><div id="assignFill" class="fill" style="background:#FF6E05"></div></div>
-  </div>
+  <!-- 4. kinetic type -->
+  <div id="type"></div>
 
-  <div id="resolvedCard" class="stat abs">
-    <h1>Ticket Solved</h1>
-    <h2>Closed by Maya · Support</h2>
-    <div class="track" style="background:#2a2a2a"><div id="resolvedFill" class="fill" style="background:#FF6E05"></div></div>
-  </div>
+  <!-- 5. logo -->
+  <svg id="logoMark" viewBox="-110 -110 220 220"></svg>
+  <div id="logoWordWrap"><div id="logoWord">RASOLV</div></div>
+  <div id="logoTag">Vision That <b>Solves</b></div>
 
-  <div id="rate" class="abs">
-    <div id="avatar"><svg viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="#fff" stroke-width="1.8"/><rect x="3" y="12.5" width="4" height="6" rx="1.6" fill="#fff"/><rect x="17" y="12.5" width="4" height="6" rx="1.6" fill="#fff"/><path d="M19 18.5c0 2-2 3-5 3" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="13.5" cy="21.5" r="1.3" fill="#FF6E05"/></svg></div>
-    <h1>Solved in 4 minutes</h1>
-    <h2 id="stars"></h2>
-  </div>
-
-  <div id="outroGray" class="abs">RASOLV</div>
-  <div id="outroMark" class="abs">
-    <svg id="outroLogo" viewBox="-110 -110 220 220"></svg>
-    <div id="outroWord">RASOLV</div>
-    <div id="outroTag">Vision That Solves</div>
-  </div>
-
-  <svg id="cursor" class="abs" viewBox="0 0 32 32"><path d="M6 3v23l6.2-5.8 4.1 9 4-1.8-4-8.8H25z" fill="#111" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+  <div id="vignette" class="fill"></div>
+  <div id="flash" class="fill"></div>
+  <canvas id="grain" width="540" height="960"></canvas>
 </div>
 
 <script>
-// ---------- helpers ----------
+// ================= helpers =================
 const $ = id => document.getElementById(id);
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, k) => a + (b - a) * k;
 const prog = (t, a, b) => clamp((t - a) / (b - a));
 const E = {
-  lin: k => k,
   outCubic: k => 1 - Math.pow(1 - k, 3),
   inCubic: k => k * k * k,
   inOutCubic: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
@@ -189,33 +220,32 @@ const E = {
   inOutExpo: k => k === 0 ? 0 : k === 1 ? 1 : k < .5 ? Math.pow(2, 20 * k - 10) / 2 : (2 - Math.pow(2, -20 * k + 10)) / 2,
   outBack: k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); },
   outQuint: k => 1 - Math.pow(1 - k, 5),
+  inQuart: k => k * k * k * k,
 };
-// animated value over [a,b] with easing from v0 to v1
-const tw = (t, a, b, v0, v1, ease = E.outCubic) => lerp(v0, v1, ease(prog(t, a, b)));
+// derivative-ish helper for motion blur: |f(t+dt)-f(t)|
+const speed = (f, t, dt = 1 / 60) => Math.abs(f(t + dt) - f(t)) / dt;
+function vis(el, on) { el.style.display = on ? '' : 'none'; return on; }
 
-function S(el, o) {
-  const s = el.style;
-  s.display = o.hide ? 'none' : '';
-  if (o.hide) return;
-  s.opacity = o.o ?? 1;
-  const x = o.x ?? 540, y = o.y ?? 960;
-  s.left = x + 'px'; s.top = y + 'px';
-  s.transform = `translate(-50%, -50%) ${o.tf || ''} scale(${o.s ?? 1})`;
-  s.filter = o.blur ? `blur(${o.blur}px)` : 'none';
-}
-function hideAll() {
-  for (const id of ['ball','word','wipe','morph','chip','chipIcon','dots','issueHead','issueCard','ticket','assignCard','resolvedCard','rate','outroGray','outroMark','cursor'])
-    $(id).style.display = 'none';
-}
+// ================= timing (seconds) — locked to the voiceover & 125 BPM grid =================
+const BEAT = 60 / 125, DROP = 9.6, LOGO = 15.36;
+const T = {
+  phoneIn: 0.0, tapIcon: 1.55, liveIn: 1.85, pushIn: 3.35, ui: 3.75,
+  pill: 4.55, whip: 6.05, list: 6.25, expand: 7.05, zoomSend: 8.75, drop: DROP, logo: LOGO,
+};
+// kinetic phrases: [start, [words], highlight flags] — synced to VO lines 4–6
+const PHRASES = [
+  { t: 9.70,  out: 11.55, words: ['Support', 'that', 'actually', 'solves.'], hl: [0, 0, 0, 1], wt: [0, .38, .62, 1.05] },
+  { t: 11.85, out: 13.55, words: ['One', 'app.', 'Every', 'answer.'],         hl: [0, 0, 1, 1], wt: [0, .32, .78, 1.08] },
+  { t: 13.75, out: 15.25, words: ['Your', 'data', 'stays', 'yours.'],         hl: [0, 0, 1, 1], wt: [0, .22, .55, .9] },
+];
+window.DURATION = 19.6;
 
-// ---------- RASOLV aperture mark (procedural so the iris can animate) ----------
-// r: inner hole radius, rot: blade rotation (deg), bp: blueprint draw progress 0..1, grow: blade scale-in 0..1
+// ================= RASOLV aperture mark =================
 function aperture({ r = 37, rot = 0, bp = 1, grow = 1, color = '#FF6E05', gap = '#0A0A0A', R = 80, lines = true } = {}) {
   const P = (a, rad) => [rad * Math.cos(a * Math.PI / 180), rad * Math.sin(a * Math.PI / 180)];
   const O = [...Array(6)].map((_, i) => P(-90 + 60 * i, R));
   const I = [...Array(6)].map((_, i) => P(-60 + 60 * i + rot, Math.max(r, 0.01)));
   const ang = q => (Math.atan2(q[1], q[0]) * 180 / Math.PI + 360) % 360;
-  // intersect ray (p + t d) with the outer hexagon
   const hit = (p, d) => {
     let best = null;
     for (let k = 0; k < 6; k++) {
@@ -229,6 +259,7 @@ function aperture({ r = 37, rot = 0, bp = 1, grow = 1, color = '#FF6E05', gap = 
   };
   const Pt = I.map((q, i) => { const pr = I[(i + 5) % 6]; return hit(q, [q[0] - pr[0], q[1] - pr[1]]); });
   const f = q => q[0].toFixed(2) + ',' + q[1].toFixed(2);
+  const ln = (a, b, extra) => `<line x1="${a[0].toFixed(2)}" y1="${a[1].toFixed(2)}" x2="${b[0].toFixed(2)}" y2="${b[1].toFixed(2)}" ${extra || ''}/>`;
   let blades = '', seps = '';
   for (let i = 0; i < 6; i++) {
     const j = (i + 1) % 6, a0 = ang(Pt[i]), span = (ang(Pt[j]) - a0 + 360) % 360;
@@ -236,324 +267,288 @@ function aperture({ r = 37, rot = 0, bp = 1, grow = 1, color = '#FF6E05', gap = 
                   .sort((u, v) => ((ang(v) - a0 + 360) % 360) - ((ang(u) - a0 + 360) % 360));
     const poly = [I[i], I[j], Pt[j], ...mids, Pt[i]];
     const c = poly.reduce((m, q) => [m[0] + q[0] / poly.length, m[1] + q[1] / poly.length], [0, 0]);
-    const g = 0.6 + 0.4 * clamp(grow * 1.6 - i * 0.12);
-    const o = clamp(grow * 2 - i * 0.18);
+    const g = 0.6 + 0.4 * clamp(grow * 1.6 - i * 0.12), o = clamp(grow * 2 - i * 0.18);
     blades += `<polygon points="${poly.map(f).join(' ')}" fill="${color}" opacity="${o}" transform="translate(${f(c)}) scale(${g}) translate(${f([-c[0], -c[1]])})"/>`;
-    seps += `<line x1="${f(I[i]).replace(',', '" y1="')}" x2="${f(Pt[i]).replace(',', '" y2="')}" stroke="${gap}" stroke-width="4.2" stroke-linecap="square"/>`;
-    if (lines && (i === 0 || i === 3)) { // thick accent slash
-      const s0 = [I[i][0] + (I[j][0] - I[i][0]) * 0.55, I[i][1] + (I[j][1] - I[i][1]) * 0.55];
-      const d = [Pt[i][0] - I[i][0], Pt[i][1] - I[i][1]];
-      seps += `<line x1="${s0[0] + d[0] * 0.08}" y1="${s0[1] + d[1] * 0.08}" x2="${s0[0] + d[0] * 0.62}" y2="${s0[1] + d[1] * 0.62}" stroke="${gap}" stroke-width="3.6"/>`;
+    seps += ln(I[i], Pt[i], `stroke="${gap}" stroke-width="4.2" stroke-linecap="square"`);
+    if (lines && (i === 0 || i === 3)) {
+      const s0 = [I[i][0] + (I[j][0] - I[i][0]) * 0.55, I[i][1] + (I[j][1] - I[i][1]) * 0.55], d = [Pt[i][0] - I[i][0], Pt[i][1] - I[i][1]];
+      seps += ln([s0[0] + d[0] * .08, s0[1] + d[1] * .08], [s0[0] + d[0] * .62, s0[1] + d[1] * .62], `stroke="${gap}" stroke-width="3.6"`);
     }
-    if (lines && (i === 1 || i === 4)) // fine construction line
-      seps += `<line x1="${f(I[j]).replace(',', '" y1="')}" x2="${f(O[(i + 2) % 6]).replace(',', '" y2="')}" stroke="${gap}" stroke-width="0.9"/>`;
+    if (lines && (i === 1 || i === 4)) seps += ln(I[j], O[(i + 2) % 6], `stroke="${gap}" stroke-width="0.9"`);
   }
-  // blueprint dimension lines around the hexagon
   let bpS = '';
   if (bp > 0) {
     for (let k = 0; k < 6; k++) {
       const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(...e);
-      const n = [e[1] / L, -e[0] / L]; const off = 13; const kk = clamp(bp * 1.4 - k * 0.07);
-      const a1 = [a[0] + n[0] * off + e[0] * 0.08, a[1] + n[1] * off + e[1] * 0.08];
-      const b1 = [a1[0] + e[0] * 0.84 * kk, a1[1] + e[1] * 0.84 * kk];
-      const tick = (q, s) => `<line x1="${q[0] - n[0] * 4 * s}" y1="${q[1] - n[1] * 4 * s}" x2="${q[0] + n[0] * 4 * s}" y2="${q[1] + n[1] * 4 * s}"/>`;
-      bpS += `<line x1="${f(a1).replace(',', '" y1="')}" x2="${f(b1).replace(',', '" y2="')}"/>` + tick(a1, kk) + tick(b1, kk);
-      const ra = P(-90 + 60 * k, R + 6), rb = P(-90 + 60 * k, R + 6 + 12 * kk);
-      bpS += `<line x1="${f(ra).replace(',', '" y1="')}" x2="${f(rb).replace(',', '" y2="')}"/>`;
+      const n = [e[1] / L, -e[0] / L], off = 13, kk = clamp(bp * 1.4 - k * 0.07);
+      const a1 = [a[0] + n[0] * off + e[0] * .08, a[1] + n[1] * off + e[1] * .08], b1 = [a1[0] + e[0] * .84 * kk, a1[1] + e[1] * .84 * kk];
+      const tick = (q, s) => ln([q[0] - n[0] * 4 * s, q[1] - n[1] * 4 * s], [q[0] + n[0] * 4 * s, q[1] + n[1] * 4 * s]);
+      bpS += ln(a1, b1) + tick(a1, kk) + tick(b1, kk) + ln(P(-90 + 60 * k, R + 6), P(-90 + 60 * k, R + 6 + 12 * kk));
     }
     bpS = `<g stroke="${color}" stroke-width="1.3" fill="none" opacity="${clamp(bp * 3)}">${bpS}</g>`;
   }
   return bpS + `<g>${blades}${seps}</g>`;
 }
 
-// ---------- icons ----------
-const ICON = {
-  bolt: c => `<svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.5h6L10 22l9-12.5h-6z" fill="${c}"/></svg>`,
-  check: c => `<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="${c}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  chat: c => `<svg viewBox="0 0 24 24"><path d="M4 5h16v11H10l-5 4v-4H4z" fill="${c}" stroke="${c}" stroke-width="1.2" stroke-linejoin="round"/></svg>`,
-  card: c => `<svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="${c}"/><rect x="2.5" y="8.5" width="19" height="2.6" fill="#fff"/></svg>`,
-  wrench: c => `<svg viewBox="0 0 24 24"><path d="M14.7 3.3a5 5 0 0 0-6 6.3L3 15.3 5.7 18l1 1 5.7-5.7a5 5 0 0 0 6.3-6l-3 3-2.8-.6-.6-2.8z" fill="${c}"/></svg>`,
-  user: c => `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.2" fill="${c}"/><path d="M3.5 21a8.5 7 0 0 1 17 0z" fill="${c}"/></svg>`,
-  lock: c => `<svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="11" rx="2.5" fill="${c}"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="${c}" stroke-width="2.4"/></svg>`,
-  refresh: c => `<svg viewBox="0 0 24 24"><path d="M19 8a8 8 0 1 0 1 6" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/><path d="M20 3v6h-6z" fill="${c}"/></svg>`,
-  alert: c => `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="${c}"/><path d="M12 7v6M12 16.5v.3" stroke="#111" stroke-width="2.6" stroke-linecap="round"/></svg>`,
-  star: c => `<svg class="star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z" fill="${c}"/></svg>`,
-};
-
-// ---------- data ----------
-const WORDS = [
-  { text: 'Fast',     icon: 'bolt',  bg: 'light'  },
-  { text: 'Reliable', icon: 'check', bg: 'dark'   },
-  { text: 'Human',    icon: 'chat',  bg: 'orange' },
+// ================= static content =================
+const AV = [ // [initials, gradient a, gradient b]
+  ['MH', '#ff9a3d', '#c2410c'], ['OK', '#5b6cff', '#1e2a78'], ['LS', '#e04f8a', '#6b1240'],
+  ['SA', '#2bb673', '#0d5a36'], ['NR', '#c79bff', '#5b2aa8'], ['JD', '#ffcd4d', '#a8710a'], ['AK', '#49c6e5', '#11576b'],
 ];
-const W_T0 = 0.0, W_DUR = 0.72;
+let avN = 0;
+function avatarHTML(i, size) {
+  const [ini, a, b] = AV[i % AV.length]; const id = 'avg' + (avN++);
+  return `<svg viewBox="0 0 100 100"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+    <rect width="100" height="100" fill="url(#${id})"/>
+    <circle cx="50" cy="40" r="18" fill="rgba(255,255,255,.88)"/><path d="M16 100c4-22 18-32 34-32s30 10 34 32z" fill="rgba(255,255,255,.88)"/></svg>`;
+}
+const STAR = c => `<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z" fill="${c}"/></svg>`;
 
-const LABELS = [
-  { text: 'Billing',   icon: 'card'   },
-  { text: 'Technical', icon: 'wrench' },
-  { text: 'Account',   icon: 'user'   },
+const APPS = [
+  ['Maps',     `<rect width="100" height="100" fill="#e9f1e4"/><path d="M0 62 100 30v18L0 80z" fill="#f6d36b"/><path d="M58 0h16L48 100H32z" fill="#fff"/><circle cx="64" cy="42" r="12" fill="#2f7cf6"/><path d="M64 42l-6 14h12z" fill="#2f7cf6"/>`],
+  ['Notes',    `<rect width="100" height="100" fill="#fff"/><rect width="100" height="30" fill="#ffcf3a"/><path d="M14 48h72M14 62h72M14 76h50" stroke="#ddd" stroke-width="3"/>`],
+  ['Photos',   `<rect width="100" height="100" fill="#fff"/>` + ['#f5a623','#f8e71c','#7ed321','#50e3c2','#4a90e2','#9013fe','#e04f8a','#ff6e05'].map((c, i) => `<ellipse cx="50" cy="30" rx="11" ry="20" fill="${c}" opacity=".85" transform="rotate(${i * 45} 50 50)"/>`).join('')],
+  ['Mail',     `<rect width="100" height="100" fill="#2f8cff"/><rect x="18" y="30" width="64" height="42" rx="6" fill="#fff"/><path d="M20 33l30 22 30-22" fill="none" stroke="#2f8cff" stroke-width="4"/>`],
+  ['Clock',    `<rect width="100" height="100" fill="#111"/><circle cx="50" cy="50" r="36" fill="#fff"/><path d="M50 50V26M50 50l16 10" stroke="#111" stroke-width="4" stroke-linecap="round"/><path d="M50 50l-20-6" stroke="#ff6e05" stroke-width="2"/>`],
+  ['RASOLV',   null],
+  ['Music',    `<rect width="100" height="100" fill="#fa3c5a"/><path d="M42 70V32l30-6v36" fill="none" stroke="#fff" stroke-width="6"/><circle cx="36" cy="70" r="9" fill="#fff"/><circle cx="66" cy="62" r="9" fill="#fff"/>`],
+  ['Settings', `<rect width="100" height="100" fill="#8e8e93"/><circle cx="50" cy="50" r="24" fill="none" stroke="#e5e5ea" stroke-width="10" stroke-dasharray="7 5"/><circle cx="50" cy="50" r="12" fill="#e5e5ea"/>`],
 ];
-const L_T = [4.45, 4.95, 5.45, 6.0];
-
-const ENTRIES = [
-  { t: 'Payment failed',        s: 'Order #48213 · Card declined',     i: 'card'    },
-  { t: 'Can’t sign in',         s: '2FA code not arriving · Account',  i: 'lock'    },
-  { t: 'Refund pending',        s: 'Order #39102 · 6 days ago',        i: 'refresh' },
-  { t: 'App crashes on upload', s: 'iOS 18 · Version 4.2.1',           i: 'alert'   },
+const DOCK = [
+  `<rect width="100" height="100" fill="#34c759"/><path d="M34 28c-6 4-8 14 2 28s22 20 28 16l4-8-10-8-6 4c-6-3-12-9-14-15l4-6-8-10z" fill="#fff"/>`,
+  `<rect width="100" height="100" fill="#fff"/><circle cx="50" cy="50" r="34" fill="none" stroke="#2f8cff" stroke-width="4"/><path d="M50 22l8 28-8 28-8-28z" fill="#ff3b30"/><path d="M50 50l8-0-8 28-8-28z" fill="#ddd"/>`,
+  `<rect width="100" height="100" fill="#34c759"/><path d="M22 30h56v34H44l-14 12V64h-8z" fill="#fff"/>`,
+  `<rect width="100" height="100" fill="#1c1c1e"/><rect x="18" y="34" width="64" height="44" rx="10" fill="#8e8e93"/><circle cx="50" cy="56" r="14" fill="#1c1c1e"/><circle cx="50" cy="56" r="9" fill="#3a3a3c"/><rect x="38" y="26" width="24" height="10" rx="3" fill="#8e8e93"/>`,
 ];
-const E_T = [6.05, 6.32, 6.56, 6.80, 99];
-
-// ---------- build DOM ----------
-const ctx = document.createElement('canvas').getContext('2d');
-function textW(font, txt) { ctx.font = font; return ctx.measureText(txt).width; }
-let labelW = [];
+const TILES = [ // service tiles: monochrome illustrations with an orange accent
+  `<svg viewBox="0 0 100 100"><rect x="18" y="30" width="64" height="42" rx="8" fill="#111"/><rect x="18" y="40" width="64" height="8" fill="#ff6e05"/><rect x="26" y="56" width="20" height="6" rx="3" fill="#fff"/><circle cx="74" cy="72" r="13" fill="#ff6e05"/><path d="M68 72l4 4 8-8" stroke="#111" stroke-width="3" fill="none"/></svg>`,
+  `<svg viewBox="0 0 100 100"><rect x="16" y="24" width="68" height="46" rx="6" fill="#111"/><rect x="22" y="30" width="56" height="34" fill="#2a2a2a"/><path d="M30 52l8-8 8 6 12-14" stroke="#ff6e05" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="38" y="72" width="24" height="6" fill="#111"/><path d="M74 66l12 12" stroke="#ff6e05" stroke-width="7" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 100 100"><circle cx="50" cy="38" r="16" fill="#111"/><path d="M20 84c4-20 16-28 30-28s26 8 30 28z" fill="#111"/><circle cx="72" cy="30" r="12" fill="#ff6e05"/><path d="M67 30h10M72 25v10" stroke="#111" stroke-width="3"/></svg>`,
+  `<svg viewBox="0 0 100 100"><path d="M24 36h52l-6 44H30z" fill="#111"/><path d="M38 36v-6a12 12 0 0 1 24 0v6" stroke="#111" stroke-width="5" fill="none"/><rect x="40" y="50" width="20" height="6" rx="3" fill="#ff6e05"/></svg>`,
+];
+const REACTS = [['🔥', 12, '#ff6e05'], ['✓', 8, '#34d058'], ['♥', 5, '#ff4d6d']];
 
 function build() {
-  document.querySelectorAll('.apSmall').forEach(el => el.innerHTML = aperture({ bp: 0, lines: false, gap: '#efefef' }));
-  const mt = $('morphText');
-  mt.innerHTML = [...'RASOLV'].map(c => `<span>${c}</span>`).join('');
-  $('chipTextWrap').innerHTML = LABELS.map((l, i) => `<div class="chipText" id="lt${i}">${l.text}</div>`).join('');
-  labelW = LABELS.map(l => textW('500 64px Rubik', l.text));
-  $('entries').innerHTML = ENTRIES.map((e, i) =>
-    `<div class="entry" id="en${i}"><div class="ico">${ICON[e.i]('#fff')}</div><div><b>${e.t}</b><small>${e.s}</small></div></div>`).join('');
-  $('stars').innerHTML = '<span>Maya · Rasolv Support</span>' + [0,1,2,3,4].map(i => `<span id="st${i}" style="display:inline-flex">${ICON.star('#d0d0d0')}</span>`).join('');
+  $('apps').innerHTML = APPS.map(([n, svg], i) => `<div class="app" id="app${i}"><div class="ic">${svg ? `<svg viewBox="0 0 100 100">${svg}</svg>` : `<div style="position:absolute;inset:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center"><svg class="apM" viewBox="-110 -110 220 220" style="width:92%;height:92%"></svg></div>`}</div>${n === 'RASOLV' ? 'Rasolv' : n}</div>`).join('');
+  $('dock').innerHTML = DOCK.map(s => `<div class="ic"><svg viewBox="0 0 100 100">${s}</svg></div>`).join('');
+  document.querySelectorAll('.apM').forEach(el => el.innerHTML = aperture({ bp: 0, lines: true }));
+  $('liveStack').innerHTML = [0, 1, 2].map(i => `<div class="av" style="width:56px;height:56px">${avatarHTML(i)}</div>`).join('');
+  $('onStack').innerHTML = [0, 1, 2, 3, 4].map(i => `<div class="av" style="width:84px;height:84px">${avatarHTML(i)}</div>`).join('');
+  $('meAv').innerHTML = avatarHTML(5);
+  document.querySelectorAll('[data-av]').forEach(el => el.innerHTML = avatarHTML(+el.dataset.av) + (el.offsetWidth > 90 ? '<div class="online"></div>' : ''));
+  document.querySelectorAll('[data-stars]').forEach(el => el.innerHTML = [0, 1, 2, 3, 4].map(i => STAR(i < +el.dataset.stars ? '#ff6e05' : '#3a3a3a')).join(''));
+  [0, 1, 2, 3].forEach(i => $('s' + i).querySelector('.tile').innerHTML = TILES[i]);
+  $('reacts').innerHTML = REACTS.map(([g, n, c]) => `<div class="react"><span style="color:${c};font-weight:700">${g === '🔥' ? `<svg viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-3-1-6 1-9z" fill="${c}"/></svg>` : g}</span>${n}</div>`).join('');
+  $('type').innerHTML = PHRASES.map((p, i) => `<div class="phrase" id="ph${i}">${p.words.map((w, j) => `<span class="w${p.hl[j] ? ' hl' : ''}" id="ph${i}w${j}">${w}</span>`).join('<span class="w"> </span>')}</div>`).join('');
 }
 
-// ---------- scenes ----------
-function sceneWords(t) {
-  const idx = Math.floor((t - W_T0) / W_DUR);
-  if (idx < 0 || idx > 2) return null;
-  const w = WORDS[idx];
-  const lt = (t - W_T0) - idx * W_DUR;          // local time in segment
-  const fg = w.bg === 'dark' ? '#fff' : '#0A0A0A', bgc = { light: '#fff', dark: '#0A0A0A', orange: '#FF6E05' }[w.bg];
-  $('wordText').textContent = w.text;
-  $('wordText').style.color = fg;
-  const wi = $('wordIcon');
-  wi.style.background = fg;
-  if (wi.dataset.k !== w.icon + bgc) { wi.innerHTML = ICON[w.icon](bgc); wi.dataset.k = w.icon + bgc; }
-  // word pop
-  const inK = prog(lt, 0, 0.22), outK = prog(lt, W_DUR - 0.12, W_DUR);
-  const s = lerp(0.86, 1, E.outBack(inK)) * lerp(1, 1.06, E.inCubic(outK));
-  const blur = lerp(14, 0, E.outCubic(inK)) + lerp(0, 10, E.inCubic(outK));
-  const o = clamp(inK * 1.6) * (idx === 2 ? 1 - E.inCubic(outK) * 0 : 1 - outK);
-  S($('word'), { s, blur, o: idx === 2 ? clamp(inK * 1.6) * (1 - prog(t, 2.05, 2.2)) : o, y: 900 });
-  // icon spin
-  wi.style.transform = `rotate(${lerp(-120, 0, E.outBack(prog(lt, 0.05, 0.35)))}deg) scale(${lerp(0, 1, E.outBack(prog(lt, 0.05, 0.32)))})`;
-  // ball (motion blurred blob)
-  const paths = [
-    [[1180, 1180], [-140, 1560]],
-    [[-140, 1500], [1180, 1080]],
-    [[1180, 1620], [540, 1150]],
-  ];
-  const [[x0, y0], [x1, y1]] = paths[idx];
-  const bk = idx === 2 ? E.outExpo(prog(lt, 0, 0.6)) : E.inOutCubic(prog(lt, 0, W_DUR));
-  const speed = idx === 2 ? (1 - bk) : Math.sin(Math.PI * prog(lt, 0, W_DUR));
-  const ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
-  const b = $('ball');
-  b.style.background = w.bg === 'dark' ? '#FF6E05' : '#0A0A0A';
-  S(b, { x: lerp(x0, x1, bk), y: lerp(y0, y1, bk), tf: `rotate(${ang}deg) scaleX(${1 + speed * 1.6}) scaleY(${1 - speed * 0.25})`, blur: 2 + speed * 16, s: idx === 2 ? lerp(1, 0.6, bk) : 1 });
-  return w.bg;
+// ================= grain =================
+const gctx = $('grain').getContext('2d');
+const gimg = gctx.createImageData(540, 960);
+function grain(t) {
+  let s = (Math.floor(t * 60) * 2654435761) >>> 0;
+  const d = gimg.data;
+  for (let i = 0; i < d.length; i += 4) {
+    s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0;
+    const v = s & 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255;
+  }
+  gctx.putImageData(gimg, 0, 0);
 }
 
+// ================= camera / motion blur =================
+function setCam(tf, bx = 0, by = 0) {
+  const cam = $('cam');
+  cam.style.transform = tf;
+  if (bx + by > 0.4) { $('mbBlur').setAttribute('stdDeviation', `${bx.toFixed(2)} ${by.toFixed(2)}`); cam.style.filter = 'url(#mb)'; }
+  else cam.style.filter = 'none';
+}
+
+// ================= render =================
 function render(t) {
-  hideAll();
-  // background state
-  let dark = 0, orange = 0;
+  grain(t);
+  // --- background glows (drift, and pulse on the beat after the drop) ---
+  const pulse = t >= DROP && t < LOGO ? Math.exp(-((t - DROP) % BEAT) / 0.16) : 0;
+  const intro = E.outCubic(prog(t, 0, 1.2));
+  const gA = $('glowA'), gB = $('glowB');
+  const ax = lerp(-650, -520, Math.sin(t * .35) * .5 + .5), ay = lerp(1150, 1050, Math.sin(t * .27) * .5 + .5);
+  gA.style.left = ax + 'px'; gA.style.top = ay + 'px';
+  gA.style.opacity = (0.75 + 0.35 * pulse) * intro * (t > LOGO - .2 ? lerp(1, .55, prog(t, LOGO - .2, LOGO + .3)) : 1);
+  gA.style.transform = `scale(${1 + .08 * pulse})`;
+  gB.style.left = lerp(380, 300, Math.sin(t * .3) * .5 + .5) + 'px'; gB.style.top = lerp(-760, -660, Math.cos(t * .25) * .5 + .5) + 'px';
+  gB.style.opacity = (t < DROP ? .35 : .55 + .3 * pulse) * intro;
 
-  // 1) keyword flashes 0 – 2.16
-  if (t < 2.16) {
-    const bgk = sceneWords(t); dark = bgk === 'dark' ? 1 : 0; orange = bgk === 'orange' ? 1 : 0;
+  let camTf = '', bx = 0, by = 0;
+
+  // ---------- 1. phone (0 – 3.85) ----------
+  const phoneOn = vis($('phoneScene'), t < T.ui + 0.1);
+  if (phoneOn) {
+    const ph = $('phone');
+    const kIn = E.outQuint(prog(t, 0, 1.5));
+    const rx = lerp(38, 8, kIn), ry = lerp(-34, -10, kIn), rz = lerp(14, 3, kIn);
+    const settle = E.inOutCubic(prog(t, 1.4, 2.6));
+    const ty = lerp(1300, 60, kIn);
+    // push-in toward the live widget (widget centre is 350px above phone centre)
+    const pk = E.inCubic(prog(t, T.pushIn, T.ui + 0.1));
+    const s = lerp(1, 4.2, pk);
+    const phoneT = tt => { const k = E.outQuint(prog(tt, 0, 1.5)); const p = E.inCubic(prog(tt, T.pushIn, T.ui + .1)); return lerp(1300, 60, k) + 266 * lerp(1, 4.2, p) * p; };
+    const wc = E.outCubic(prog(t, T.pushIn, T.pushIn + .3));
+    ph.style.transform = `perspective(2600px) translateY(${ty + (266 * s - ty) * wc}px) rotateX(${rx * (1 - settle)}deg) rotateY(${ry * (1 - settle)}deg) rotateZ(${rz * (1 - settle)}deg) scale(${s * lerp(1, 1.04, settle)})`;
+    ph.style.filter = t < 1 ? `blur(${lerp(14, 0, E.outCubic(prog(t, 0, .9)))}px)` : 'none';
+    by = t < T.pushIn ? Math.min(30, speed(phoneT, t) * 0.008) : 0;
+    const zsp = speed(tt => lerp(1, 4.2, E.inCubic(prog(tt, T.pushIn, T.ui + .1))), t);
+    bx = Math.max(bx, zsp * 1.6); by = Math.max(by, zsp * 1.6);
+    $('phoneScene').style.opacity = 1 - prog(t, T.ui - 0.05, T.ui + 0.1);
+    // lock -> home: lock clock fades as icons appear
+    const home = prog(t, 0.75, 1.15);
+    $('lockTime').style.opacity = 1 - home; $('lockDate').style.opacity = 1 - home;
+    $('lockTime').style.transform = `translateY(${-60 * home}px) scale(${1 - .1 * home})`;
+    APPS.forEach((_, i) => { const el = $('app' + i); const k = E.outBack(prog(t, .85 + i * .03, 1.25 + i * .03)); el.style.opacity = clamp(k); el.style.transform = `scale(${lerp(.4, 1, k)})`; });
+    $('dock').style.opacity = home;
+    // tap on Rasolv icon
+    const tap = Math.sin(Math.PI * prog(t, T.tapIcon, T.tapIcon + .22));
+    $('app5').style.transform = `scale(${1 - .14 * tap})`;
+    $('app5').querySelector('.ic').style.boxShadow = `0 0 ${60 * tap}px rgba(255,110,5,${.9 * tap})`;
+    // live activity drops from the island
+    const lk = E.outBack(prog(t, T.liveIn, T.liveIn + .5));
+    const live = $('live');
+    live.style.opacity = clamp(prog(t, T.liveIn, T.liveIn + .2));
+    live.style.transform = `translateY(${lerp(-150, 0, lk)}px) scale(${lerp(.35, 1, lk)}, ${lerp(.15, 1, lk)})`;
+    live.style.transformOrigin = '50% 0';
+    $('live').querySelector('.dot').style.opacity = .55 + .45 * Math.sin(t * 9);
+    camTf = `scale(${1 + .03 * Math.sin(t * .8)})`;
   }
-  // 2) circle wipe 2.05 – 2.6
-  if (t >= 2.05 && t < 2.62) {
-    const k = E.inExpo(prog(t, 2.05, 2.55));
-    const d = lerp(40, 4600, k);
-    S($('wipe'), { x: 540, y: 1150 + (960 - 1150) * k, tf: `scale(${d / 100})` });
-    if (t < 2.16) { S($('ball'), { x: 540, y: 1150, s: 0.6, blur: 2 }); $('ball').style.background = '#0A0A0A'; }
-    if (t < 2.62) orange = 1;
-  }
-  // 3) logo type-in on black, then morph to app icon 2.55 – 4.6
-  if (t >= 2.55 && t < 4.62) {
-    const m = $('morph');
-    const k = E.inOutExpo(prog(t, 3.32, 3.95));
-    const w = lerp(1080, 330, k), h = lerp(1920, 330, k);
-    m.style.width = w + 'px'; m.style.height = h + 'px';
-    m.style.borderRadius = lerp(0, 78, k) + 'px';
-    m.style.boxShadow = `0 ${30 * k}px ${80 * k}px rgba(0,0,0,${0.25 * k})`;
-    // pop after morph + exit
-    const pop = 1 + 0.06 * Math.sin(Math.PI * prog(t, 3.9, 4.15));
-    const outK = prog(t, 4.3, 4.55);
-    S(m, { s: pop * lerp(1, 0.55, E.inCubic(outK)), blur: lerp(0, 18, E.inCubic(outK)), o: 1 - E.inCubic(outK) });
-    const ik = E.outExpo(prog(t, 2.58, 3.15));
-    $('morphLogo').innerHTML = aperture({ r: lerp(4, 37, ik), rot: lerp(-75, 0, ik), grow: prog(t, 2.56, 2.95), bp: E.outCubic(prog(t, 2.8, 3.3)) * (1 - prog(t, 3.3, 3.55)) });
-    const lg = $('morphLogo');
-    lg.style.left = (w / 2 - 220) + 'px';
-    lg.style.top = (h / 2 - 220 + lerp(-120, 0, k)) + 'px';
-    lg.style.transform = `scale(${lerp(1, 0.62, k)}) rotate(${lerp(0, 0, k)}deg)`;
-    const mt = $('morphText');
-    mt.style.left = (w / 2) + 'px';
-    mt.style.top = (h / 2 + lerp(220, 120, k)) + 'px';
-    mt.style.transform = `translate(-50%, -50%) scale(${lerp(1, 0.6, k)})`;
-    mt.style.opacity = 1 - E.outCubic(prog(t, 3.3, 3.55));
-    [...mt.children].forEach((sp, i) => {
-      const a = 2.9 + i * 0.06, kk = prog(t, a, a + 0.28);
-      sp.style.opacity = E.outCubic(kk);
-      sp.style.transform = `translateY(${lerp(50, 0, E.outExpo(kk))}px)`;
-      sp.style.filter = `blur(${lerp(12, 0, E.outCubic(kk))}px)`;
+
+  // ---------- 2. services (3.75 – 6.3) ----------
+  const uiOn = vis($('uiScene'), t >= T.ui && t < T.list + .1);
+  if (uiOn) {
+    const k = E.outExpo(prog(t, T.ui, T.ui + .7));
+    const whip = E.inExpo(prog(t, T.whip, T.list + .05));
+    const sc = lerp(1.9, 1.12, k) * lerp(1, 1.04, prog(t, T.ui + .7, T.whip));
+    const uiY = tt => lerp(0, -2200, E.inExpo(prog(tt, T.whip, T.list + .05)));
+    const uiS = tt => lerp(1.9, 1.12, E.outExpo(prog(tt, T.ui, T.ui + .7)));
+    camTf = `translateY(${uiY(t)}px) scale(${sc}) rotate(${lerp(-4, 0, k)}deg)`;
+    bx = speed(uiS, t) * 6; by = Math.min(60, speed(uiY, t) * 0.02) + speed(uiS, t) * 6;
+    $('uiScene').style.opacity = clamp(prog(t, T.ui, T.ui + .12));
+    // pills: highlight slides me -> tickets
+    const pl = [$('p0'), $('p1'), $('p2')];
+    const pk = E.inOutExpo(prog(t, T.pill, T.pill + .35));
+    const a = pl[0], b = pl[1];
+    const hi = $('pillHi');
+    hi.style.left = lerp(a.offsetLeft, b.offsetLeft, pk) + 'px';
+    hi.style.width = lerp(a.offsetWidth, b.offsetWidth, pk) + 'px';
+    hi.style.transform = `scale(${1 + .08 * Math.sin(Math.PI * pk)})`;
+    pl.forEach((p, i) => { p.style.color = (i === 0 && pk < .5) || (i === 1 && pk >= .5) ? '#0a0a0a' : '#ddd'; p.style.background = i === 2 || (i === 0 && pk >= .5) || (i === 1 && pk < .5) ? '#262626' : 'transparent'; });
+    // service cards stagger + depth blur on the back row
+    [0, 1, 2, 3].forEach(i => {
+      const el = $('s' + i), kk = E.outExpo(prog(t, T.ui + .15 + i * .08, T.ui + .75 + i * .08));
+      el.style.opacity = clamp(kk) * (i > 1 ? .45 : 1);
+      el.style.transform = `translateY(${lerp(80, 0, kk)}px)`;
+      el.style.filter = i > 1 ? 'blur(5px)' : 'none';
     });
-    if (t < 3.32) dark = 1;
+    const ok = E.outExpo(prog(t, T.ui + .5, T.ui + 1.1));
+    $('onlineCard').style.opacity = clamp(ok);
+    $('onlineCard').style.transform = `translateY(${lerp(120, 0, ok)}px) scale(${lerp(.92, 1, ok)})`;
+    [...$('onStack').children].forEach((el, i) => { const kk = E.outBack(prog(t, T.ui + .8 + i * .07, T.ui + 1.1 + i * .07)); el.style.transform = `scale(${kk})`; });
   }
-  // 4) category chip 4.45 – 6.05
-  if (t >= 4.4 && t < 6.1) {
-    let li = L_T.findIndex((a, i) => t >= a && t < L_T[i + 1]); if (li < 0) li = 0;
-    const prevW = labelW[Math.max(0, li - 1)];
-    const wk = li === 0 ? 1 : E.outExpo(prog(t, L_T[li], L_T[li] + 0.3));
-    const tw0 = lerp(prevW, labelW[li], wk);
-    const chipW = tw0 + 100;
-    const inK = prog(t, 4.42, 4.75), outK = prog(t, 5.88, 6.08);
-    const s = lerp(0.6, 1, E.outBack(inK)) * lerp(1, 0.85, E.inCubic(outK));
-    const blur = lerp(16, 0, E.outCubic(inK)) + lerp(0, 16, E.inCubic(outK));
-    const o = clamp(inK * 2) * (1 - outK);
-    const chip = $('chip');
-    chip.style.width = chipW + 'px';
-    const cx = 540 - 60;
-    S(chip, { x: cx, y: 930, s, blur, o });
-    LABELS.forEach((l, i) => {
-      const el = $('lt' + i);
-      let y = 60, op = 0, b = 0;
-      if (i === li) { const k = li === 0 ? 1 : E.outExpo(prog(t, L_T[i], L_T[i] + 0.3)); y = lerp(60, 0, k); op = k; b = lerp(10, 0, k); }
-      if (i === li - 1) { const k = E.outExpo(prog(t, L_T[li], L_T[li] + 0.25)); y = lerp(0, -60, k); op = 1 - k; b = lerp(0, 10, k); }
-      el.style.opacity = op; el.style.transform = `translateY(calc(-50% + ${y}px))`; el.style.filter = `blur(${b}px)`;
-      el.style.left = (chipW - labelW[i]) / 2 + 'px';
+
+  // ---------- 3. list (6.25 – 9.6) ----------
+  const listOn = vis($('listScene'), t >= T.list - .05 && t < DROP);
+  vis($('zoomDisc'), listOn && t >= T.zoomSend);
+  if (listOn) {
+    const ent = tt => lerp(2200, 0, E.outExpo(prog(tt, T.list - .05, T.list + .55)));
+    const ty = ent(t);
+    by = Math.max(by, Math.min(60, speed(ent, t) * 0.02));
+    // expand row 0
+    const ek = E.inOutExpo(prog(t, T.expand, T.expand + .55));
+    const fullH = 160 + $('r0').querySelector('.exp').scrollHeight + 34;
+    $('r0').style.height = lerp(160, fullH, ek) + 'px';
+    $('chev0').setAttribute('transform', `rotate(${180 * ek} 12 12)`);
+    $('r1').style.top = (710 + (fullH - 160) * ek) + 'px';
+    $('r2').style.top = (890 + (fullH - 160) * ek) + 'px';
+    $('recent').style.top = (1100 + (fullH - 160) * ek) + 'px';
+    [0, 1, 2].forEach(i => { const kk = E.outExpo(prog(t, T.list + i * .08, T.list + .6 + i * .08)); $('r' + i).style.opacity = clamp(kk); });
+    $('recent').style.opacity = .5;
+    [...$('reacts').children].forEach((el, i) => { const kk = E.outBack(prog(t, T.expand + .3 + i * .07, T.expand + .6 + i * .07)); el.style.transform = `scale(${kk})`; });
+    // camera: gentle tilt during expand, then dive into the send button
+    const send = $('send').getBoundingClientRect ? null : null;
+    const sx = 90 + 900 - 34 - 12 - 35, syBase = 530 + fullH - 34 - 45; // send button centre (stage coords)
+    const zk = E.inExpo(prog(t, T.zoomSend, DROP - .05));
+    const zs = lerp(1, 7, zk);
+    const tx = (540 - sx) * zk, tyz = (960 - syBase) * zk;
+    const drift = lerp(1.04, 1.1, prog(t, T.list + .5, T.zoomSend));
+    camTf = `translate(${tx}px, ${ty + tyz}px) scale(${drift}) translate(${(sx - 540) * (1 - 1 / zs) * 0}px,0)`;
+    // apply zoom about the send button
+    camTf = `translate(0px, ${ty}px) scale(${drift}) translate(${tx}px, ${tyz}px) translate(${sx - 540}px, ${syBase - 960}px) scale(${zs}) translate(${540 - sx}px, ${960 - syBase}px)`;
+    const zSpeed = speed(tt => lerp(1, 7, E.inExpo(prog(tt, T.zoomSend, DROP - .05))), t);
+    bx = Math.max(bx, zSpeed * 1.2); by = Math.max(by, zSpeed * 1.2);
+    // orange disc grows from the button and swallows the frame
+    const dk = E.inExpo(prog(t, DROP - .5, DROP - .02));
+    const d = lerp(70, 520, dk);
+    const disc = $('zoomDisc');
+    disc.style.width = disc.style.height = d + 'px';
+    disc.style.left = (sx - d / 2) + 'px'; disc.style.top = (syBase - d / 2) + 'px';
+    disc.style.opacity = prog(t, DROP - .5, DROP - .4);
+  }
+
+  setCam(camTf, Math.min(bx, 70), Math.min(by, 70));
+
+  // ---------- 4. kinetic type (drop – logo) ----------
+  const typeOn = vis($('type'), t >= DROP - .05 && t < LOGO + .1);
+  if (typeOn) {
+    PHRASES.forEach((p, i) => {
+      const el = $('ph' + i);
+      const on = vis(el, t >= p.t - .05 && t < p.out + .3);
+      if (!on) return;
+      const ok = E.inCubic(prog(t, p.out, p.out + .25));
+      el.style.opacity = 1 - ok;
+      el.style.filter = `blur(${ok * 24}px)`;
+      el.style.transform = `scale(${lerp(1, 1.12, ok) * lerp(1, 1.04, prog(t, p.t, p.out))})`;
+      p.words.forEach((_, j) => {
+        const w = $(`ph${i}w${j}`), a = p.t + p.wt[j], k = E.outExpo(prog(t, a, a + .4));
+        w.style.opacity = clamp(prog(t, a, a + .12));
+        w.style.filter = `blur(${lerp(22, 0, k)}px)`;
+        w.style.transform = `translateY(${lerp(40, 0, k)}px) scale(${lerp(1.25, 1, k)})`;
+        w.style.letterSpacing = `${lerp(20, -3, k)}px`;
+      });
     });
-    const ci = $('chipIcon');
-    if (ci.dataset.k != li) { ci.innerHTML = ICON[LABELS[li].icon]('#111'); ci.dataset.k = li; }
-    const ik = li === 0 ? E.outBack(prog(t, 4.55, 4.85)) : E.outBack(prog(t, L_T[li] + 0.05, L_T[li] + 0.35));
-    S(ci, { x: cx + chipW / 2 + 70, y: 922, s: ik * (1 - outK), o: ik * (1 - outK), tf: `rotate(${lerp(-40, 0, ik)}deg)`, blur: lerp(0, 12, outK) });
-    const dots = $('dots');
-    S(dots, { x: cx, y: 1050, o: o, blur });
-    [...dots.children].forEach((d, i) => { d.style.background = i === li ? '#FF6E05' : '#c4c4c4'; d.style.transform = `scale(${i === li ? 1.15 : 1})`; });
   }
-  // 5) issue picker 6.0 – 7.32
-  if (t >= 6.0 && t < 7.35) {
-    const inK = prog(t, 6.0, 6.3), outK = prog(t, 7.12, 7.32);
-    const blur = lerp(18, 0, E.outCubic(inK)) + lerp(0, 22, E.inCubic(outK));
-    const o = clamp(inK * 1.8) * (1 - outK);
-    const s = lerp(0.9, 1, E.outCubic(inK)) * lerp(1, 1.08, E.inCubic(outK));
-    S($('issueHead'), { x: 540, y: 820, s, blur, o });
-    const press = Math.sin(Math.PI * prog(t, 6.98, 7.18));
-    const card = $('issueCard');
-    card.style.background = `rgb(${lerp(239, 168, prog(t, 6.98, 7.08))},${lerp(239, 168, prog(t, 6.98, 7.08))},${lerp(239, 168, prog(t, 6.98, 7.08))})`;
-    S(card, { x: 540, y: 960, s: s * (1 - press * 0.035), blur, o });
-    let ei = E_T.findIndex((a, i) => t >= a && t < E_T[i + 1]); if (ei < 0) ei = 0;
-    ENTRIES.forEach((_, i) => {
-      const el = $('en' + i);
-      let y = 190, op = 0, b = 0;
-      if (i === ei) { const k = i === 0 ? 1 : E.outExpo(prog(t, E_T[i], E_T[i] + 0.2)); y = lerp(110, 0, k); op = k; b = lerp(12, 0, k); }
-      if (i === ei - 1) { const k = E.outExpo(prog(t, E_T[ei], E_T[ei] + 0.18)); y = lerp(0, -110, k); op = 1 - k; b = lerp(0, 12, k); }
-      el.style.opacity = op; el.style.transform = `translateY(${y}px)`; el.style.filter = `blur(${b}px)`;
-    });
-    $('radioDot').style.transform = `scale(${E.outBack(prog(t, 6.98, 7.12))})`;
-    // cursor
-    const ck = E.inOutCubic(prog(t, 6.62, 6.96));
-    const click = Math.sin(Math.PI * prog(t, 6.96, 7.1));
-    if (t > 6.6) S($('cursor'), { x: lerp(1040, 914, ck) + 20, y: lerp(1260, 960, ck) + 22, s: 1 - click * 0.18, o: (1 - outK) * clamp((t - 6.6) * 8), blur: lerp(0, 10, outK) });
+
+  // ---------- 5. logo ----------
+  const lm = $('logoMark'), lw = $('logoWordWrap'), lt = $('logoTag');
+  const logoOn = t >= LOGO;
+  vis(lm, logoOn); vis(lw, logoOn); vis(lt, logoOn);
+  if (logoOn) {
+    const ik = E.outExpo(prog(t, LOGO, LOGO + .7));
+    lm.innerHTML = aperture({ r: lerp(2, 37, ik), rot: lerp(-90, 0, ik), grow: prog(t, LOGO, LOGO + .35), bp: E.outCubic(prog(t, LOGO + .25, LOGO + .9)), gap: '#070707' });
+    const slide = E.inOutExpo(prog(t, LOGO + .75, LOGO + 1.35));
+    const wordW = 600, markS = lerp(1.25, .78, slide);
+    const total = 300 * .78 + 30 + wordW;
+    const markCx = lerp(540, 540 - total / 2 + 300 * .78 / 2, slide);
+    lm.style.left = (markCx - 150) + 'px'; lm.style.top = (900 - 150) + 'px';
+    lm.style.transform = `scale(${markS * lerp(.6, 1, E.outBack(prog(t, LOGO, LOGO + .45)))})`;
+    lm.style.filter = `drop-shadow(0 0 ${lerp(60, 24, slide)}px rgba(255,110,5,.55)) blur(${lerp(10, 0, E.outCubic(prog(t, LOGO, LOGO + .3)))}px)`;
+    const wx = 540 - total / 2 + 300 * .78 + 30;
+    lw.style.left = wx + 'px'; lw.style.top = (900 - 95) + 'px'; lw.style.width = wordW + 'px';
+    const word = $('logoWord');
+    word.style.transform = `translateX(${lerp(-wordW, 0, slide)}px)`;
+    word.style.filter = `blur(${lerp(14, 0, slide)}px)`;
+    const tk = E.outExpo(prog(t, LOGO + 1.25, LOGO + 1.9));
+    lt.style.top = '1040px'; lt.style.opacity = clamp(tk);
+    lt.style.transform = `translateY(${lerp(30, 0, tk)}px)`; lt.style.filter = `blur(${lerp(12, 0, tk)}px)`;
+    const z = lerp(1, 1.04, prog(t, LOGO + 1, 19.6));
+    [lm, lw, lt].forEach(el => el.style.scale = z);
+    const end = E.inCubic(prog(t, 19.1, 19.6));
+    [lm, lw, lt].forEach(el => el.style.opacity = (el === lt ? clamp(tk) : 1) * (1 - end));
   }
-  // 6) new ticket card 7.28 – 8.85 (with 3D flip out)
-  if (t >= 7.28 && t < 8.9) {
-    const inK = prog(t, 7.28, 7.62);
-    const flip = prog(t, 8.5, 8.82);
-    const s = lerp(0.88, 1, E.outCubic(inK)) * lerp(1, 0.72, E.inCubic(flip));
-    const blur = lerp(20, 0, E.outCubic(inK)) + lerp(0, 8, E.inCubic(flip));
-    const o = clamp(inK * 1.8) * (1 - E.inExpo(flip));
-    S($('ticket'), { x: 540 - 60 * E.inCubic(flip), y: 960, s, blur, o, tf: `perspective(1600px) rotateY(${lerp(0, 72, E.inCubic(flip))}deg) rotateZ(${lerp(0, -6, E.inCubic(flip))}deg)` });
-    // button press + spinner
-    const press = prog(t, 8.04, 8.12);
-    const rel = prog(t, 8.12, 8.24);
-    const btn = $('btn');
-    btn.style.transform = `scale(${1 - 0.04 * E.outCubic(press) + 0.04 * E.outCubic(rel)})`;
-    const g = Math.round(lerp(11, 92, press) - lerp(0, 81, rel));
-    btn.style.background = `rgb(${g},${g},${g})`;
-    $('btnLabel').style.opacity = 1 - prog(t, 8.1, 8.2);
-    $('btnLabel').style.filter = `blur(${lerp(0, 8, prog(t, 8.1, 8.2))}px)`;
-    const sp = $('spinner');
-    sp.style.opacity = prog(t, 8.16, 8.26);
-    sp.style.transform = `rotate(${(t - 8.1) * 900}deg) scale(${lerp(0.4, 1, E.outBack(prog(t, 8.16, 8.3)))})`;
-    // cursor
-    const ck = E.inOutCubic(prog(t, 7.62, 8.02));
-    const click = Math.sin(Math.PI * prog(t, 8.02, 8.16));
-    if (t > 7.55 && t < 8.5) S($('cursor'), { x: lerp(1080, 600, ck) + 20, y: lerp(1500, 1270, ck) + 22, s: 1 - click * 0.18, o: clamp((t - 7.55) * 8) * (1 - prog(t, 8.3, 8.45)) });
-    // illus float
-    $('illus').style.transform = `translateY(${Math.sin(t * 3) * 6}px)`;
-  }
-  // 7) assigning agent 8.68 – 10.12
-  if (t >= 8.68 && t < 10.12) {
-    const inK = prog(t, 8.68, 9.12), outK = prog(t, 9.92, 10.1);
-    const k = E.outQuint(inK);
-    const s = lerp(0.8, 1, k) * lerp(1, 0.9, E.inCubic(outK));
-    const blur = lerp(16, 0, E.outCubic(inK)) + lerp(0, 18, E.inCubic(outK));
-    S($('assignCard'), { x: lerp(470, 540, k), y: lerp(1020, 960, k), s, blur, o: clamp(inK * 2) * (1 - outK),
-      tf: `perspective(1600px) rotateX(${lerp(38, 0, k)}deg) rotateY(${lerp(-40, 0, k)}deg) rotateZ(${lerp(16, 0, k)}deg)` });
-    const p = t < 9.55 ? 0.74 * E.outCubic(prog(t, 8.95, 9.5)) : lerp(0.74, 1, E.inOutCubic(prog(t, 9.6, 9.85)));
-    $('assignFill').style.width = (p * 100) + '%';
-    const sub = $('assignSub');
-    const sw = prog(t, 9.5, 9.62);
-    sub.textContent = t < 9.56 ? 'Finding the best expert' : 'Agent found!';
-    sub.style.color = t < 9.56 ? '#888' : '#FF6E05';
-    sub.style.opacity = t < 9.56 ? 1 - sw * 2 : prog(t, 9.56, 9.66);
-    sub.style.filter = `blur(${t < 9.56 ? sw * 8 : (1 - prog(t, 9.56, 9.66)) * 8}px)`;
-  }
-  // 8) ticket resolved 10.05 – 10.95
-  if (t >= 10.04 && t < 10.98) {
-    const inK = prog(t, 10.04, 10.34), outK = prog(t, 10.78, 10.96);
-    const k = E.outQuint(inK);
-    S($('resolvedCard'), { x: lerp(380, 540, k), y: lerp(1100, 960, k), s: lerp(0.85, 1, k) * lerp(1, 1.04, outK), blur: lerp(20, 0, E.outCubic(inK)) + lerp(0, 16, E.inCubic(outK)), o: clamp(inK * 2) * (1 - outK) });
-    $('resolvedFill').style.width = (E.inOutCubic(prog(t, 10.18, 10.62)) * 100) + '%';
-  }
-  // 9) solved in 4 minutes + rating 10.9 – 11.85
-  if (t >= 10.9 && t < 11.9) {
-    const inK = prog(t, 10.9, 11.15), outK = prog(t, 11.55, 11.85);
-    const o = clamp(inK * 2) * (1 - E.inCubic(outK));
-    S($('rate'), { x: 540, y: 960, s: lerp(0.94, 1, E.outCubic(inK)) * lerp(1, 0.97, outK), blur: lerp(14, 0, E.outCubic(inK)) + lerp(0, 14, E.inCubic(outK)), o });
-    const av = $('avatar');
-    const ak = E.outExpo(prog(t, 10.92, 11.3));
-    av.style.transform = `translateX(${lerp(-260, 0, ak)}px) rotate(${lerp(-90, 0, ak)}deg)`;
-    av.style.filter = `blur(${lerp(10, 0, ak)}px)`;
-    for (let i = 0; i < 5; i++) {
-      const sk = prog(t, 11.08 + i * 0.06, 11.2 + i * 0.06);
-      const st = $('st' + i);
-      st.querySelector('path').setAttribute('fill', sk > 0.5 ? '#FF6E05' : '#d0d0d0');
-      st.style.transform = `scale(${1 + 0.35 * Math.sin(Math.PI * sk)})`;
-    }
-  }
-  // fade to black 11.7 – 12.0
-  if (t >= 11.7) dark = Math.max(dark, E.inOutCubic(prog(t, 11.7, 12.0)));
-  // 10) outro 11.95 – end
-  if (t >= 11.95) {
-    const gk = prog(t, 11.98, 12.38);
-    if (t < 12.62) S($('outroGray'), { s: lerp(0.92, 1, E.outCubic(gk)) * lerp(1, 1.02, prog(t, 12.38, 12.62)), blur: lerp(18, 0, E.outCubic(gk)), o: E.outCubic(gk) });
-    if (t >= 12.62) {
-      const mk = prog(t, 12.62, 12.8);
-      const z = lerp(1, 1.035, E.outCubic(prog(t, 12.62, 13.8)));
-      S($('outroMark'), { s: lerp(1.12, 1, E.outExpo(mk)) * z, blur: lerp(6, 0, E.outCubic(mk)), y: 960 });
-      const ok = E.outExpo(prog(t, 12.6, 13.05));
-      $('outroLogo').innerHTML = aperture({ r: lerp(8, 37, ok), rot: lerp(-60, 0, ok), grow: 1, bp: E.outCubic(prog(t, 12.75, 13.3)) });
-      const tk = prog(t, 12.9, 13.25);
-      const tag = $('outroTag');
-      tag.style.opacity = E.outCubic(tk);
-      tag.style.transform = `translateY(${lerp(24, 0, E.outCubic(tk))}px)`;
-      tag.style.filter = `blur(${lerp(8, 0, tk)}px)`;
-    }
-  }
-  $('dark').style.opacity = dark;
-  $('orange').style.opacity = orange;
+
+  // ---------- flashes (on the drop and the logo hit) ----------
+  const fl = Math.max(Math.exp(-Math.max(0, t - DROP) / .07) * (t >= DROP ? 1 : 0), Math.exp(-Math.max(0, t - LOGO) / .09) * (t >= LOGO ? .5 : 0));
+  $('flash').style.opacity = fl * .85;
+  $('flash').style.background = t >= DROP && t < DROP + .3 ? '#FF6E05' : '#fff';
 }
 
-window.DURATION = 14.0;
 window.seek = t => render(t);
-window.ready = document.fonts.ready.then(() => { build(); render(0); return true; });
-
-// preview mode: open in a browser to watch it loop
+window.ready = document.fonts.load('600 40px Rubik').then(() => document.fonts.ready).then(() => { build(); render(0); return true; });
 if (!navigator.webdriver) {
   window.ready.then(() => { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % window.DURATION); requestAnimationFrame(loop); }; loop(); });
 }
