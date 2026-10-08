@@ -19,6 +19,7 @@ Same pipeline as `../film/`: `vo.py` (Kokoro voice `af_heart`, "Rasolv" forced t
 ```bash
 KOKORO_DIR=/path/to/kokoro ./build.sh   # full build
 SKIP_VO=1 ./build.sh                     # reuse voiceover/captions
+SCALE=1 OUT=rasolv_cinema_1080p SKIP_VO=1 ./build.sh   # Full HD (1920x1080), ~4x faster
 ```
 
 Names and numbers (Maya Haddad, AI match 98%, 4.9★, refund in 4 min) mirror the main promo and are

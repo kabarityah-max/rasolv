@@ -16,5 +16,5 @@ python3 score.py out/mix.wav
 wait
 : > out/list.txt; for ((i=0; i<WORKERS; i++)); do echo "file 'seg$i.mp4'" >> out/list.txt; done
 ffmpeg -y -v error -f concat -safe 0 -i out/list.txt -i out/mix.wav \
-  -af "loudnorm=I=-14:TP=-1.0:LRA=7" -c:v copy -c:a aac -b:a 320k -ar 48000 -shortest -movflags +faststart out/rasolv_cinema_4k.mp4
-echo "done: out/rasolv_cinema_4k.mp4 (+ out/rasolv_cinema.srt)"
+  -af "loudnorm=I=-14:TP=-1.0:LRA=7" -c:v copy -c:a aac -b:a 320k -ar 48000 -shortest -movflags +faststart out/${OUT:-rasolv_cinema_4k}.mp4
+echo "done: out/${OUT:-rasolv_cinema_4k}.mp4 (+ out/rasolv_cinema.srt)"

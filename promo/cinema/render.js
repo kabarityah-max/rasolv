@@ -1,4 +1,4 @@
-// Renders promo/cinema/index.html frame-by-frame at 3840x2160 (4K UHD) and pipes PNGs to ffmpeg.
+// Renders promo/cinema/index.html frame-by-frame (SCALE=2 → 3840x2160 4K, SCALE=1 → 1920x1080 Full HD) and pipes PNGs to ffmpeg.
 // Usage: node render.js <out.mp4> [fps] [startFrame] [endFrame]
 //        node render.js --stills <dir> <t1,t2,...>   (preview stills)
 const path = require('path');
@@ -9,7 +9,7 @@ const HTML = 'file://' + path.join(__dirname, 'index.html');
 
 async function open() {
   const browser = await chromium.launch({ args: ['--force-color-profile=srgb', '--disable-lcd-text', '--font-render-hinting=none'] });
-  const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 2 });
+  const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: Number(process.env.SCALE || 2) });
   await page.goto(HTML);
   await page.evaluate(() => window.ready);
   return { browser, page };
