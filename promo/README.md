@@ -31,3 +31,8 @@ then `python3 vo.py kokoro-v1.0.onnx voices-v1.0.bin af_heart`.
 
 Brand: orange `#FF6E05`, ink `#070707`, white; Rubik (bundled in `fonts/`). The aperture mark is drawn
 procedurally by `aperture()` so the iris can open on reveals; `brand-reference.png` is the brand sheet.
+
+## Download
+
+`promo/release/rasolv_promo_4k.mp4` — the final 4K60 video (H.264 32 Mb/s, ~79 MB; SSIM 0.995 vs. the
+lossless-ish render master that `build.sh` produces in `out/`).
