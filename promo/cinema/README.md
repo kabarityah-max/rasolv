@@ -1,11 +1,15 @@
 # RASOLV cinematic film (4K, dark style, voiceover + captions)
 
 45-second 16:9 dark cinematic brand film, modelled on the "Multimercial"-style After Effects reel:
-**typed hook + floating phone → orange light beams build the aperture logo → glass sphere rises, channels
-orbit the logo and collapse into a focus reticle → keyword chips inside the sphere (intent / sentiment /
-history / urgency light up as they're spoken) → metric chips with live counters and a cursor click →
-dots link into a square that bends into a ring ("no one waits.") → "Trusted by teams…" + industries →
-See. / Decide. / Solve. word beats with a giant ring hit → RGB-glitch logo → spaced RASOLV wordmark.**
+told around the RASOLV app — report a problem, a real expert picks it up, live updates, solved in minutes:
+**"What if getting help wasn't a waiting game… but one tap away?" + phone → orange light beams build the
+aperture logo ("real experts · real answers · in minutes") → glass sphere rises, Billing / Orders / Accounts /
+Tech / Refunds icons orbit the logo and collapse into a focus reticle → issue chips inside the sphere (the
+categories light up as they're spoken, "Payment failed" becomes the reported problem) → live ticket chips
+(Ticket #4821, experts reviewing, reply countdown, LIVE updates) with a tap on "Maya Haddad · Billing expert"
+and "Refund issued in 4 min" → dots link into a ring ("an expert is on it") → "One app. Every answer. Your data
+stays yours." + categories → Tap. / Track. / Solved. word beats with a giant ring hit → RGB-glitch logo →
+spaced RASOLV wordmark.**
 
 3840×2160, 60 fps, H.264 + AAC 320 kbps, −14 LUFS. Captions burned in (word highlight) and in `out/rasolv_cinema.srt`.
 
@@ -18,5 +22,5 @@ KOKORO_DIR=/path/to/kokoro ./build.sh   # full build
 SKIP_VO=1 ./build.sh                     # reuse voiceover/captions
 ```
 
-The metric values (−62% first response, +38% CSAT, 4 min resolution, …) are illustrative placeholders, and the
-industry row lists sectors, not customers — swap in real numbers/logos before publishing.
+Names, ticket numbers and timings (Maya Haddad, #4821, 4.9★, refund in 4 min) mirror the main promo and are
+illustrative — swap in real ones before publishing.

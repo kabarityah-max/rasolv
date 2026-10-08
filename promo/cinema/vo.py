@@ -9,16 +9,16 @@ import numpy as np, soundfile as sf
 
 # (start time on the timeline, caption text, spoken text)
 LINES = [
-    (0.5,   "What if support wasn't a waiting game...", None),
-    (4.4,   "...but a system that solves?", None),
-    (9.0,   "Meet RASOLV. Support that sees the whole picture.", "Meet Rasolv. Support that sees the whole picture."),
-    (14.3,  "It reads every conversation. Intent, sentiment, history, urgency.", None),
-    (19.6,  "Then turns it into results your team can feel.", None),
-    (24.8,  "So nothing slips. And no one waits.", None),
-    (28.3,  "Trusted by teams that can't afford to.", None),
-    (33.0,  "See it.", None),
-    (34.6,  "Decide it.", None),
-    (36.2,  "Solve it.", None),
+    (0.5,   "What if getting help wasn't a waiting game...", None),
+    (4.4,   "...but one tap away?", None),
+    (9.0,   "Meet RASOLV. Real experts, on your problem, in minutes.", "Meet Rasolv. Real experts, on your problem, in minutes."),
+    (14.3,  "Billing. Orders. Accounts. Tech. Just tell us what broke...", None),
+    (19.6,  "...and a real expert takes it from there.", None),
+    (24.8,  "Live updates. Real people. No hold music.", None),
+    (28.3,  "One app. Every answer. And your data stays yours.", None),
+    (33.0,  "Tap it.", None),
+    (34.6,  "Track it.", None),
+    (36.2,  "Solved.", None),
     (41.7,  "RASOLV. Vision that solves.", "Rasolv. Vision that solves."),
 ]
 BRAND = "ɹɑːzˈɑːlv"   # "rah-ZOLV", rhymes with "resolve" — same phonemes as ../vo.py
@@ -31,31 +31,39 @@ def syllables(w):
 
 
 def word_times(audio, sr, words):
-    """Return [(start, end)] per word, seconds relative to the clip start."""
+    """Return [(start, end)] per word, seconds relative to the clip start. Each punctuation break is snapped
+    to the real pause nearest to where syllable counts predict it; words inside a phrase are spread by syllables."""
     hop = int(sr * 0.01)
     rms = np.array([np.sqrt(np.mean(audio[i:i + hop] ** 2)) for i in range(0, len(audio) - hop, hop)])
     quiet = rms < max(0.004, rms.max() * 0.04)
     gaps, i = [], 0
-    while i < len(quiet):  # internal silent runs of >= 60 ms
+    while i < len(quiet):  # internal silent runs of >= 30 ms
         if quiet[i]:
             j = i
             while j < len(quiet) and quiet[j]: j += 1
-            if i > 0 and j < len(quiet) and j - i >= 6: gaps.append((i * 0.01, j * 0.01))
+            if i > 0 and j < len(quiet) and j - i >= 3: gaps.append((i * 0.01, j * 0.01))
             i = j
         else: i += 1
-    breaks = [k for k, w in enumerate(words[:-1]) if re.search(r"[.,;:!?]$", w)]
-    gaps = sorted(sorted(gaps, key=lambda g: g[0] - g[1])[:len(breaks)])
-    if len(gaps) != len(breaks): breaks = breaks[:len(gaps)]
     total = len(audio) / sr
-    bounds = [0.0] + [x for g in gaps for x in g] + [total]
+    wts = np.array([syllables(w) + 0.6 + (1.5 if re.search(r"[.,;:!?]$", w) else 0) for w in words], float)
+    cum = np.concatenate([[0], np.cumsum(wts)]) / wts.sum() * total
+    breaks, bounds, last = [], [0.0], 0.0
+    for k, w in enumerate(words[:-1]):
+        if not re.search(r"[.,;:!?]$", w): continue
+        exp = cum[k + 1]
+        cands = [g for g in gaps if g[0] > last + 0.08 and abs((g[0] + g[1]) / 2 - exp) < 0.45]
+        if not cands: continue
+        g = min(cands, key=lambda g: abs((g[0] + g[1]) / 2 - exp) - 0.4 * (g[1] - g[0]))
+        breaks.append(k); bounds += [g[0], g[1]]; last = g[1]
+    bounds.append(total)
     segs, s0 = [], 0
     for b in breaks + [len(words) - 1]:
         segs.append(list(range(s0, b + 1))); s0 = b + 1
     out = [None] * len(words)
     for si, idx in enumerate(segs):
         a, b = bounds[2 * si], bounds[2 * si + 1]
-        wts = np.array([syllables(words[k]) + 0.6 for k in idx], float)
-        edges = a + (b - a) * np.concatenate([[0], np.cumsum(wts) / wts.sum()])
+        ww = np.array([syllables(words[k]) + 0.6 for k in idx], float)
+        edges = a + (b - a) * np.concatenate([[0], np.cumsum(ww) / ww.sum()])
         for n, k in enumerate(idx): out[k] = (float(edges[n]), float(edges[n + 1]))
     return out
 

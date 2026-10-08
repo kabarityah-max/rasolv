@@ -55,7 +55,7 @@
   /* ring word */
   #ringWord { width: 380px; height: 380px; }
   #ringWord svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  #ringTxt { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-size: 46px; font-weight: 500; white-space: nowrap; }
+  #ringTxt { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-size: 31px; font-weight: 500; white-space: nowrap; }
   .dotp { width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 0 18px rgba(255,255,255,.9); }
   #sq { width: 1920px; height: 1080px; }
 
@@ -95,7 +95,7 @@
 
   <div id="beams"></div>
   <svg id="logoMain" class="abs" viewBox="-110 -110 220 220"></svg>
-  <div id="logoSub" class="abs">support that sees the whole picture</div>
+  <div id="logoSub" class="abs">real experts · real answers · in minutes</div>
 
   <div id="orbs"></div>
   <svg id="reticle" class="abs" viewBox="-60 -60 120 120"><circle r="34" fill="none" stroke="#fff" stroke-width="3"/><path d="M0-50v14M0 36v14M-50 0h14M36 0h14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
@@ -104,9 +104,9 @@
 
   <div id="dots"></div>
   <svg id="sq" class="abs" viewBox="0 0 1920 1080"><polyline id="sqLine" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5"/></svg>
-  <div id="ringWord" class="abs"><svg viewBox="-200 -200 400 400"><circle r="168" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle id="ringArc" r="168" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 10px #fff)"/><g id="ringDots"></g></svg><div id="ringTxt">no one waits.</div></div>
+  <div id="ringWord" class="abs"><svg viewBox="-200 -200 400 400"><circle r="168" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle id="ringArc" r="168" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 10px #fff)"/><g id="ringDots"></g></svg><div id="ringTxt">an expert is on it</div></div>
 
-  <div id="trust" class="abs">Trusted by teams that<br>can’t afford to <em>wait</em></div>
+  <div id="trust" class="abs"><span id="tr1">One app. Every answer.</span><br><span id="tr2"><i id="trLock" style="display:inline-block;width:56px;height:56px;vertical-align:-6px;margin-right:14px"></i>Your data stays <em>yours.</em></span></div>
   <div id="inds"></div>
 
   <div id="bigBlur" class="abs">RASOLV</div>
@@ -234,6 +234,13 @@ const I = {
   check: c => `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M8 12.5l2.7 2.7L16 9.8" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   bolt: c => `<svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.5h6L10 22l9-12.5h-6z" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
   doc: c => `<svg viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h7M9 17h5" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  card: c => `<svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="${c}" stroke-width="1.9"/><path d="M2.5 9.5h19M6 15h4" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/></svg>`,
+  box: c => `<svg viewBox="0 0 24 24"><path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z M3.5 7.5 12 12l8.5-4.5M12 12v9" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/></svg>`,
+  user: c => `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="${c}" stroke-width="1.9"/><path d="M4 21a8 7 0 0 1 16 0" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
+  wrench: c => `<svg viewBox="0 0 24 24"><path d="M14.7 3.3a5 5 0 0 0-6 6.3L3 15.3 5.7 18l1 1 5.7-5.7a5 5 0 0 0 6.3-6l-3 3-2.8-.6-.6-2.8z" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+  refresh: c => `<svg viewBox="0 0 24 24"><path d="M19 8a8 8 0 1 0 1 6" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/><path d="M20 3v6h-6" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  lock: c => `<svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" fill="none" stroke="${c}" stroke-width="1.9"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
+  repeat: c => `<svg viewBox="0 0 24 24"><path d="M4 11V9a3 3 0 0 1 3-3h12M16 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H5M8 21l-3-3 3-3" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   cart: c => `<svg viewBox="0 0 24 24"><path d="M3 4h3l2.4 11h10.2L21 7H7" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/><circle cx="10" cy="19.5" r="1.6" fill="${c}"/><circle cx="17" cy="19.5" r="1.6" fill="${c}"/></svg>`,
   cloud: c => `<svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.5-10A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/></svg>`,
   bank: c => `<svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"/></svg>`,
@@ -243,31 +250,33 @@ const I = {
 };
 
 // ================= data =================
-const HOOK1 = [['What', 0.5], ['if', 0.73], ['support', 0.95, 1], ['wasn’t', 1.32], ['a', 1.54], ['waiting', 1.77], ['game…', 2.14]];
-const HOOK2 = [['but', 4.4], ['a', 4.62], ['system', 4.84], ['that', 5.19], ['solves?', 5.41, 1]];
-const ORBS = ['mail', 'chat', 'wa', 'phone', 'hash', 'bug', 'star'];
+const HOOK1 = [['What', 0.5], ['if', 0.71], ['getting', 0.93, 1], ['help', 1.28, 1], ['wasn’t', 1.49], ['a', 1.71], ['waiting', 1.92], ['game…', 2.27]];
+const HOOK2 = [['but', 4.4], ['one', 4.64, 1], ['tap', 4.88, 1], ['away?', 5.13]];
+const ORBS = ['card', 'box', 'user', 'wrench', 'refresh', 'chat', 'lock'];
 // keyword chips: [text, x, y, appear, hot-time]
 const KEYS = [
-  ['channel', 640, 300, 14.45], ['language', 1050, 300, 14.6], ['customer value', 1420, 300, 14.75],
-  ['intent', 760, 420, 14.9, 16.32], ['sentiment', 1060, 420, 15.05, 17.01], ['SLA clock', 1370, 420, 15.2],
-  ['product area', 560, 540, 15.35], ['history', 860, 540, 15.5, 17.63], ['urgency', 1130, 540, 15.65, 18.2], ['tone', 1360, 540, 15.8],
-  ['past fixes', 760, 660, 15.95], ['root cause', 1080, 660, 16.1],
+  ['Payment failed', 600, 300, 14.4], ['Order missing', 1000, 300, 14.5], ['Wrong size sent', 1400, 300, 14.6],
+  ['Billing', 690, 420, 14.3, 14.3], ['Orders', 930, 420, 14.7, 14.75], ['Accounts', 1180, 420, 15.25, 15.31], ['Tech', 1400, 420, 15.85, 15.89],
+  ['Can’t sign in', 560, 540, 15.0], ['Charged twice', 870, 540, 15.15], ['App crashes on upload', 1250, 540, 15.4],
+  ['Refund pending', 720, 660, 15.55], ['Subscription won’t cancel', 1130, 660, 15.7],
 ];
 // metric chips: [kind, text|icon, x, y, appear, value0, value1, fmt]
 const METRICS = [
-  ['icon', 'check', 1240, 300, 19.55], ['m', 'first response', 1470, 300, 19.6, 0, 62, v => `<b>−${v}%</b> first response`],
-  ['m', 'csat', 630, 420, 19.75, 0, 38, v => `<b>+${v}%</b> CSAT`], ['m', 'res', 960, 420, 19.85, 90, 4, v => `<b>${v} min</b> avg. resolution`], ['icon', 'bolt', 1250, 420, 19.95],
-  ['m', 'backlog', 790, 540, 20.05, 0, 45, v => `<b>−${v}%</b> backlog`], ['m', 'output', 1080, 540, 20.15, 1, 3, v => `<b>${v}×</b> agent output`],
-  ['m', 'sla', 1150, 660, 20.3, 70, 98, v => `<b>${v}%</b> SLA met`], ['icon', 'doc', 1385, 660, 20.4],
+  ['icon', 'check', 1180, 300, 19.5], ['m', 'ticket', 1420, 300, 19.55, 0, 1, v => `Ticket <b>#4821</b> opened`],
+  ['m', 'maya', 640, 420, 19.7, 0, 1, v => `<span style="width:34px;height:34px;border-radius:50%;background:#FF6E05;display:inline-flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#fff">M</span><b>Maya Haddad</b> · Billing expert`],
+  ['m', 'review', 1100, 420, 19.85, 1, 3, v => `<b>${v}</b> expert${v > 1 ? 's' : ''} reviewing`], ['icon', 'bolt', 1340, 420, 19.95],
+  ['m', 'reply', 770, 540, 20.05, 9, 2, v => `reply in <b>~${v} min</b>`], ['m', 'live', 1050, 540, 20.15, 0, 1, v => `<i style="width:11px;height:11px;border-radius:50%;background:#FF3B30;display:inline-block;box-shadow:0 0 10px #FF3B30"></i><b>LIVE</b> updates`],
+  ['m', 'rating', 1300, 540, 20.25, 40, 49, v => `<b>${(v / 10).toFixed(1)}★</b> rated`],
+  ['m', 'refund', 1080, 660, 22.55, 0, 1, v => `${I.check('#fff').replace('<svg', '<svg style="width:28px;height:28px"')}<b>Refund issued</b> in 4 min`], ['icon', 'lock', 1360, 660, 22.7],
 ];
-const INDS = [['cart', 'Commerce'], ['cloud', 'SaaS'], ['bank', 'Fintech'], ['tower', 'Telecom'], ['plane', 'Travel'], ['heart', 'Health']];
+const INDS = [['card', 'Billing'], ['box', 'Orders'], ['user', 'Accounts'], ['wrench', 'Tech help'], ['refresh', 'Refunds'], ['repeat', 'Subscriptions']];
 const DOTS = [[620, 300], [1340, 260], [1300, 820], [640, 790]];
 
 // ================= build =================
 let capChunks = [];
 function build() {
   $('hook').innerHTML = '';
-  $('phoneScreen').innerHTML = ['mail', 'chat', 'wa', 'phone', 'hash', 'star'].map(k => `<i>${I[k]('#FF8A2A')}</i>`).join('');
+  $('phoneScreen').innerHTML = ['card', 'box', 'user', 'wrench', 'refresh', 'chat'].map(k => `<i>${I[k]('#FF8A2A')}</i>`).join('') + '<b id="tap" style="position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;border:3px solid #FF6E05;opacity:0"></b>';
   $('beams').innerHTML = [0, 1, 2, 3].map(i => `<div class="beam abs" id="bm${i}"></div>`).join('');
   $('orbs').innerHTML = ORBS.map((k, i) => `<div class="orb abs" id="ob${i}">${I[k]('#EDEDED')}</div>`).join('');
   $('chips').innerHTML = KEYS.map((k, i) => `<div class="chip abs" id="kc${i}">${k[0]}</div>`).join('') +
@@ -276,7 +285,7 @@ function build() {
   $('ringDots').innerHTML = [0, 1, 2, 3].map(i => `<circle id="rd${i}" r="6" fill="#fff" style="filter:drop-shadow(0 0 6px #fff)"/>`).join('');
   $('inds').innerHTML = INDS.map((d, i) => `<div class="ind abs" id="in${i}">${I[d[0]]('rgba(237,237,237,.55)')}${d[1]}</div>`).join('');
   $('comets').innerHTML = [0, 1, 2, 3].map(i => `<div class="comet abs" id="cm${i}"></div>`).join('');
-  $('letters').innerHTML = [...'Solve.'].map((c, i) => `<span class="lt abs" id="lt${i}">${c}</span>`).join('');
+  $('letters').innerHTML = [...'Solved.'].map((c, i) => `<span class="lt abs" id="lt${i}">${c}</span>`).join('');
   // grain tile
   const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d'); const img = g.createImageData(256, 256);
   for (let i = 0; i < img.data.length; i += 4) { const v = rnd(i, 9) * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
@@ -309,19 +318,21 @@ function scHook(t) {                                    // 0 – 7.5
   if (t < 3.9) {
     const o = 1 - E.inCubic(prog(t, 3.5, 3.9));
     wordsIn($('hook'), HOOK1, t, 'h1');
-    S('hook', { x: 900, y: 540, o, blur: o < 1 ? (1 - o) * 12 : 0 });
+    S('hook', { x: 800, y: 540, o, blur: o < 1 ? (1 - o) * 12 : 0 });
     // tumbling phone drifts in from the right
     const k = E.outCubic(prog(t, 0.2, 3.9));
-    S('phone', { x: lerp(1650, 1500, k), y: 520 + Math.sin(t * 1.3) * 12, s: 0.75, o: clamp(prog(t, 0.2, 0.8)) * o * 0.85, blur: 3 + (1 - o) * 10,
+    S('phone', { x: lerp(1720, 1610, k), y: 520 + Math.sin(t * 1.3) * 12, s: 0.75, o: clamp(prog(t, 0.2, 0.8)) * o * 0.85, blur: 3 + (1 - o) * 10,
       tf: `perspective(900px) rotateY(${lerp(-70, 20, k)}deg) rotateZ(${lerp(-25, 12, k)}deg)` });
-  } else {
+  }
+  if (t >= 3.9) {
     const a = io(t, 4.0, 4.4, 6.9, 7.35, { ein: E.outExpo });
     wordsIn($('hook'), HOOK2, t, 'h2');
     S('hook', { x: 1060, y: 540, o: a.o, blur: a.out * 14 });
     const k = E.outExpo(prog(t, 4.0, 4.9));
     S('phone', { x: lerp(500, 560, k), y: 540 + Math.sin(t * 1.5) * 8, s: lerp(0.5, 0.62, k) * lerp(1, 0.8, a.out), o: a.o, blur: a.blur * 0.6,
       tf: `perspective(900px) rotateY(${lerp(40, -18, k)}deg) rotateZ(${lerp(14, -8, k)}deg)` });
-  }
+    const tk = prog(t, 4.88, 5.5); $('tap').style.opacity = (1 - tk) * (t > 4.88 ? 1 : 0); $('tap').style.transform = `scale(${0.3 + tk * 1.6})`;
+  } else $('tap').style.opacity = 0;
 }
 
 function scLogo(t) {                                    // 7.3 – 11
@@ -379,12 +390,12 @@ function scSphere(t) {                                  // 10.5 – 24.6
     KEYS.forEach(([txt, x, y, a, hot], i) => {
       const k = E.outExpo(prog(t, a, a + 0.5));
       const depth = rnd(i, 4);             // pseudo depth-of-field
-      const isHot = hot && t >= hot;
+      const isHot = (hot && t >= hot) || (txt === 'Payment failed' && t >= 17.1);
       const el = $('kc' + i);
       el.style.color = isHot ? '#fff' : 'rgba(237,237,237,.78)';
       el.style.background = isHot ? 'rgba(255,110,5,.16)' : 'rgba(255,255,255,.035)';
       el.style.boxShadow = isHot ? 'inset 0 0 0 1.5px rgba(255,110,5,.85), 0 0 30px rgba(255,110,5,.25)' : 'inset 0 0 0 1px rgba(255,255,255,.10)';
-      const pulse = hot ? 1 + 0.08 * Math.sin(Math.PI * prog(t, hot, hot + 0.3)) : 1;
+      const pulse = 1 + 0.08 * Math.sin(Math.PI * prog(t, hot || 17.1, (hot || 17.1) + 0.3)) * (hot || txt === 'Payment failed' ? 1 : 0);
       S(el, { x: x + (t - a) * (depth - 0.5) * 6, y: y + 40 + lerp(30, 0, k) - go * 40, o: clamp(k * 1.5) * (1 - go) * (isHot ? 1 : lerp(0.55, 0.9, depth)), blur: lerp(14, depth < 0.25 && !isHot ? 2.5 : 0, k) + go * 12, s: pulse * lerp(0.92, 1, k) });
     });
   }
@@ -396,20 +407,20 @@ function scSphere(t) {                                  // 10.5 – 24.6
       const k = E.outExpo(prog(t, a, a + 0.5));
       const el = $('mc' + i);
       if (kind === 'm') {
-        const v = Math.round(lerp(m[5], m[6], E.outCubic(prog(t, a + 0.1, a + 1.8))));
+        const v = Math.round(lerp(m[5], m[6], E.outCubic(prog(t, a + 0.1, key === 'reply' ? 2.6 + a : a + 1.8))));
         el.innerHTML = m[7](v);
       }
-      const isPick = key === 'csat' && t >= 22.05;
+      const isPick = (key === 'maya' && t >= 20.08) || key === 'refund';
       el.style.background = isPick ? 'rgba(255,110,5,.9)' : 'rgba(255,255,255,.035)';
       el.style.color = isPick ? '#fff' : '';
       el.style.boxShadow = isPick ? '0 0 40px rgba(255,110,5,.45)' : 'inset 0 0 0 1px rgba(255,255,255,.10)';
-      const press = key === 'csat' ? Math.sin(Math.PI * prog(t, 22.0, 22.16)) : 0;
+      const press = key === 'maya' ? Math.sin(Math.PI * prog(t, 20.02, 20.18)) : 0;
       const depth = rnd(i, 6);
       S(el, { x: x + (t - a) * (depth - 0.5) * 5, y: y + 40 + lerp(30, 0, k), o: clamp(k * 1.5) * (1 - go) * lerp(0.7, 1, depth), blur: lerp(14, 0, k) + go * 16, s: lerp(0.92, 1, k) * (1 - press * 0.06) });
     });
-    if (t > 21.2 && t < 23.4) {
-      const ck = E.inOutCubic(prog(t, 21.25, 21.98)), press = Math.sin(Math.PI * prog(t, 22.0, 22.16));
-      S('cursor', { x: lerp(1000, 690, ck) + 12, y: lerp(800, 470, ck) + 16, o: clamp((t - 21.2) * 6) * (1 - prog(t, 23.0, 23.35)), s: 1 - press * 0.18 });
+    if (t > 19.45 && t < 21.4) {
+      const ck = E.inOutCubic(prog(t, 19.5, 20.0)), press = Math.sin(Math.PI * prog(t, 20.02, 20.18));
+      S('cursor', { x: lerp(1000, 700, ck) + 12, y: lerp(820, 470, ck) + 16, o: clamp((t - 19.45) * 6) * (1 - prog(t, 21.0, 21.35)), s: 1 - press * 0.18 });
     }
   }
 }
@@ -442,7 +453,7 @@ function scRing(t) {                                    // 24.4 – 28.2
   }
   if (t > 26.2) {
     const rk = E.outExpo(prog(t, 26.2, 26.9));
-    S('ringWord', { s: lerp(0.8, 1, rk) * lerp(1, 1.1, out), o: clamp(prog(t, 26.2, 26.4)) * (1 - out), blur: out * 14 });
+    S('ringWord', { s: lerp(0.95, 1.3, rk) * lerp(1, 1.1, out), o: clamp(prog(t, 26.2, 26.4)) * (1 - out), blur: out * 14 });
     const L = 2 * Math.PI * 168, arc = $('ringArc');
     arc.style.strokeDasharray = `${L * lerp(0.15, 0.35, rk)} ${L}`; arc.style.strokeDashoffset = -t * 260;
     [0, 1, 2, 3].forEach(i => { const a = (t * 70 + i * 90) * Math.PI / 180; const c = $('rd' + i); c.setAttribute('cx', Math.cos(a) * 168); c.setAttribute('cy', Math.sin(a) * 168); });
@@ -454,11 +465,14 @@ function scRing(t) {                                    // 24.4 – 28.2
 function scTrust(t) {                                   // 28.1 – 32.6
   const a = io(t, 28.25, 28.8, 31.9, 32.4, { ein: E.outExpo });
   S('trust', { y: 400 + lerp(24, 0, a.k), o: a.o, blur: a.blur, s: lerp(1, 0.97, a.out) });
-  $('trust').querySelector('em').style.opacity = clamp(prog(t, 30.2, 30.5));
+  const t2 = prog(t, 29.85, 30.3);
+  $('tr2').style.opacity = E.outCubic(t2); $('tr2').style.filter = `blur(${lerp(10, 0, t2)}px)`; $('tr2').style.display = 'inline-block'; $('tr2').style.transform = `translateY(${lerp(16, 0, E.outExpo(t2))}px)`;
+  $('trust').querySelector('em').style.color = t > 31.0 ? 'var(--or)' : 'inherit';
+  if (!$('trLock').innerHTML) $('trLock').innerHTML = I.lock('#FF6E05').replace('<svg', '<svg style="width:56px;height:56px"');
   INDS.forEach((d, i) => {
-    const k = E.outExpo(prog(t, 29.0 + i * 0.14, 29.5 + i * 0.14));
+    const k = E.outExpo(prog(t, 28.55 + i * 0.12, 29.05 + i * 0.12));
     const flick = rnd(Math.floor(t * 12) + i * 40, 3) < 0.08 ? 0.4 : 1;
-    const x = 960 + (i - 2.5) * 270, y = 650 + (i % 2) * 0;
+    const x = 960 + (i - 2.5) * 275, y = 680;
     S('in' + i, { x, y: y + lerp(20, 0, k), o: clamp(k * 1.5) * (1 - a.out) * flick, blur: lerp(12, 0, k) + a.out * 12 });
   });
 }
@@ -472,8 +486,8 @@ function scBeats(t) {                                   // 32.2 – 39.5
     $('beat').textContent = txt;
     S('beat', { s: lerp(1.35, 1, w.k) * lerp(1, 1.06, w.out) * (extra.s || 1), o: w.o, blur: w.blur, y: 540 });
   };
-  if (t >= 32.85 && t < 34.5) word('See.', 32.95, 34.45);
-  if (t >= 34.45 && t < 35.75) word('Decide.', 34.55, 35.7);
+  if (t >= 32.85 && t < 34.5) word('Tap.', 32.95, 34.45);
+  if (t >= 34.45 && t < 35.75) word('Track.', 34.55, 35.7);
   // comets streak past "Decide."
   [0, 1, 2, 3].forEach(i => {
     const a = 34.5 + i * 0.22, k = prog(t, a, a + 0.5);
@@ -484,8 +498,8 @@ function scBeats(t) {                                   // 32.2 – 39.5
     const lockK = E.inOutExpo(prog(t, 35.75, 36.3));
     const big = E.outExpo(prog(t, 36.9, 37.5));
     const out = io(t, 0, .01, 38.95, 39.45).out;
-    const chars = [...'Solve.'];
-    const widths = [64, 66, 30, 64, 66, 28]; const tot = widths.reduce((a, b) => a + b, 0) * lerp(1, 1.18, big);
+    const chars = [...'Solved.'];
+    const widths = [64, 66, 30, 64, 66, 68, 28]; const tot = widths.reduce((a, b) => a + b, 0) * lerp(1, 1.18, big);
     let x0 = 960 - tot / 2;
     chars.forEach((c, i) => {
       const w = widths[i] * lerp(1, 1.18, big);
