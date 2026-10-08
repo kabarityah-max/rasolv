@@ -1,15 +1,14 @@
 # RASOLV cinematic film (4K, dark style, voiceover + captions)
 
 45-second 16:9 dark cinematic brand film, modelled on the "Multimercial"-style After Effects reel:
-told around the RASOLV app — report a problem, a real expert picks it up, live updates, solved in minutes:
+AI-powered, told around the RASOLV app:
 **"What if getting help wasn't a waiting game… but one tap away?" + phone → orange light beams build the
-aperture logo ("real experts · real answers · in minutes") → glass sphere rises, Billing / Orders / Accounts /
-Tech / Refunds icons orbit the logo and collapse into a focus reticle → issue chips inside the sphere (the
-categories light up as they're spoken, "Payment failed" becomes the reported problem) → live ticket chips
-(Ticket #4821, experts reviewing, reply countdown, LIVE updates) with a tap on "Maya Haddad · Billing expert"
-and "Refund issued in 4 min" → dots link into a ring ("an expert is on it") → "One app. Every answer. Your data
-stays yours." + categories → Tap. / Track. / Solved. word beats with a giant ring hit → RGB-glitch logo →
-spaced RASOLV wordmark.**
+aperture logo ("AI that sees the whole picture") → glass sphere rises, Billing / Orders / Accounts / Tech icons
+orbit the logo and collapse into a focus reticle → AI signal chips inside the sphere (intent / sentiment /
+history / urgency light up as they're spoken) → hand-off chips: AI match 98%, a tap on "Maya Haddad · Billing
+expert", "answer drafted", reply countdown, LIVE updates, "Refund issued in 4 min" → dots link into a ring
+("no one waits.") → "One app. Every answer. Your data stays yours." + categories → See. / Decide. / Solve.
+word beats with a giant ring hit → RGB-glitch logo → spaced RASOLV wordmark.**
 
 3840×2160, 60 fps, H.264 + AAC 320 kbps, −14 LUFS. Captions burned in (word highlight) and in `out/rasolv_cinema.srt`.
 
@@ -22,5 +21,5 @@ KOKORO_DIR=/path/to/kokoro ./build.sh   # full build
 SKIP_VO=1 ./build.sh                     # reuse voiceover/captions
 ```
 
-Names, ticket numbers and timings (Maya Haddad, #4821, 4.9★, refund in 4 min) mirror the main promo and are
+Names and numbers (Maya Haddad, AI match 98%, 4.9★, refund in 4 min) mirror the main promo and are
 illustrative — swap in real ones before publishing.

@@ -11,14 +11,14 @@ import numpy as np, soundfile as sf
 LINES = [
     (0.5,   "What if getting help wasn't a waiting game...", None),
     (4.4,   "...but one tap away?", None),
-    (9.0,   "Meet RASOLV. Real experts, on your problem, in minutes.", "Meet Rasolv. Real experts, on your problem, in minutes."),
-    (14.3,  "Billing. Orders. Accounts. Tech. Just tell us what broke...", None),
-    (19.6,  "...and a real expert takes it from there.", None),
-    (24.8,  "Live updates. Real people. No hold music.", None),
+    (9.0,   "Meet RASOLV. AI that sees the whole picture.", "Meet Rasolv. A.I. that sees the whole picture."),
+    (14.3,  "It reads your problem in seconds. Intent, sentiment, history, urgency.", None),
+    (19.6,  "Then hands it to the right expert, with the answer ready.", None),
+    (24.8,  "So nothing slips. And no one waits.", None),
     (28.3,  "One app. Every answer. And your data stays yours.", None),
-    (33.0,  "Tap it.", None),
-    (34.6,  "Track it.", None),
-    (36.2,  "Solved.", None),
+    (33.0,  "See it.", None),
+    (34.6,  "Decide it.", None),
+    (36.2,  "Solve it.", None),
     (41.7,  "RASOLV. Vision that solves.", "Rasolv. Vision that solves."),
 ]
 BRAND = "ɹɑːzˈɑːlv"   # "rah-ZOLV", rhymes with "resolve" — same phonemes as ../vo.py

@@ -55,7 +55,7 @@
   /* ring word */
   #ringWord { width: 380px; height: 380px; }
   #ringWord svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  #ringTxt { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-size: 31px; font-weight: 500; white-space: nowrap; }
+  #ringTxt { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-size: 36px; font-weight: 500; white-space: nowrap; }
   .dotp { width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 0 18px rgba(255,255,255,.9); }
   #sq { width: 1920px; height: 1080px; }
 
@@ -95,7 +95,7 @@
 
   <div id="beams"></div>
   <svg id="logoMain" class="abs" viewBox="-110 -110 220 220"></svg>
-  <div id="logoSub" class="abs">real experts · real answers · in minutes</div>
+  <div id="logoSub" class="abs">AI that sees the whole picture</div>
 
   <div id="orbs"></div>
   <svg id="reticle" class="abs" viewBox="-60 -60 120 120"><circle r="34" fill="none" stroke="#fff" stroke-width="3"/><path d="M0-50v14M0 36v14M-50 0h14M36 0h14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
@@ -104,7 +104,7 @@
 
   <div id="dots"></div>
   <svg id="sq" class="abs" viewBox="0 0 1920 1080"><polyline id="sqLine" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5"/></svg>
-  <div id="ringWord" class="abs"><svg viewBox="-200 -200 400 400"><circle r="168" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle id="ringArc" r="168" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 10px #fff)"/><g id="ringDots"></g></svg><div id="ringTxt">an expert is on it</div></div>
+  <div id="ringWord" class="abs"><svg viewBox="-200 -200 400 400"><circle r="168" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle id="ringArc" r="168" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 10px #fff)"/><g id="ringDots"></g></svg><div id="ringTxt">no one waits.</div></div>
 
   <div id="trust" class="abs"><span id="tr1">One app. Every answer.</span><br><span id="tr2"><i id="trLock" style="display:inline-block;width:56px;height:56px;vertical-align:-6px;margin-right:14px"></i>Your data stays <em>yours.</em></span></div>
   <div id="inds"></div>
@@ -241,6 +241,7 @@ const I = {
   refresh: c => `<svg viewBox="0 0 24 24"><path d="M19 8a8 8 0 1 0 1 6" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/><path d="M20 3v6h-6" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   lock: c => `<svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" fill="none" stroke="${c}" stroke-width="1.9"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
   repeat: c => `<svg viewBox="0 0 24 24"><path d="M4 11V9a3 3 0 0 1 3-3h12M16 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H5M8 21l-3-3 3-3" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  spark: c => `<svg viewBox="0 0 24 24"><path d="M12 2.5l2.1 6.4 6.4 2.1-6.4 2.1L12 19.5l-2.1-6.4L3.5 11l6.4-2.1z" fill="${c}"/><path d="M19 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" fill="${c}"/></svg>`,
   cart: c => `<svg viewBox="0 0 24 24"><path d="M3 4h3l2.4 11h10.2L21 7H7" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/><circle cx="10" cy="19.5" r="1.6" fill="${c}"/><circle cx="17" cy="19.5" r="1.6" fill="${c}"/></svg>`,
   cloud: c => `<svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.5-10A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/></svg>`,
   bank: c => `<svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"/></svg>`,
@@ -255,19 +256,19 @@ const HOOK2 = [['but', 4.4], ['one', 4.64, 1], ['tap', 4.88, 1], ['away?', 5.13]
 const ORBS = ['card', 'box', 'user', 'wrench', 'refresh', 'chat', 'lock'];
 // keyword chips: [text, x, y, appear, hot-time]
 const KEYS = [
-  ['Payment failed', 600, 300, 14.4], ['Order missing', 1000, 300, 14.5], ['Wrong size sent', 1400, 300, 14.6],
-  ['Billing', 690, 420, 14.3, 14.3], ['Orders', 930, 420, 14.7, 14.75], ['Accounts', 1180, 420, 15.25, 15.31], ['Tech', 1400, 420, 15.85, 15.89],
-  ['Can’t sign in', 560, 540, 15.0], ['Charged twice', 870, 540, 15.15], ['App crashes on upload', 1250, 540, 15.4],
-  ['Refund pending', 720, 660, 15.55], ['Subscription won’t cancel', 1130, 660, 15.7],
+  ['channel', 640, 300, 14.45], ['language', 1050, 300, 14.6], ['customer value', 1420, 300, 14.75],
+  ['intent', 760, 420, 14.9, 16.35], ['sentiment', 1060, 420, 15.05, 16.83], ['order history', 1390, 420, 15.2],
+  ['product area', 540, 540, 15.35], ['history', 860, 540, 15.5, 17.61], ['urgency', 1130, 540, 15.65, 18.19], ['tone', 1360, 540, 15.8],
+  ['past fixes', 760, 660, 15.95], ['root cause', 1080, 660, 16.1],
 ];
 // metric chips: [kind, text|icon, x, y, appear, value0, value1, fmt]
 const METRICS = [
-  ['icon', 'check', 1180, 300, 19.5], ['m', 'ticket', 1420, 300, 19.55, 0, 1, v => `Ticket <b>#4821</b> opened`],
+  ['icon', 'spark', 1190, 300, 19.5], ['m', 'ai', 1430, 300, 19.55, 60, 98, v => `AI match <b>${v}%</b>`],
   ['m', 'maya', 640, 420, 19.7, 0, 1, v => `<span style="width:34px;height:34px;border-radius:50%;background:#FF6E05;display:inline-flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#fff">M</span><b>Maya Haddad</b> · Billing expert`],
-  ['m', 'review', 1100, 420, 19.85, 1, 3, v => `<b>${v}</b> expert${v > 1 ? 's' : ''} reviewing`], ['icon', 'bolt', 1340, 420, 19.95],
+  ['m', 'draft', 1110, 420, 21.85, 0, 1, v => `${I.spark('#FF8A2A').replace('<svg', '<svg style="width:26px;height:26px"')}answer <b>drafted</b>`], ['icon', 'bolt', 1340, 420, 19.95],
   ['m', 'reply', 770, 540, 20.05, 9, 2, v => `reply in <b>~${v} min</b>`], ['m', 'live', 1050, 540, 20.15, 0, 1, v => `<i style="width:11px;height:11px;border-radius:50%;background:#FF3B30;display:inline-block;box-shadow:0 0 10px #FF3B30"></i><b>LIVE</b> updates`],
   ['m', 'rating', 1300, 540, 20.25, 40, 49, v => `<b>${(v / 10).toFixed(1)}★</b> rated`],
-  ['m', 'refund', 1080, 660, 22.55, 0, 1, v => `${I.check('#fff').replace('<svg', '<svg style="width:28px;height:28px"')}<b>Refund issued</b> in 4 min`], ['icon', 'lock', 1360, 660, 22.7],
+  ['m', 'refund', 1080, 660, 22.95, 0, 1, v => `${I.check('#fff').replace('<svg', '<svg style="width:28px;height:28px"')}<b>Refund issued</b> in 4 min`], ['icon', 'lock', 1360, 660, 23.1],
 ];
 const INDS = [['card', 'Billing'], ['box', 'Orders'], ['user', 'Accounts'], ['wrench', 'Tech help'], ['refresh', 'Refunds'], ['repeat', 'Subscriptions']];
 const DOTS = [[620, 300], [1340, 260], [1300, 820], [640, 790]];
@@ -285,7 +286,7 @@ function build() {
   $('ringDots').innerHTML = [0, 1, 2, 3].map(i => `<circle id="rd${i}" r="6" fill="#fff" style="filter:drop-shadow(0 0 6px #fff)"/>`).join('');
   $('inds').innerHTML = INDS.map((d, i) => `<div class="ind abs" id="in${i}">${I[d[0]]('rgba(237,237,237,.55)')}${d[1]}</div>`).join('');
   $('comets').innerHTML = [0, 1, 2, 3].map(i => `<div class="comet abs" id="cm${i}"></div>`).join('');
-  $('letters').innerHTML = [...'Solved.'].map((c, i) => `<span class="lt abs" id="lt${i}">${c}</span>`).join('');
+  $('letters').innerHTML = [...'Solve.'].map((c, i) => `<span class="lt abs" id="lt${i}">${c}</span>`).join('');
   // grain tile
   const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d'); const img = g.createImageData(256, 256);
   for (let i = 0; i < img.data.length; i += 4) { const v = rnd(i, 9) * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
@@ -390,12 +391,12 @@ function scSphere(t) {                                  // 10.5 – 24.6
     KEYS.forEach(([txt, x, y, a, hot], i) => {
       const k = E.outExpo(prog(t, a, a + 0.5));
       const depth = rnd(i, 4);             // pseudo depth-of-field
-      const isHot = (hot && t >= hot) || (txt === 'Payment failed' && t >= 17.1);
+      const isHot = hot && t >= hot;
       const el = $('kc' + i);
       el.style.color = isHot ? '#fff' : 'rgba(237,237,237,.78)';
       el.style.background = isHot ? 'rgba(255,110,5,.16)' : 'rgba(255,255,255,.035)';
       el.style.boxShadow = isHot ? 'inset 0 0 0 1.5px rgba(255,110,5,.85), 0 0 30px rgba(255,110,5,.25)' : 'inset 0 0 0 1px rgba(255,255,255,.10)';
-      const pulse = 1 + 0.08 * Math.sin(Math.PI * prog(t, hot || 17.1, (hot || 17.1) + 0.3)) * (hot || txt === 'Payment failed' ? 1 : 0);
+      const pulse = hot ? 1 + 0.08 * Math.sin(Math.PI * prog(t, hot, hot + 0.3)) : 1;
       S(el, { x: x + (t - a) * (depth - 0.5) * 6, y: y + 40 + lerp(30, 0, k) - go * 40, o: clamp(k * 1.5) * (1 - go) * (isHot ? 1 : lerp(0.55, 0.9, depth)), blur: lerp(14, depth < 0.25 && !isHot ? 2.5 : 0, k) + go * 12, s: pulse * lerp(0.92, 1, k) });
     });
   }
@@ -410,17 +411,17 @@ function scSphere(t) {                                  // 10.5 – 24.6
         const v = Math.round(lerp(m[5], m[6], E.outCubic(prog(t, a + 0.1, key === 'reply' ? 2.6 + a : a + 1.8))));
         el.innerHTML = m[7](v);
       }
-      const isPick = (key === 'maya' && t >= 20.08) || key === 'refund';
+      const isPick = (key === 'maya' && t >= 20.94) || key === 'refund';
       el.style.background = isPick ? 'rgba(255,110,5,.9)' : 'rgba(255,255,255,.035)';
       el.style.color = isPick ? '#fff' : '';
       el.style.boxShadow = isPick ? '0 0 40px rgba(255,110,5,.45)' : 'inset 0 0 0 1px rgba(255,255,255,.10)';
-      const press = key === 'maya' ? Math.sin(Math.PI * prog(t, 20.02, 20.18)) : 0;
+      const press = key === 'maya' ? Math.sin(Math.PI * prog(t, 20.88, 21.04)) : 0;
       const depth = rnd(i, 6);
       S(el, { x: x + (t - a) * (depth - 0.5) * 5, y: y + 40 + lerp(30, 0, k), o: clamp(k * 1.5) * (1 - go) * lerp(0.7, 1, depth), blur: lerp(14, 0, k) + go * 16, s: lerp(0.92, 1, k) * (1 - press * 0.06) });
     });
-    if (t > 19.45 && t < 21.4) {
-      const ck = E.inOutCubic(prog(t, 19.5, 20.0)), press = Math.sin(Math.PI * prog(t, 20.02, 20.18));
-      S('cursor', { x: lerp(1000, 700, ck) + 12, y: lerp(820, 470, ck) + 16, o: clamp((t - 19.45) * 6) * (1 - prog(t, 21.0, 21.35)), s: 1 - press * 0.18 });
+    if (t > 20.25 && t < 22.2) {
+      const ck = E.inOutCubic(prog(t, 20.3, 20.86)), press = Math.sin(Math.PI * prog(t, 20.88, 21.04));
+      S('cursor', { x: lerp(1000, 700, ck) + 12, y: lerp(820, 470, ck) + 16, o: clamp((t - 20.25) * 6) * (1 - prog(t, 21.8, 22.15)), s: 1 - press * 0.18 });
     }
   }
 }
@@ -486,8 +487,8 @@ function scBeats(t) {                                   // 32.2 – 39.5
     $('beat').textContent = txt;
     S('beat', { s: lerp(1.35, 1, w.k) * lerp(1, 1.06, w.out) * (extra.s || 1), o: w.o, blur: w.blur, y: 540 });
   };
-  if (t >= 32.85 && t < 34.5) word('Tap.', 32.95, 34.45);
-  if (t >= 34.45 && t < 35.75) word('Track.', 34.55, 35.7);
+  if (t >= 32.85 && t < 34.5) word('See.', 32.95, 34.45);
+  if (t >= 34.45 && t < 35.75) word('Decide.', 34.55, 35.7);
   // comets streak past "Decide."
   [0, 1, 2, 3].forEach(i => {
     const a = 34.5 + i * 0.22, k = prog(t, a, a + 0.5);
@@ -498,8 +499,8 @@ function scBeats(t) {                                   // 32.2 – 39.5
     const lockK = E.inOutExpo(prog(t, 35.75, 36.3));
     const big = E.outExpo(prog(t, 36.9, 37.5));
     const out = io(t, 0, .01, 38.95, 39.45).out;
-    const chars = [...'Solved.'];
-    const widths = [64, 66, 30, 64, 66, 68, 28]; const tot = widths.reduce((a, b) => a + b, 0) * lerp(1, 1.18, big);
+    const chars = [...'Solve.'];
+    const widths = [64, 66, 30, 64, 66, 28]; const tot = widths.reduce((a, b) => a + b, 0) * lerp(1, 1.18, big);
     let x0 = 960 - tot / 2;
     chars.forEach((c, i) => {
       const w = widths[i] * lerp(1, 1.18, big);
