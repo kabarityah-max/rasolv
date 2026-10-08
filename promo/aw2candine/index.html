@@ -1,0 +1,365 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>A&amp;W 2 Can Dine</title>
+<style>
+  @font-face { font-family: 'Rubik'; src: url('../fonts/Rubik.woff2') format('woff2'); font-weight: 300 900; }
+  :root { --or: #FF6A13; --or2: #FF9A3D; --gold: #F5B21B; --cream: #FFF4E2; --brown: #2A140A; --tx: #FFF4E2; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+  body { font-family: 'Rubik', sans-serif; -webkit-font-smoothing: antialiased; color: var(--tx); }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(ellipse 90% 60% at 50% 45%, #1a0d06 0%, #0b0604 60%, #040202 100%); }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; pointer-events: none; }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+
+  /* full-bleed photos */
+  .ph { position: absolute; inset: -4%; overflow: hidden; }
+  .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .shade { position: absolute; inset: 0; }
+
+  /* type */
+  .hl { position: absolute; left: 0; right: 0; text-align: center; font-weight: 900; text-transform: uppercase; letter-spacing: -2px; line-height: .92; color: var(--cream); }
+  .hl span { display: inline-block; }
+  .eyebrow { font-size: 30px; font-weight: 700; letter-spacing: 9px; color: var(--or2); text-transform: uppercase; }
+
+  /* hook */
+  #big2 { font-size: 760px; font-weight: 900; line-height: 1; color: var(--cream); letter-spacing: -30px; text-shadow: 0 30px 90px rgba(0,0,0,.6); }
+  #canDine { font-size: 150px; font-weight: 900; letter-spacing: -4px; white-space: nowrap; padding: 6px 40px 14px; background: var(--or); color: #fff; border-radius: 26px; box-shadow: 0 30px 80px rgba(255,106,19,.45); }
+  #price { font-size: 170px; font-weight: 900; color: var(--or); background: var(--cream); padding: 4px 40px 12px; border-radius: 30px; letter-spacing: -5px; box-shadow: 0 0 0 8px var(--or), 0 30px 90px rgba(0,0,0,.6), 0 0 120px rgba(255,154,61,.55); white-space: nowrap; }
+  .chipline { font-size: 36px; font-weight: 700; letter-spacing: 5px; white-space: nowrap; padding: 18px 34px; border-radius: 60px; background: rgba(10,5,3,.62); box-shadow: inset 0 0 0 2px rgba(255,244,226,.18); backdrop-filter: blur(8px); }
+  .chipline b { color: var(--gold); }
+
+  /* bubble */
+  #bubble { width: 860px; padding: 56px 60px 64px; border-radius: 48px; background: rgba(255,244,226,.96); color: var(--brown); font-size: 78px; font-weight: 800; line-height: 1.05; letter-spacing: -2px; box-shadow: 0 40px 100px rgba(0,0,0,.55); }
+  #bubble::after { content: ''; position: absolute; left: 90px; bottom: -54px; border: 30px solid transparent; border-top: 40px solid rgba(255,244,226,.96); border-left: 10px solid transparent; }
+  #bubble span { display: inline-block; margin-right: 18px; }
+  #bubble q { color: var(--or); font-size: 120px; line-height: .4; vertical-align: -30px; quotes: none; }
+
+  /* trays */
+  .tray { width: 470px; height: 760px; border-radius: 40px; background-size: 205% auto; background-repeat: no-repeat; box-shadow: 0 40px 90px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,244,226,.12); }
+  #x2 { width: 190px; height: 190px; border-radius: 50%; background: var(--or); color: #fff; font-size: 92px; font-weight: 900; display: flex; align-items: center; justify-content: center; letter-spacing: -3px; box-shadow: 0 0 0 10px rgba(255,106,19,.25), 0 20px 60px rgba(255,106,19,.5); }
+
+  /* ring it right */
+  .card { width: 900px; height: 250px; border-radius: 40px; background: rgba(28,14,8,.82); box-shadow: inset 0 0 0 2px rgba(255,244,226,.12), 0 30px 80px rgba(0,0,0,.5); backdrop-filter: blur(10px); padding: 44px 50px; }
+  .card h3 { font-size: 66px; font-weight: 900; letter-spacing: -1.5px; text-transform: uppercase; }
+  .card p { font-size: 38px; font-weight: 500; color: rgba(255,244,226,.65); margin-top: 10px; letter-spacing: .5px; }
+  .card p b { color: var(--cream); font-weight: 700; }
+  .pill { position: absolute; right: 44px; top: 50%; padding: 22px 30px; border-radius: 22px; font-size: 40px; font-weight: 900; letter-spacing: 1px; text-align: center; line-height: 1; white-space: nowrap; }
+  .pill.gold { background: var(--gold); color: var(--brown); box-shadow: 0 0 60px rgba(245,178,27,.5); }
+  .pill.orange { background: var(--or); color: #fff; box-shadow: 0 0 60px rgba(255,106,19,.55); }
+  #stamp { font-size: 96px; font-weight: 900; letter-spacing: -2px; color: var(--or); padding: 18px 50px 26px; border: 10px solid var(--or); border-radius: 30px; background: rgba(255,244,226,.97); white-space: nowrap; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+
+  /* add-ons */
+  .tile { width: 470px; height: 500px; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,244,226,.12); background: #120a06; }
+  .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .tile .lab { position: absolute; left: 0; right: 0; bottom: 0; padding: 70px 30px 28px; background: linear-gradient(180deg, transparent, rgba(8,4,2,.92) 55%); font-size: 46px; font-weight: 900; text-transform: uppercase; letter-spacing: -.5px; line-height: 1; }
+  .tile .num { position: absolute; left: 24px; top: 24px; width: 64px; height: 64px; border-radius: 50%; background: var(--or); color: #fff; font-weight: 900; font-size: 34px; display: flex; align-items: center; justify-content: center; }
+  .tile .ring { position: absolute; inset: 0; border-radius: 40px; box-shadow: inset 0 0 0 6px var(--gold); opacity: 0; }
+
+  /* outro */
+  .ol { font-size: 132px; font-weight: 900; letter-spacing: -4px; white-space: nowrap; text-transform: uppercase; }
+  #go { font-size: 76px; font-weight: 900; letter-spacing: -1px; padding: 22px 56px 30px; border-radius: 80px; background: var(--or); color: #fff; white-space: nowrap; box-shadow: 0 0 120px rgba(255,106,19,.6); }
+  #lock { display: flex; flex-direction: column; align-items: center; gap: 26px; }
+  #lockTop { font-size: 520px; font-weight: 900; line-height: .8; margin-bottom: -10px; }
+  #lockSub { font-size: 150px; font-weight: 900; letter-spacing: -4px; white-space: nowrap; line-height: .9; }
+  #lockTop em { font-style: normal; color: var(--or); }
+  #lockPrice { font-size: 120px; font-weight: 900; color: var(--gold); letter-spacing: -3px; }
+
+  /* chrome */
+  #hdr { left: 0; right: 0; top: 74px; display: flex; justify-content: center; align-items: center; gap: 18px; font-size: 28px; font-weight: 700; letter-spacing: 8px; color: rgba(255,244,226,.85); z-index: 60; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
+  #hdr i { width: 12px; height: 12px; border-radius: 50%; background: var(--or); box-shadow: 0 0 14px var(--or); }
+  #bar { left: 60px; right: 60px; bottom: 70px; height: 6px; border-radius: 3px; background: rgba(255,244,226,.14); z-index: 60; overflow: hidden; }
+  #barFill { height: 100%; width: 0; background: linear-gradient(90deg, var(--or), var(--gold)); }
+  #cap { left: 60px; right: 60px; bottom: 140px; z-index: 55; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 14px; font-size: 44px; font-weight: 700; line-height: 1.25; text-align: center; text-shadow: 0 3px 16px rgba(0,0,0,.95), 0 0 4px rgba(0,0,0,.8); }
+  #cap span { display: inline-block; }
+  #flash { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,240,220,1), rgba(255,140,50,.85) 55%, rgba(255,106,19,0) 100%); mix-blend-mode: screen; opacity: 0; z-index: 70; }
+  #sweep { background: linear-gradient(105deg, transparent 40%, rgba(255,220,180,.22) 50%, transparent 60%); mix-blend-mode: screen; z-index: 65; }
+  #leak { background: radial-gradient(circle at 0% 0%, rgba(255,120,30,.35), transparent 45%), radial-gradient(circle at 100% 100%, rgba(255,80,10,.25), transparent 40%); mix-blend-mode: screen; z-index: 64; }
+  #vig { background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 55%, rgba(0,0,0,.7) 100%); z-index: 66; }
+  #grain { opacity: .08; mix-blend-mode: screen; z-index: 67; width: 1080px; height: 1920px; image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world" class="layer">
+
+    <!-- 1 HOOK -->
+    <div id="sHook" class="scene">
+      <div class="ph" id="hookPh"><img src="img/combos.jpg"></div>
+      <div class="shade" style="background:linear-gradient(180deg, rgba(5,2,1,.86) 0%, rgba(5,2,1,.35) 38%, rgba(5,2,1,.25) 55%, rgba(5,2,1,.9) 100%)"></div>
+      <div id="big2" class="abs">2</div>
+      <div id="canDine" class="abs">CAN DINE</div>
+      <div id="price" class="abs">$17.99</div>
+      <div id="hookChip" class="abs chipline">2 COMBOS · <b>BEEF</b> OR <b>CHICKEN</b></div>
+    </div>
+
+    <!-- 2 ASK -->
+    <div id="sAsk" class="scene">
+      <div class="ph" id="askPh"><img src="img/burger.jpg"></div>
+      <div class="shade" style="background:linear-gradient(180deg, rgba(5,2,1,.92) 0%, rgba(5,2,1,.55) 30%, rgba(5,2,1,.1) 55%, rgba(5,2,1,.75) 100%)"></div>
+      <div id="askHl" class="hl" style="top:210px;font-size:130px"></div>
+      <div id="bubble" class="abs"></div>
+    </div>
+
+    <!-- 3 ORDERING ONE -->
+    <div id="sOne" class="scene">
+      <div class="ph" id="onePh" style="filter:blur(26px) brightness(.35) saturate(1.2)"><img src="img/combos.jpg"></div>
+      <div id="oneHl" class="hl" style="top:200px;font-size:150px"></div>
+      <div id="trayL" class="tray abs" style="background-image:url(img/combos.jpg);background-position:2% 62%"></div>
+      <div id="trayR" class="tray abs" style="background-image:url(img/combos.jpg);background-position:98% 62%"></div>
+      <div id="x2" class="abs">×2</div>
+    </div>
+
+    <!-- 4 RING IT RIGHT -->
+    <div id="sRing" class="scene">
+      <div class="ph" id="ringPh" style="filter:blur(22px) brightness(.32) saturate(1.3)"><img src="img/burger.jpg"></div>
+      <div id="ringHl" class="hl" style="right:auto;width:1080px;font-size:170px">Ring it<br>right</div>
+      <div id="card1" class="card abs"><h3>Same protein</h3><p><b>2</b> beef or <b>2</b> chicken</p><div id="pill1" class="pill gold">COUPON</div></div>
+      <div id="card2" class="card abs"><h3>Mixed</h3><p>beef <b>+</b> chicken</p><div id="pill2" class="pill orange">MANUAL<br>OVERRIDE</div></div>
+      <div id="stamp" class="abs">IN-STORE ONLY</div>
+    </div>
+
+    <!-- 5 ADD ONE MORE -->
+    <div id="sAdd" class="scene">
+      <div id="addHl" class="hl" style="top:200px;font-size:132px"></div>
+      <div id="tiles"></div>
+    </div>
+
+    <!-- 6 OUTRO -->
+    <div id="sOut" class="scene">
+      <div class="ph" id="outPh" style="filter:blur(30px) brightness(.28) saturate(1.3)"><img src="img/combos.jpg"></div>
+      <div id="ol1" class="ol abs">Mention it.</div>
+      <div id="ol2" class="ol abs" style="color:var(--gold)">Add one.</div>
+      <div id="ol3" class="ol abs" style="color:var(--or)">Ring it right.</div>
+      <div id="go" class="abs">LET'S GO, TEAM!</div>
+      <div id="lock" class="abs"><div class="eyebrow">A&amp;W Tanger</div><div id="lockTop"><em>2</em></div><div id="lockSub">CAN DINE</div><div id="lockPrice">$17.99</div><div class="chipline">IN-STORE ONLY · <b>BEEF</b> OR <b>CHICKEN</b></div></div>
+    </div>
+  </div>
+
+  <div id="leak" class="layer"></div>
+  <div id="sweep" class="layer"></div>
+  <div id="vig" class="layer"></div>
+  <canvas id="grain" class="layer" width="270" height="480"></canvas>
+  <div id="flash" class="layer"></div>
+  <div id="hdr" class="abs">A&amp;W TANGER <i></i> STAFF</div>
+  <div id="cap" class="abs"></div>
+  <div id="bar" class="abs"><div id="barFill"></div></div>
+</div>
+<script src="captions.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, d) => clamp((t - a) / d);
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eo5 = x => 1 - Math.pow(1 - x, 5);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x, s = 1.9) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
+const lerp = (a, b, x) => a + (b - a) * x;
+
+const CAP = window.CAPTIONS, DUR = window.DURATION;
+const L = Object.fromEntries(CAP.map(c => [c.scene, c]));
+const W = (s, i) => L[s].words[i][1];
+const CUT = { hook: 0, ask: L.ask.start - .25, one: L.one.start - .25, ring: L.same.start - .25, add: L.addons.start - .25, out: L.outro.start - .25 };
+const ORDER = [['hook', 'sHook'], ['ask', 'sAsk'], ['one', 'sOne'], ['ring', 'sRing'], ['add', 'sAdd'], ['out', 'sOut']];
+const CUTS = ORDER.map(o => CUT[o[0]]).slice(1);
+const LOCK = W('outro', 7) + 1.15;
+
+// place element centred at (x, y) with transform extras
+function put(el, x, y, { s = 1, r = 0, o = 1, blur = 0, ox = 0, oy = 0 } = {}) {
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+  el.style.transform = `translate(-50%,-50%) translate(${ox}px,${oy}px) rotate(${r}deg) scale(${s})`;
+  el.style.opacity = o; el.style.filter = blur > 0.2 ? `blur(${blur}px)` : '';
+}
+// slam in: big → settled, with blur
+function slam(el, t, t0, x, y, { from = 1.7, dur = .26, r = 0, extra = {} } = {}) {
+  const p = P(t, t0, dur), e = eo5(p);
+  put(el, x, y, { s: lerp(from, 1, e) * (extra.s || 1), r: lerp(r * 2, r, e), o: t < t0 ? 0 : clamp(p * 3), blur: (1 - e) * 14, ox: extra.ox || 0, oy: extra.oy || 0 });
+}
+// rise in: from below with overshoot
+function rise(el, t, t0, x, y, { dist = 120, dur = .45, ox = 0 } = {}) {
+  const p = P(t, t0, dur), e = back(p, 1.4);
+  put(el, x, y, { oy: (1 - e) * dist, o: t < t0 ? 0 : clamp(p * 3), blur: (1 - eo(p)) * 8, ox });
+}
+function pill(el, t, t0, r) {
+  const p = P(t, t0, .26), e = eo5(p);
+  el.style.opacity = t < t0 ? 0 : clamp(p * 3);
+  el.style.transform = `translateY(-50%) rotate(${lerp(r * 3, r, e)}deg) scale(${lerp(2.2, 1, e)})`;
+  el.style.filter = p < 1 ? `blur(${(1 - e) * 10}px)` : '';
+}
+function words(el, list) {
+  el.innerHTML = list.map(w => w === '\n' ? '<br>' : `<span>${w}</span>`).join(' ');
+  return [...el.querySelectorAll('span')];
+}
+function kinetic(spans, t, times) {
+  spans.forEach((sp, i) => {
+    const p = P(t, times[i], .22), e = eo5(p);
+    sp.style.opacity = t < times[i] ? 0 : clamp(p * 3);
+    sp.style.transform = `translateY(${(1 - e) * 60}px) scale(${lerp(1.35, 1, e)})`;
+    sp.style.filter = p < 1 ? `blur(${(1 - e) * 10}px)` : '';
+  });
+}
+
+let askSp, bubSp, oneSp1, oneSp2, addSp, tiles = [], capEls = [], noise = [];
+function build() {
+  askSp = words($('askHl'), ['Say', 'it', 'to', '\n', 'every', 'guest']);
+  $('bubble').innerHTML = '<q>“</q><br>' + ['Is', 'someone', 'joining', 'you', 'today?”'].map(w => `<span>${w}</span>`).join('');
+  bubSp = [...$('bubble').querySelectorAll('span')];
+  $('oneHl').innerHTML = '<div id="oneA">' + ['Ordering', '<br>', 'one?'].map(w => w === '<br>' ? w : `<span>${w}</span>`).join(' ') + '</div><div id="oneB" style="position:absolute;left:0;right:0;top:0;color:var(--or)">' + ['Make', 'it', '<br>', 'two.'].map(w => w === '<br>' ? w : `<span>${w}</span>`).join(' ') + '</div>';
+  oneSp1 = [...$('oneA').querySelectorAll('span')]; oneSp2 = [...$('oneB').querySelectorAll('span')];
+  addSp = words($('addHl'), ['Then', 'add', '\n', 'one', 'more']);
+  const T = [['rings', 'Onion<br>rings'], ['gravy', 'Small<br>gravy'], ['turnover', 'Apple<br>turnover'], ['rootbeer', 'Upsize<br>the drink']];
+  $('tiles').innerHTML = T.map(([img, lab], i) => `<div class="tile abs"><img src="img/${img}.jpg"><div class="lab">${lab}</div><div class="num">${i + 1}</div><div class="ring"></div></div>`).join('');
+  tiles = [...$('tiles').children];
+  // grain frames
+  for (let k = 0; k < 8; k++) {
+    const c = document.createElement('canvas'); c.width = 270; c.height = 480; const g = c.getContext('2d'); const im = g.createImageData(270, 480);
+    let sd = 1234 + k * 7919; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < im.data.length; i += 4) { const v = rnd() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+    g.putImageData(im, 0, 0); noise.push(c);
+  }
+}
+
+function sceneAlpha(t, a, b) {
+  if (t < a || t >= b) return 0;
+  return 1;
+}
+
+function render(t) {
+  // ---------- scene visibility + whip between scenes ----------
+  ORDER.forEach(([k, id], i) => {
+    const a = CUT[k], b = i + 1 < ORDER.length ? CUT[ORDER[i + 1][0]] : DUR + 1;
+    const el = $(id), on = sceneAlpha(t, a, b);
+    el.style.opacity = on;
+    if (!on) return;
+    const pin = P(t, a, .35), e = eo5(pin);
+    const pout = P(t, b - .12, .12);
+    const s = (i === 0 ? 1 : lerp(1.12, 1, e)) * lerp(1, 1.06, pout);
+    el.style.transform = `translateY(${-pout * 80}px) scale(${s})`;
+    el.style.filter = (i && pin < 1 ? `blur(${(1 - e) * 10}px)` : '') + (pout > 0 ? ` blur(${pout * 16}px)` : '');
+  });
+
+  // ---------- 1 HOOK ----------
+  if (t < CUT.ask) {
+    const ph = $('hookPh'); ph.style.transform = `scale(${lerp(1.18, 1.02, eio(P(t, 0, 3.6)))})`;
+    ph.style.filter = `brightness(${lerp(.0, 1, P(t, 0, .45))})`;
+    slam($('big2'), t, W('hook', 0) - .05, 540, 640, { from: 2.6, dur: .3 });
+    slam($('canDine'), t, W('hook', 1), 540, 1060, { from: 1.5, dur: .26 });
+    rise($('hookChip'), t, W('hook', 3), 540, 1220);
+    const tp = W('hook', 5) + .05;
+    slam($('price'), t, tp, 540, 1440, { from: 2.2, r: -5, dur: .3, extra: { s: 1 + .04 * Math.sin(Math.max(0, t - tp) * 7) * Math.exp(-Math.max(0, t - tp) * 2.5) } });
+  }
+
+  // ---------- 2 ASK ----------
+  if (t >= CUT.ask && t < CUT.one) {
+    const a = CUT.ask;
+    $('askPh').style.transform = `scale(${lerp(1.16, 1.03, eo(P(t, a, 3.2)))}) translateY(${lerp(30, -20, P(t, a, 3.2))}px)`;
+    kinetic(askSp, t, [0, 1, 2, 3, 4].map(i => W('ask', i)));
+    const tb = W('ask', 5) - .2, pb = P(t, tb, .4);
+    put($('bubble'), 540, 1180, { s: lerp(.6, 1, back(pb, 2.2)), o: t < tb ? 0 : clamp(pb * 3), oy: (1 - eo(pb)) * 60 });
+    bubSp.forEach((sp, i) => { const ti = W('ask', 5 + i), p = P(t, ti, .18); sp.style.opacity = t < ti ? .12 : lerp(.12, 1, p); sp.style.transform = `translateY(${(1 - eo(p)) * 14}px)`; });
+  }
+
+  // ---------- 3 ORDERING ONE ----------
+  if (t >= CUT.one && t < CUT.ring) {
+    const a = CUT.one, tb = W('one', 3);
+    $('onePh').style.transform = `scale(${lerp(1.1, 1.0, P(t, a, 2.2))})`;
+    const sw = P(t, tb - .08, .2);
+    kinetic(oneSp1, t, [W('one', 0), W('one', 1)]);
+    $('oneA').style.opacity = 1 - sw; $('oneA').style.transform = `translateY(${-sw * 50}px)`;
+    kinetic(oneSp2, t, [tb, W('one', 4), W('one', 5)]);
+    const pL = P(t, a + .05, .45), slide = eo(P(t, tb, .4));
+    put($('trayL'), lerp(540, 300, slide), 1180, { oy: (1 - back(pL, 1.3)) * 400, o: clamp(pL * 3), r: lerp(0, -3, slide) });
+    const pR = P(t, tb, .45);
+    put($('trayR'), 780, 1180, { ox: (1 - back(pR, 1.2)) * 700, o: t < tb ? 0 : clamp(pR * 3), r: lerp(14, 3, eo(pR)) });
+    slam($('x2'), t, W('one', 5) - .05, 540, 1560, { from: 2.4, r: -8 });
+  }
+
+  // ---------- 4 RING IT RIGHT ----------
+  if (t >= CUT.ring && t < CUT.add) {
+    const a = CUT.ring;
+    $('ringPh').style.transform = `scale(${lerp(1.15, 1.0, P(t, a, 6))})`;
+    slam($('ringHl'), t, W('same', 0) - .05, 540, 390, { from: 1.4 });
+    rise($('card1'), t, W('same', 3) - .05, 540, 870, { dist: 200 });
+    pill($('pill1'), t, W('same', 7) - .05, 4);
+    rise($('card2'), t, W('mixed', 0) - .05, 540, 1170, { dist: 200 });
+    pill($('pill2'), t, W('mixed', 4) - .05, -4);
+    slam($('stamp'), t, W('mixed', 6) - .05, 540, 1460, { from: 2.6, r: -6, dur: .28 });
+  }
+
+  // ---------- 5 ADD ONE MORE ----------
+  if (t >= CUT.add && t < CUT.out) {
+    kinetic(addSp, t, [0, 1, 2, 3].map(i => W('addons', i)));
+    const at = [4, 6, 8, 11].map(i => W('addons', i) - .08), pos = [[295, 790], [785, 790], [295, 1320], [785, 1320]];
+    tiles.forEach((el, i) => {
+      const p = P(t, at[i], .42), e = back(p, 1.6);
+      put(el, pos[i][0], pos[i][1] + 0, { s: lerp(.55, 1, e), o: t < at[i] ? 0 : clamp(p * 3), r: lerp(i % 2 ? 9 : -9, 0, eo(p)), blur: (1 - eo(p)) * 10 });
+      el.querySelector('img').style.transform = `scale(${lerp(1.25, 1.05, eo(P(t, at[i], 2.5)))})`;
+      const nx = i + 1 < 4 ? at[i + 1] : W('addons', 13) + .6;
+      const active = t >= at[i] && t < nx;
+      el.querySelector('.ring').style.opacity = active ? 1 : (t >= W('addons', 13) + .6 ? .0 : 0);
+      el.style.filter += active ? '' : (t >= at[i] ? ' brightness(.7)' : '');
+      if (t >= W('addons', 13) + .4) { el.style.filter = ''; const q = P(t, W('addons', 13) + .4 + i * .06, .3); el.style.transform += ` scale(${1 + .05 * Math.sin(q * Math.PI)})`; }
+    });
+  }
+
+  // ---------- 6 OUTRO ----------
+  if (t >= CUT.out) {
+    $('outPh').style.transform = `scale(${lerp(1.2, 1.0, P(t, CUT.out, 5))})`;
+    const off = P(t, LOCK - .15, .3), oe = eio(off);
+    [['ol1', 0, 760], ['ol2', 2, 930], ['ol3', 4, 1100]].forEach(([id, wi, y]) => {
+      const t0 = W('outro', wi) - .05, p = P(t, t0, .24), e = eo5(p);
+      put($(id), 540, y, { s: lerp(1.9, 1, e), o: t < t0 ? 0 : clamp(p * 3) * (1 - oe), blur: (1 - e) * 12 + oe * 20, oy: -oe * 120 });
+    });
+    const tg = W('outro', 7) - .05, pg = P(t, tg, .35);
+    put($('go'), 540, 1330, { s: lerp(.4, 1, back(pg, 2.2)) * (1 + .03 * Math.sin((t - tg) * 9) * (t > tg)), o: (t < tg ? 0 : clamp(pg * 3)) * (1 - oe), blur: oe * 20, oy: oe * 160 });
+    const pl = P(t, LOCK, .5);
+    put($('lock'), 540, 940, { s: lerp(1.35, 1, eo5(pl)), o: t < LOCK ? 0 : clamp(pl * 2.5), blur: (1 - eo5(pl)) * 16 });
+  }
+
+  // ---------- chrome ----------
+  const lastCut = [0, ...CUTS].filter(c => c <= t).pop();
+  const df = t - lastCut, isCut = lastCut > 0 || t >= LOCK;
+  let fl = lastCut > 0 ? Math.exp(-df / .07) * .75 * (df >= 0) : 0;
+  if (t >= LOCK) fl = Math.max(fl, Math.exp(-(t - LOCK) / .09) * .9);
+  $('flash').style.opacity = fl;
+  $('world').style.transform = `scale(${1 + (lastCut > 0 ? .035 * Math.exp(-df / .12) : 0)})`;
+  const sw = ((t - lastCut) / .9);
+  $('sweep').style.transform = `translateX(${lerp(-110, 110, clamp(sw))}%)`; $('sweep').style.opacity = sw < 1 ? .9 : 0;
+  $('leak').style.opacity = .55 + .35 * Math.sin(t * 1.3) * Math.sin(t * .7 + 1);
+  const g = $('grain').getContext('2d'); g.drawImage(noise[Math.floor(t * 24) % noise.length], 0, 0);
+  $('barFill').style.width = (clamp(t / DUR) * 100) + '%';
+  $('hdr').style.opacity = clamp(P(t, .2, .4)) * (t > DUR - .4 ? clamp((DUR - t) / .4) : 1);
+  $('stage').style.filter = t > DUR - .35 ? `brightness(${clamp((DUR - t) / .35)})` : '';
+
+  // ---------- captions (word highlight) ----------
+  const line = CAP.find(c => t >= c.start - .05 && t < c.end);
+  const capEl = $('cap');
+  if (!line) { capEl.style.opacity = 0; }
+  else {
+    if (capEl.dataset.k !== String(line.start)) {
+      capEl.dataset.k = String(line.start);
+      capEl.innerHTML = line.words.map(w => `<span>${w[0]}</span>`).join('');
+      capEls = [...capEl.children];
+    }
+    capEl.style.opacity = clamp((t - line.start + .05) / .12) * clamp((line.end - t) / .15);
+    line.words.forEach((w, i) => {
+      const on = t >= w[1], cur = on && (i + 1 >= line.words.length || t < line.words[i + 1][1]);
+      capEls[i].style.color = cur ? 'var(--or2)' : on ? 'var(--cream)' : 'rgba(255,244,226,.38)';
+      capEls[i].style.transform = cur ? 'translateY(-3px) scale(1.06)' : '';
+    });
+  }
+}
+
+window.DURATION = DUR;
+window.seek = t => render(t);
+window.ready = Promise.all([document.fonts.ready, ...[...document.images].map(i => i.decode().catch(() => 0))])
+  .then(() => { build(); return Promise.all([...document.images].map(i => i.decode().catch(() => 0))); })
+  .then(() => { render(0); return true; });
+if (!navigator.webdriver) {
+  window.ready.then(() => { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); }; loop(); });
+}
+</script>
+</body>
+</html>
