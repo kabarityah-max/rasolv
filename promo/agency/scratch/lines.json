@@ -1,0 +1,117 @@
+{
+ "voice": "af_heart",
+ "lines": [
+  {
+   "i": 0,
+   "start": 0.35,
+   "dur": 2.412,
+   "sr": 24000,
+   "text": "This entire film was created by Claude Code."
+  },
+  {
+   "i": 1,
+   "start": 3.9,
+   "dur": 2.513,
+   "sr": 24000,
+   "text": "Written in code. Rendered with HyperFrames."
+  },
+  {
+   "i": 2,
+   "start": 7.6,
+   "dur": 2.979,
+   "sr": 24000,
+   "text": "With our agency, RASOLV, we can do the same for you."
+  },
+  {
+   "i": 3,
+   "start": 11.35,
+   "dur": 0.716,
+   "sr": 24000,
+   "text": "Your brand."
+  },
+  {
+   "i": 4,
+   "start": 13.225,
+   "dur": 0.738,
+   "sr": 24000,
+   "text": "In motion."
+  },
+  {
+   "i": 5,
+   "start": 15.15,
+   "dur": 1.915,
+   "sr": 24000,
+   "text": "Your story, in front of customers."
+  },
+  {
+   "i": 6,
+   "start": 18.581,
+   "dur": 0.899,
+   "sr": 24000,
+   "text": "Wherever they are."
+  },
+  {
+   "i": 7,
+   "start": 20.745,
+   "dur": 1.687,
+   "sr": 24000,
+   "text": "Your product, in three dimensions."
+  },
+  {
+   "i": 8,
+   "start": 24.495,
+   "dur": 1.543,
+   "sr": 24000,
+   "text": "Every detail, in focus."
+  },
+  {
+   "i": 9,
+   "start": 28.225,
+   "dur": 2.62,
+   "sr": 24000,
+   "text": "Launch films. Product films. Training films."
+  },
+  {
+   "i": 10,
+   "start": 31.975,
+   "dur": 2.711,
+   "sr": 24000,
+   "text": "Voice, music and captions, composed around you."
+  },
+  {
+   "i": 11,
+   "start": 35.725,
+   "dur": 2.422,
+   "sr": 24000,
+   "text": "Change one line, and the whole film follows."
+  },
+  {
+   "i": 12,
+   "start": 39.475,
+   "dur": 1.656,
+   "sr": 24000,
+   "text": "One source. Every format."
+  },
+  {
+   "i": 13,
+   "start": 43.225,
+   "dur": 1.965,
+   "sr": 24000,
+   "text": "Precision of code. Feel of cinema."
+  },
+  {
+   "i": 14,
+   "start": 47.075,
+   "dur": 2.157,
+   "sr": 24000,
+   "text": "We see the whole picture. Then we solve it."
+  },
+  {
+   "i": 15,
+   "start": 52.5,
+   "dur": 2.788,
+   "sr": 24000,
+   "text": "RASOLV. Vision that solves. Let's build yours."
+  }
+ ]
+}
