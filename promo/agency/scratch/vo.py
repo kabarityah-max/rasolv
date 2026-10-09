@@ -8,22 +8,22 @@ import sys, json, os, re
 import numpy as np, soundfile as sf
 
 # (start time on the timeline, caption text, spoken text)
-LINES = [(0.35, 'This entire video? Built by Claude Code.', None),
-    (3.87, 'Every frame, written as code. Rendered with HyperFrames.', 'Every frame, written as code. Rendered with Hyper Frames.'),
-    (7.62, 'With our agency, RASOLV, we can do the same for you.', 'With our agency, Rasolv, we can do the same for you.'),
-    (11.37, 'Motion graphics that never sit still.', None),
-    (13.245, 'Liquid glass, in real time.', None),
-    (15.12, 'Maps that fly to your customers.', None),
-    (18.87, 'Your product, in 3D. Spinning on the beat.', 'Your product, in three D. Spinning on the beat.'),
-    (22.62, 'Live data. Orbiting. Counting. Alive.', None),
-    (26.37, 'Training films. Launch films. Brand stories.', None),
-    (30.12, 'Voiceover, music and captions. All generated.', None),
-    (33.87, 'Every cut lands on the beat.', None),
-    (37.62, 'Then five critics tear it apart.', None),
-    (41.37, 'Under seventy-five? Rejected.', None),
-    (45.12, 'Brief in. Video out. Hours, not weeks.', None),
-    (48.87, "Wherever your customers are, we're one tap away.", None),
-    (54.375, "RASOLV. Vision that solves. Let's build yours.", "Rasolv. Vision that solves. Let's build yours.")]
+LINES = [(0.35, 'This entire film was created by Claude Code.', None),
+    (3.9, 'Written in code. Rendered with HyperFrames.', 'Written in code. Rendered with Hyper Frames.'),
+    (7.6, 'With our agency, RASOLV, we can do the same for you.', 'With our agency, Rasolv, we can do the same for you.'),
+    (11.35, 'Your brand.', None),
+    (13.225, 'In motion.', None),
+    (15.15, 'Your story, in front of customers.', None),
+    (18.581, 'Wherever they are.', None),
+    (20.745, 'Your product, in three dimensions.', 'Your product, in three dimensions.'),
+    (24.495, 'Every detail, in focus.', None),
+    (28.225, 'Launch films. Product films. Training films.', None),
+    (31.975, 'Voice, music and captions, composed around you.', None),
+    (35.725, 'Change one line, and the whole film follows.', None),
+    (39.475, 'One source. Every format.', None),
+    (43.225, 'Precision of code. Feel of cinema.', None),
+    (47.075, 'We see the whole picture. Then we solve it.', None),
+    (52.5, "RASOLV. Vision that solves. Let's build yours.", "Rasolv. Vision that solves. Let's build yours.")]
 BRAND = "ɹɑːzˈɑːlv"   # "rah-ZOLV", rhymes with "resolve" — same phonemes as ../vo.py
 
 

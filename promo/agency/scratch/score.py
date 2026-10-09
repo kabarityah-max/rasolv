@@ -9,7 +9,7 @@ BEAT = 60 / 128
 BAR = 4 * BEAT
 def tb(b): return b * BEAT
 # scene starts in beats (must match index.html)
-SC = [0, 8, 16, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 116, 128]
+SC = [0, 8, 16, 24, 28, 32, 44, 52, 60, 68, 76, 84, 92, 100, 112, 128]
 
 CH = [('A1', ['A3', 'C4', 'E4'], ['A4', 'C5', 'E5', 'A5', 'E5', 'C5', 'E5', 'C5']),
       ('F1', ['F3', 'A3', 'C4'], ['F4', 'A4', 'C5', 'F5', 'C5', 'A4', 'C5', 'A4']),
@@ -19,13 +19,13 @@ kicks = []
 for bar in range(32):
     b0 = bar * 4; t0 = tb(b0); root, ch, arp = CH[bar % 4]
     intro = b0 < 16
-    brk = 80 <= b0 < 88          # tension break under "critics"
-    calm = 104 <= b0 < 116       # map scene: lighter
-    fin = b0 >= 116
+    brk = 104 <= b0 < 112        # build into the end card
+    calm = False
+    fin = b0 >= 112
     music.add(pad([note(n) for n in ch], BAR, a=0.2, r=0.5, bright=(1200 if intro or brk else 2600)), t0, 0.30 if not fin else 0.4)
     for k in range(4):
         t = t0 + k * BEAT; bb = b0 + k
-        drums = (not intro or bb >= 8) and not brk and not (calm and bb < 112) and not (fin and bb > 119)
+        drums = (not intro or bb >= 8) and not brk and not (calm and bb < 112) and not (fin and bb > 115)
         if drums:
             kicks.append(t); music.add(kick(0.85 if not intro else 0.5), t)
             if k in (1, 3) and not intro: music.add(clap(), t, 0.22)
@@ -47,12 +47,12 @@ music.add(whoosh(tb(8) - 0.0, True, (200, 9000)), tb(8) - tb(8) + 0.0, 0.0)
 music.add(whoosh(tb(4), True, (300, 9000)), tb(12), 0.32)
 music.add(impact(1.0), tb(16)); music.add(chime([note('A5'), note('C6'), note('E6')], 0.05, 1.2), tb(16), 0.10)
 # break riser + REJECTED hit
-music.add(whoosh(tb(8), True, (200, 8000)), tb(80), 0.25); music.add(impact(1.0), tb(88))
+music.add(whoosh(tb(8), True, (200, 8000)), tb(104), 0.28)
 # final resolve
-music.add(pad([note('A2'), note('E3'), note('A3'), note('C4'), note('E4'), note('B4')], 6.0, a=0.3, r=2.0, bright=3400), tb(116), 0.5)
-music.add(impact(1.1), tb(116))
-for k, nm in enumerate(['A5', 'C6', 'E6', 'A6']): music.add(pluck(note(nm), 0.5), tb(120) + k * BEAT / 2, 0.10, pan=0.3 * (-1) ** k)
-music.add(chime([note('A5'), note('E6'), note('A6'), note('C7')], 0.07, 1.6), tb(124), 0.16)
+music.add(pad([note('A2'), note('E3'), note('A3'), note('C4'), note('E4'), note('B4')], 6.0, a=0.3, r=2.0, bright=3400), tb(112), 0.5)
+music.add(impact(1.1), tb(112))
+for k, nm in enumerate(['A5', 'C6', 'E6', 'A6']): music.add(pluck(note(nm), 0.5), tb(116) + k * BEAT / 2, 0.10, pan=0.3 * (-1) ** k)
+music.add(chime([note('A5'), note('E6'), note('A6'), note('C7')], 0.07, 1.6), tb(120), 0.16)
 
 pump = np.ones(N)
 for kt in kicks:
@@ -66,39 +66,43 @@ for i, b in enumerate(SC[1:-1], 1):         # every cut: riser into it, hit on i
     sfx.add(pop(420 + 30 * (i % 5), 0.06), t, 0.30)
     sfx.add(tick(3000, 0.02), t, 0.12)
 # A: terminal typing
-for k in range(24): sfx.add(key(), 1.7 + k * 0.05 + rng.uniform(-0.01, 0.01), 0.14, pan=0.2)
+for k in range(26): sfx.add(key(), 1.75 + k * 0.045 + rng.uniform(-0.008, 0.008), 0.13, pan=0.2)
 sfx.add(click(), 3.0, 0.4)
 # B: frame counter ticks
-for k in range(18): sfx.add(tick(1800 + 60 * k, 0.008), tb(8) + 0.4 + k * 0.1, 0.09, pan=-0.3)
+for k in range(18): sfx.add(tick(1800 + 60 * k, 0.008), tb(8) + 1.0 + k * 0.09, 0.09, pan=-0.3)
 # C: aperture assembly
-sfx.add(shimmer(1.2, 1800), tb(16) + 0.1, 0.16); sfx.add(impact(0.6), tb(20))
-# D: kinetic words slam each 2 beats
-for k in range(4): sfx.add(pop(300 + 60 * k, 0.07), tb(24) + k * BEAT, 0.25)
-for k in range(4): sfx.add(shimmer(0.5, 2600 + 300 * k), tb(28) + k * BEAT, 0.08)
-# E: map pings
-for k in range(8): sfx.add(ding(1568 * 2 ** ([0, 4, 7, 12, 7, 4, 0, 9][k] / 12), 0.25), tb(32) + 0.5 + k * 0.25, 0.08, pan=np.sin(k) * 0.6)
-# F: phone spin whooshes
-for k in range(4): sfx.add(whoosh(0.4, False, (700, 7000)), tb(40) + k * 2 * BEAT, 0.14, pan=0.5 * (-1) ** k)
-# G: counters
-for k in range(24): sfx.add(tick(2600 - k * 40, 0.006), tb(48) + 0.5 + k * 0.07, 0.07, pan=-0.4)
-sfx.add(chime([note('E6'), note('A6')], 0.06, 0.6), tb(54), 0.12)
-# H: three stickers
-for k in range(3): sfx.add(pop(520 + 110 * k, 0.05), tb(56) + k * 2 * BEAT, 0.30); sfx.add(clap(), tb(56) + k * 2 * BEAT, 0.10)
-# I: waveform
-for k in range(16): sfx.add(tick(1500 + 150 * (k % 4), 0.01), tb(64) + 0.5 + k * 0.12, 0.08)
-# J: metronome flash cuts every beat
-for k in range(8): sfx.add(click(), tb(72) + k * BEAT, 0.35 if k % 2 == 0 else 0.22)
-# K: five rounds stamped
-for k in range(5): sfx.add(pop(380 + 70 * k, 0.07), tb(80) + k * 1.5 * BEAT + 0.25, 0.30); sfx.add(tick(900, 0.03), tb(80) + k * 1.5 * BEAT + 0.25, 0.2)
-# L: REJECTED stamp
-sfx.add(impact(0.9), tb(88) + 0.02); sfx.add(clap(), tb(88), 0.4); sfx.add(chime([note('E6'), note('A6')], 0.08, 0.8), tb(92), 0.14)
-# M: pipeline
-for k in range(4): sfx.add(pop(480 + 90 * k, 0.05), tb(96) + k * 1.5 * BEAT + 0.3, 0.28)
-# N: map zoom
-sfx.add(whoosh(1.6, True, (300, 9000)), tb(104) + 0.1, 0.22); sfx.add(ding(1975, 0.5), tb(109), 0.14); sfx.add(chime([note('A5'), note('E6')], 0.08, 0.9), tb(111), 0.12)
+sfx.add(whoosh(0.5, True, (400, 9000)), tb(16) - 0.4, 0.25); sfx.add(shimmer(1.2, 1800), tb(16) + 0.1, 0.16); sfx.add(impact(0.7), tb(16))
+# D1/D2: brand tiles, motion trail
+for k in range(6): sfx.add(pop(380 + 40 * k, 0.05), tb(24) + 0.05 + k * 0.07, 0.16, pan=np.sin(k) * .5)
+sfx.add(whoosh(0.6, False, (800, 9000)), tb(28), 0.28); sfx.add(shimmer(0.8, 2600), tb(28) + .6, 0.1)
+# E: map pings, dive
+for k in range(8): sfx.add(ding(1568 * 2 ** ([0, 4, 7, 12, 7, 4, 0, 9][k] / 12), 0.25), tb(32) + 0.3 + k * 0.22, 0.08, pan=np.sin(k) * 0.6)
+sfx.add(whoosh(tb(4), True, (300, 9000)), tb(40), 0.3)
+# F: phone spins
+for k in range(4): sfx.add(whoosh(0.45, False, (700, 7000)), tb(44) + 0.45 + k * 0.7, 0.13, pan=0.5 * (-1) ** k)
+# G: focus lock sweep + lock
+for k in range(30): sfx.add(tick(1400 + k * 55, 0.006), tb(52) + 0.15 + k * 0.045, 0.07, pan=np.sin(k * .5) * .4)
+sfx.add(chime([note('A5'), note('E6'), note('A6')], 0.06, 0.8), tb(52) + 1.5, 0.16)
+# H: cards
+for k in range(3): sfx.add(pop(520 + 110 * k, 0.05), tb(60) + k * 0.52 + 0.1, 0.28); sfx.add(whoosh(0.3, False, (700, 7000)), tb(60) + k * 0.52 + 0.05, 0.12)
+# I: waveforms
+for k in range(16): sfx.add(tick(1500 + 150 * (k % 4), 0.01), tb(68) + 0.5 + k * 0.1, 0.08)
+# J: typing the new value
+for k in range(14): sfx.add(key(), tb(76) + 0.75 + k * 0.035, 0.16, pan=0.3)
+for k in range(14): sfx.add(key(), tb(76) + 2.0 + k * 0.035, 0.16, pan=0.3)
+sfx.add(chime([note('E6'), note('A6')], 0.06, 0.5), tb(76) + 1.4, 0.1); sfx.add(chime([note('G6'), note('B6')], 0.06, 0.5), tb(76) + 2.7, 0.1)
+# K: morph + split
+for k in range(2): sfx.add(whoosh(0.35, True, (600, 6000)), tb(84) + 0.35 + k * 0.6, 0.14)
+for k in range(3): sfx.add(pop(480 + 90 * k, 0.05), tb(84) + 1.75 + k * 0.14, 0.26)
+# L: precision / cinema
+for k in range(18): sfx.add(tick(2200, 0.004), tb(92) + 0.1 + k * 0.035, 0.06)
+sfx.add(whoosh(0.8, False, (500, 9000)), tb(92) + 1.0, 0.25); sfx.add(impact(0.5), tb(92) + 1.05)
+# M: converge, collapse, lock
+sfx.add(whoosh(0.5, True, (300, 8000)), tb(100) - 0.4, 0.22); sfx.add(shimmer(1.2, 1700), tb(100) + 0.3, 0.14)
+sfx.add(impact(0.8), tb(100) + 2.0); sfx.add(chime([note('E6'), note('A6'), note('C7')], 0.07, 1.0), tb(100) + 2.05, 0.12)
 # O: logo
-sfx.add(shimmer(1.4, 1700), tb(116) + 0.05, 0.22); sfx.add(whoosh(0.9, False, (600, 8000)), tb(116), 0.25)
-sfx.add(click(), tb(126), 0.5)
+sfx.add(shimmer(1.4, 1700), tb(112) + 0.05, 0.22); sfx.add(whoosh(0.9, False, (600, 8000)), tb(112), 0.25)
+sfx.add(click(), tb(112) + 1.8, 0.5)
 
 # ---------------- voice ----------------
 lines = json.load(open('lines.json'))['lines']

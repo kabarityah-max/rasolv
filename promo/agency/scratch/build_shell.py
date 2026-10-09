@@ -1,8 +1,8 @@
 """Builds index.html: static shell + 16 timed scene sections (times come from the beat grid) + script includes."""
 BEAT = 60 / 128
-SC = [0, 8, 16, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 116, 128]
+SC = [0, 8, 16, 24, 28, 32, 44, 52, 60, 68, 76, 84, 92, 100, 112, 128]
 IDS = list('ABCDEFGHIJKLMNO') + ['P']
-IDS = ['sA','sB','sC','sD1','sD2','sE','sF','sG','sH','sI','sJ','sK','sL','sM','sN','sO']
+IDS = ['sA','sB','sC','sD1','sD2','sE','sF','sG','sH','sI','sJ','sK','sL','sM','sO']
 secs = ''
 for i, id_ in enumerate(IDS):
     st = max(0, SC[i] * BEAT - 0.2); en = SC[i + 1] * BEAT + (0.3 if i < len(IDS) - 1 else 0)
@@ -32,12 +32,15 @@ html = f'''<!doctype html>
   <div id="bg" class="clip" data-start="0" data-duration="60" data-track-index="0">
     <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
   </div>
-{secs}  <div id="grain" class="clip" data-start="0" data-duration="60" data-track-index="5"><svg width="1080" height="1920"><rect width="1080" height="1920" filter="url(#grainf)"/></svg></div>
-  <div id="sweep" class="clip glass" data-start="0" data-duration="60" data-track-index="6"></div>
+{secs}  <div id="grid" class="clip" data-start="0" data-duration="60" data-track-index="0"></div>
+  <div id="grain" class="clip" data-start="0" data-duration="60" data-track-index="5"><svg width="1080" height="1920"><rect width="1080" height="1920" filter="url(#grainf)"/></svg></div>
+  <div id="sweepw" class="clip" data-start="0" data-duration="60" data-track-index="6"><div id="sweep" class="glass"></div></div>
+  <div id="shw" class="clip" data-start="0" data-duration="60" data-track-index="6" style="position:absolute;inset:0;z-index:36;pointer-events:none"><div id="shT"></div><div id="shB"></div></div>
   <div id="flash" class="clip" data-start="0" data-duration="60" data-track-index="7"></div>
+  <div id="hud" class="clip" data-start="0" data-duration="60" data-track-index="8"></div>
   <div id="hdr" class="clip" data-start="0" data-duration="60" data-track-index="8"></div>
   <div id="caps" class="clip" data-start="0" data-duration="60" data-track-index="9"></div>
-  <div id="foot" class="clip" data-start="0" data-duration="60" data-track-index="8">MADE WITH CLAUDE CODE  ·  HYPERFRAMES</div>
+  <div id="foot" class="clip" data-start="0" data-duration="60" data-track-index="8">CREATED BY CLAUDE CODE  ·  RENDERED WITH HYPERFRAMES</div>
   <div id="prog" class="clip" data-start="0" data-duration="60" data-track-index="8"><i></i></div>
   <audio id="mix" src="assets/mix.wav" data-start="0" data-duration="60" data-track-index="10" data-volume="1"></audio>
 </div>
