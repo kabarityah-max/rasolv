@@ -57,7 +57,7 @@
   const a = h(`<div class="abs disp" style="left:70px;top:190px;font-size:104px;white-space:nowrap">One source.</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:304px;font-size:128px;font-weight:600;white-space:nowrap">Every format.</div>`, s);
   reveal(chars(a), t0 - .05, { stagger: .03, d: .5 }); reveal(chars(b, 'ch gt'), t0 + .12, { stagger: .03, d: .55 });
   const body = (w, hh) => { const m = Math.min(w, hh); return `<div class="abs" style="inset:0;background:linear-gradient(160deg,#2a1204,#07080c 70%)"></div><div class="abs" style="left:${w / 2 - m * .17}px;top:${hh * .16}px;width:${m * .34}px;height:${m * .34}px" data-ap></div><div class="abs disp" style="left:0;right:0;text-align:center;top:${hh * .58}px;font-size:${m * .13}px;font-weight:600;line-height:1">Your brand.</div><div class="abs" style="left:${w * .18}px;right:${w * .18}px;bottom:${hh * .1}px;height:${Math.max(3, m * .014)}px;background:#FF6E05"></div>`; };
-  const frame = (x, y, w, hh, label) => { const f = h(`<div class="glass" style="left:${x}px;top:${y}px;width:${w}px;height:${hh}px;border-radius:${Math.min(w, hh) * .07}px">${body(w, hh)}</div>`, s); ap($('[data-ap]', f), { r: 37, grow: 1, bp: 0, gap: '#07080c', lines: false }); const l = h(`<div class="abs mono" style="left:${x}px;top:${y + hh + 14}px;font-size:26px;letter-spacing:.3em;color:#FF9A3D">${label}</div>`, s); return [f, l]; };
+  const frame = (x, y, w, hh, label) => { const f = h(`<div class="glass" style="left:${x}px;top:${y}px;width:${w}px;height:${hh}px;border-radius:${Math.min(w, hh) * .07}px">${body(w, hh)}</div>`, s); ap($('[data-ap]', f), { r: 37, grow: 1, bp: 0, gap: '#07080c', lines: false }); const l = h(`<div class="abs mono" style="left:${x}px;top:${y + hh + 14}px;font-size:30px;letter-spacing:.3em;color:#FF9A3D">${label}</div>`, s); return [f, l]; };
   // morphing source frame
   const mw = { w: 300, h: 533 };
   const src = h(`<div class="glass" id="k-src" style="left:390px;top:640px;width:300px;height:533px;border-radius:24px"></div>`, s);
@@ -80,7 +80,7 @@
   const rl = h(`<svg class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"><g stroke="rgba(244,239,233,.45)" stroke-width="2">${[...Array(55)].map((_, i) => `<line x1="${60 + i * 18}" y1="${i % 5 ? 520 : 500}" x2="${60 + i * 18}" y2="540" />`).join('')}</g><line x1="60" y1="540" x2="1020" y2="540" stroke="rgba(244,239,233,.6)" stroke-width="2"/></svg>`, s);
   tl.fromTo(rl, { opacity: 0, clipPath: 'inset(0 100% 0 0)' }, { opacity: 1, clipPath: 'inset(0 0% 0 0)', duration: .6, ease: E.out }, t0 - .05);
   const pr = h(`<div class="abs mono" id="l-pr" style="left:60px;top:300px;font-size:70px;font-weight:700;letter-spacing:-.02em;white-space:nowrap"></div>`, s);
-  h(`<div class="abs mono" style="left:62px;top:230px;font-size:24px;letter-spacing:.34em;color:#FF9A3D">// 01 · PRECISION</div>`, s);
+  h(`<div class="abs mono" style="left:62px;top:220px;font-size:28px;letter-spacing:.34em;color:#FF9A3D">// 01 · PRECISION</div>`, s);
   const full = 'Precision of code.'; drive(t0 + .05, .8, p => { const n = Math.floor(p * full.length); pr.innerHTML = p >= 1 ? full : full.slice(0, n) + '<span style="color:#FF6E05">▍</span>'; });
   // cinema strip
   const strip = h(`<div class="abs" id="l-strip" style="left:0;top:600px;width:1080px;height:452px;overflow:hidden;background:radial-gradient(60% 90% at 50% 50%,#2a1305,#07080c)"></div>`, s);
@@ -94,7 +94,7 @@
   tl.fromTo(streak, { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: .5, ease: E.out }, t0 + 1.35);
   $$('.bk', sk).forEach((b, i) => tl.fromTo(b, { x: 0, opacity: 0 }, { x: -80 - i * 14, opacity: 1, duration: 2, ease: 'none' }, t0 + 1.0));
   tl.to(sk, { scale: 1.08, duration: 2.5, ease: 'none' }, t0 + 1.0);
-  h(`<div class="abs mono" style="left:62px;top:1110px;font-size:24px;letter-spacing:.34em;color:#FF9A3D">// 02 · CINEMA</div>`, s);
+  h(`<div class="abs mono" style="left:62px;top:1105px;font-size:28px;letter-spacing:.34em;color:#FF9A3D">// 02 · CINEMA</div>`, s);
   const fc = h(`<div class="abs disp" style="left:60px;top:1160px;font-size:134px;white-space:nowrap"><span>Feel of </span><b class="gt">cinema.</b></div>`, s);
   const cs = chars(fc.firstElementChild).concat(chars(fc.lastElementChild, 'ch gt')); reveal(cs, t0 + 1.25, { stagger: .035, d: .55, y: 70 });
 })();

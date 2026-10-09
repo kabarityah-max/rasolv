@@ -14,6 +14,8 @@
   enter('sL', 'zoom', { s: 1.35, flash: .3 });
   enter('sM', 'slice', { flash: .35 });
   enter('sO', 'iris', { x: 540, y: 760, flash: .85 });
+  /* production credit only where it belongs: the opening and the end card */
+  tl.set('#foot', { opacity: 1 }, 0).to('#foot', { opacity: 0, duration: .4 }, 11.3).set('#foot', { opacity: 0 }, 11.7).to('#foot', { opacity: 1, duration: .5 }, 52.6);
   /* background drift + progress */
   tl.to('.b1', { x: 500, y: -500, duration: 60, ease: 'sine.inOut' }, 0);
   tl.to('.b2', { x: -450, y: 900, duration: 60, ease: 'sine.inOut' }, 0);

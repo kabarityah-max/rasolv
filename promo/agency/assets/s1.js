@@ -1,7 +1,8 @@
 /* ===== A · hook (0–3.75 s)  "This entire film was created by Claude Code." ===== */
 (() => {
   const s = $('#sA .in');
-  // viewfinder
+  // viewfinder (brand mark present from the first frame)
+  const ghost = h(`<div class="abs" id="a-ghost" style="left:290px;top:510px;width:500px;height:500px;opacity:.16"></div>`, s); ap(ghost, { r: 37, grow: 1, bp: 1, gap: '#05060a' }); tl.to(ghost, { rotation: 60, duration: 3.8, ease: 'none' }, 0);
   const vf = h(`<svg class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"><g transform="translate(540 760)" id="a-vf">${tickRing(420, 120, 8, 5, 'rgba(244,239,233,.5)', 2)}<circle r="400" fill="none" stroke="rgba(244,239,233,.18)" stroke-width="1.5"/><circle r="330" fill="none" stroke="rgba(255,110,5,.5)" stroke-width="2" stroke-dasharray="3 14"/><path d="M-470 0H-300M300 0H470M0 -470V-300M0 300V470" stroke="rgba(244,239,233,.35)" stroke-width="2"/></g></svg>`, s);
   tl.fromTo('#a-vf', { rotation: -30, scale: 1.25, opacity: 0, svgOrigin: '540 760' }, { rotation: 20, scale: 1, opacity: 1, duration: 3.8, ease: 'power1.out', svgOrigin: '540 760' }, 0);
   // title
@@ -16,16 +17,16 @@
    <div class="abs mono" style="left:40px;top:100px;font-size:33px;line-height:1.55;width:880px"><div id="a-l1"></div><div id="a-l2" style="color:rgba(244,239,233,.62)"></div><div id="a-l3" style="color:rgba(244,239,233,.62)"></div><div id="a-l4" style="color:rgba(244,239,233,.62)"></div><div id="a-l5" style="color:var(--or)"></div></div>
    <div class="abs" style="left:40px;right:40px;bottom:40px;height:8px;border-radius:4px;background:rgba(255,255,255,.12)"><div id="a-bar" style="height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#FF6E05,#FFC59A);transform-origin:0 50%;transform:scaleX(0)"></div></div>`;
   tl.fromTo(term, { y: 1500, rotation: 4, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: .6, ease: E.snap }, 1.35);
-  const L = [['a-l1', '<b style="color:#FF6E05">›</b> build the rasolv film', 1.7, .5], ['a-l2', '✓ storyboard · scenes', 2.22, .25], ['a-l3', '✓ voice · score · captions', 2.4, .3], ['a-l4', '✓ motion · maps · 3D', 2.62, .3], ['a-l5', '▸ rendering 1,800 frames', 2.85, .4]];
+  const L = [['a-l1', '<b style="color:#FF6E05">›</b> make the RASOLV film', 1.7, .55], ['a-l5', '▸ rendering 1,800 frames', 2.5, .5]];
   L.forEach(([id, txt, t, d]) => { const el = $('#' + id); const plain = txt.replace(/<[^>]+>/g, ''); drive(t, d, p => { const n = Math.floor(p * plain.length); el.innerHTML = p >= 1 ? txt : plain.slice(0, n) + '<span style="opacity:.8">▍</span>'; }); });
   tl.to('#a-bar', { scaleX: 1, duration: 1.7, ease: 'power1.inOut' }, 2.0);
   // was created by / Claude Code
   const cb = h(`<div class="abs mono" style="left:72px;top:760px;font-size:36px;letter-spacing:.42em;color:rgba(244,239,233,.75)">WAS CREATED BY</div>`, s);
-  const n1 = h(`<div class="abs disp" style="left:64px;top:830px;font-size:214px;font-weight:500">Claude</div>`, s), n2 = h(`<div class="abs disp" style="left:64px;top:1050px;font-size:214px;font-weight:600">Code</div>`, s);
+  const n1 = h(`<div class="abs disp" style="left:64px;top:840px;font-size:176px;font-weight:400">Claude</div>`, s), n2 = h(`<div class="abs disp" style="left:64px;top:1020px;font-size:176px;font-weight:500">Code</div>`, s);
   const ch1 = chars(n1), ch2 = chars(n2, 'ch gt');
   tl.fromTo(cb, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: .35 }, 1.7);
   reveal(ch1, 2.1, { stagger: .04, d: .55, y: 80 }); reveal(ch2, 2.5, { stagger: .05, d: .6, y: 80 });
-  tl.fromTo(h(`<div class="abs" style="left:64px;top:1290px;width:0;height:3px;background:linear-gradient(90deg,#FF6E05,transparent)"></div>`, s), { width: 0 }, { width: 700, duration: .7, ease: E.out }, 2.9);
+  tl.fromTo(h(`<div class="abs" style="left:64px;top:1230px;width:0;height:3px;background:linear-gradient(90deg,#FF6E05,transparent)"></div>`, s), { width: 0 }, { width: 560, duration: .7, ease: E.out }, 2.9);
 })();
 
 /* ===== B · code → frames (3.75–7.5 s)  "Written in code. Rendered with HyperFrames." ===== */
@@ -79,7 +80,7 @@
   drive(7.55, .9, p => { const k = ease('power3.out', p); ap(host, { r: 37 + 5 * Math.sin(p * 3.14), grow: k, bp: k, gap: '#05060a' }); });
   tl.fromTo(host, { rotation: -100, scale: .4, opacity: 0 }, { rotation: 0, scale: 1, opacity: 1, duration: .9, ease: E.out }, 7.6);
   rings.forEach((r, i) => tl.fromTo(r, { scale: .5, opacity: .9 }, { scale: 2.6, opacity: 0, duration: 1.2, ease: 'power2.out' }, 7.62 + i * .25));
-  const ag = h(`<div class="abs mono center" style="top:1090px;font-size:34px;letter-spacing:.46em;color:rgba(244,239,233,.85)">WITH OUR AGENCY</div>`, s);
+  const ag = h(`<div class="abs mono center" style="top:1090px;font-size:34px;letter-spacing:.46em;color:#fff;text-shadow:0 0 24px rgba(0,0,0,.9)">WITH OUR AGENCY</div>`, s);
   tl.fromTo(ag, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .35 }, 7.75);
   const word = h(`<div class="abs disp center" style="top:1150px;font-size:178px;font-weight:600;white-space:nowrap;letter-spacing:.06em">RASOLV</div>`, s);
   const cs = chars(word);

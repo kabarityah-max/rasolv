@@ -1,7 +1,7 @@
 /* ===== F · 3D product (20.625–24.375 s)  "Your product, in three dimensions." ===== */
 (() => {
   const s = $('#sF .in'); const t0 = T(44);
-  h(`<div class="abs disp center" id="f-bg3d" style="top:560px;font-size:700px;line-height:1;color:transparent;-webkit-text-stroke:3px rgba(255,110,5,.5);letter-spacing:-.05em;font-weight:600">3D</div>`, s);
+  h(`<div class="abs disp center" id="f-bg3d" style="top:560px;font-size:700px;line-height:1;color:transparent;-webkit-text-stroke:3px rgba(255,110,5,.65);letter-spacing:-.05em;font-weight:600">3D</div>`, s);
   const rings = h(`<svg class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"><g fill="none" stroke="rgba(244,239,233,.22)" stroke-width="1.5"><ellipse cx="540" cy="980" rx="500" ry="170" transform="rotate(-18 540 980)"/><ellipse cx="540" cy="980" rx="430" ry="130" transform="rotate(22 540 980)"/></g><circle id="f-c1" r="9" fill="#FF6E05"/><circle id="f-c2" r="7" fill="#fff"/></svg>`, s);
   drive(t0 - .2, 4, p => { const a = p * 8; const e1 = (r1x, r1y, rot, ang) => { const x = r1x * Math.cos(ang), y = r1y * Math.sin(ang), r = rot * Math.PI / 180; return [540 + x * Math.cos(r) - y * Math.sin(r), 980 + x * Math.sin(r) + y * Math.cos(r)]; };
     const [x1, y1] = e1(500, 170, -18, a), [x2, y2] = e1(430, 130, 22, -a * 1.3 + 1); $('#f-c1').setAttribute('cx', x1); $('#f-c1').setAttribute('cy', y1); $('#f-c2').setAttribute('cx', x2); $('#f-c2').setAttribute('cy', y2); });
@@ -26,7 +26,7 @@
    <div class="abs" style="left:22px;right:22px;top:760px;height:84px;border-radius:42px;background:#FF6E05;color:#000;font-weight:600;font-size:26px;text-align:center;line-height:84px">Watch the film ▸</div>
    <div class="abs" style="left:140px;bottom:14px;width:140px;height:6px;border-radius:3px;background:rgba(255,255,255,.8)"></div>`;
   [['Light', -190, 250, 150], ['Depth', 440, 120, 210], ['Motion', -180, 760, 170], ['Detail', 450, 700, 120]].forEach(([l, x, y, z], i) => {
-    const c = h(`<div class="chip glass" style="left:${x}px;top:${y}px;height:72px;font-size:30px;transform:translateZ(${z}px)"><span class="dot"></span>${l}</div>`, ph);
+    const c = h(`<div class="chip glass" style="left:${x}px;top:${y}px;height:80px;font-size:34px;transform:translateZ(${z}px)"><span class="dot"></span>${l}</div>`, ph);
     tl.fromTo(c, { opacity: 0, scale: .3 }, { opacity: 1, scale: 1, duration: .4, ease: E.back }, t0 + .25 + i * .16);
     tl.to(c, { y: '+=' + (i % 2 ? 24 : -24), duration: 1.1, ease: 'sine.inOut', yoyo: true, repeat: 2 }, t0 + .2 + i * .1);
   });
@@ -38,26 +38,27 @@
 
 /* ===== G · lens-focus HUD (24.375–28.125 s)  "Every detail, in focus." ===== */
 (() => {
-  const s = $('#sG .in'); const t0 = T(52), cx = 540, cy = 790;
+  const s = $('#sG .in'); const t0 = T(52), cx = 540, cy = 905;
   const hud = h(`<div class="abs" id="g-hud" style="inset:0"></div>`, s);
+  const inner = h(`<div class="abs" style="inset:0;transform:scale(.84);transform-origin:540px ${cy}px"></div>`, hud);
   const arc = (r, a0, a1) => { const p = a => [(Math.cos(a) * r).toFixed(1), (Math.sin(a) * r).toFixed(1)]; const A = p(a0), B = p(a1); return `M${A[0]},${A[1]}A${r},${r} 0 0 1 ${B[0]},${B[1]}`; };
   const deg = [...Array(12)].map((_, i) => `<text transform="rotate(${i * 30}) translate(0,-492)" text-anchor="middle" font-family="JetBrains Mono" font-size="19" fill="rgba(244,239,233,.55)" letter-spacing="2">${String(i * 30).padStart(3, '0')}</text>`).join('');
   const segs = [...Array(36)].map((_, i) => `<path class="gs" d="${arc(352, (i * 10 + 1.5) * Math.PI / 180, (i * 10 + 8.5) * Math.PI / 180)}" stroke="#FF6E05" stroke-width="16" fill="none" opacity=".12"/>`).join('');
   const trail = [...Array(26)].map(() => `<path class="gt2" stroke="#fff" fill="none" stroke-linecap="round"/>`).join('');
-  hud.innerHTML = `<svg class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"><g transform="translate(${cx} ${cy})">
+  inner.innerHTML = `<svg class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"><g transform="translate(${cx} ${cy})">
       <g id="g-r1">${tickRing(436, 120, 9, 5, 'rgba(244,239,233,.55)', 2)}${deg}</g>
       <g id="g-r2">${segs}</g>
       <circle r="296" fill="none" stroke="rgba(244,239,233,.22)" stroke-width="1.5"/>
       <circle r="262" fill="none" stroke="rgba(255,110,5,.4)" stroke-width="1.5" stroke-dasharray="2 10"/>
       <g id="g-tr">${trail}</g><circle id="g-cm" r="9" fill="#fff" style="filter:drop-shadow(0 0 10px #fff)"/>
     </g></svg>`;
-  const orb = h(`<div class="abs" id="g-orb" style="left:${cx - 190}px;top:${cy - 190}px;width:380px;height:380px;border-radius:50%;overflow:hidden;z-index:5;background:radial-gradient(circle at 32% 24%,rgba(255,255,255,.44),rgba(255,255,255,.07) 38%,rgba(255,110,5,.18) 70%,rgba(0,0,0,.45));border:1.5px solid rgba(255,255,255,.4);box-shadow:inset 0 0 60px rgba(255,255,255,.14),inset -22px -34px 70px rgba(255,110,5,.38),0 34px 90px rgba(0,0,0,.65),0 0 110px rgba(255,110,5,.32)"></div>`, hud);
+  const orb = h(`<div class="abs" id="g-orb" style="left:${cx - 190}px;top:${cy - 190}px;width:380px;height:380px;border-radius:50%;overflow:hidden;z-index:5;background:radial-gradient(circle at 32% 24%,rgba(255,255,255,.44),rgba(255,255,255,.07) 38%,rgba(255,110,5,.18) 70%,rgba(0,0,0,.45));border:1.5px solid rgba(255,255,255,.4);box-shadow:inset 0 0 60px rgba(255,255,255,.14),inset -22px -34px 70px rgba(255,110,5,.38),0 34px 90px rgba(0,0,0,.65),0 0 110px rgba(255,110,5,.32)"></div>`, inner);
   const ahost = h(`<div class="abs" style="left:65px;top:65px;width:250px;height:250px"></div>`, orb);
   h(`<div class="abs" style="left:58px;top:30px;width:150px;height:70px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.7),rgba(255,255,255,0) 70%);transform:rotate(-28deg)"></div>`, orb);
-  const ret = h(`<svg class="abs" style="left:0;top:0;z-index:6" width="1080" height="1920" viewBox="0 0 1080 1920"><g transform="translate(${cx} ${cy})" id="g-ret" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="square"><path d="M-1 -1" /><g class="rb"><path d="M-60 0H0V-60" transform="translate(0 0)"/></g></g></svg>`, hud);
+  const ret = h(`<svg class="abs" style="left:0;top:0;z-index:6" width="1080" height="1920" viewBox="0 0 1080 1920"><g transform="translate(${cx} ${cy})" id="g-ret" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="square"><path d="M-1 -1" /><g class="rb"><path d="M-60 0H0V-60" transform="translate(0 0)"/></g></g></svg>`, inner);
   const g = $('#g-ret'); g.innerHTML = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => `<path class="rb" d="M${sx * -70} ${sy * 0}H0V${sy * -70}" transform="scale(${sx} ${sy})"/>`).join('') + `<path d="M-14 0H14M0 -14V14" stroke-width="3"/>`;
-  const chips = ['Type', 'Light', 'Motion', 'Depth', 'Sound'].map(l => h(`<div class="chip glass" style="left:0;top:0;height:66px;font-size:28px;opacity:0"><span class="dot"></span>${l}</div>`, hud));
-  const segEls = $$('.gs', hud), trEls = $$('.gt2', hud);
+  const chips = ['Type', 'Light', 'Motion', 'Depth', 'Sound'].map(l => h(`<div class="chip glass" style="left:0;top:0;height:66px;font-size:28px;opacity:0"><span class="dot"></span>${l}</div>`, inner));
+  const segEls = $$('.gs', inner), trEls = $$('.gt2', inner);
   const cm = $('#g-cm');
   drive(t0 - .1, 3.9, p => {
     const t = p * 3.9 - .1;
@@ -75,14 +76,14 @@
     chips.forEach((c, i) => { const a = i / chips.length * 6.283 + t * 1.5 + .6; const x = cx + 450 * Math.cos(a), y = cy + 120 * Math.sin(a) + 40, z = Math.sin(a) * .5 + .5; c.style.transform = `translate(${x - 80}px,${y - 33}px) scale(${.72 + z * .5})`; c.style.zIndex = z > .5 ? 8 : 3; c.style.opacity = Math.min(1, Math.max(0, (t - .35 - i * .08) * 5)); });
   });
   // focus pull + headline
-  tl.fromTo(hud, { filter: 'blur(30px)', scale: 1.08, transformOrigin: '540px 790px' }, { filter: 'blur(0px)', scale: 1, duration: 1.5, ease: 'power3.out' }, t0 + .05);
-  const a = h(`<div class="abs disp" style="left:70px;top:200px;font-size:104px;white-space:nowrap">Every detail,</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:316px;font-size:150px;font-weight:600;white-space:nowrap">in focus.</div>`, s);
+  tl.fromTo(hud, { filter: 'blur(30px)', scale: 1.08, transformOrigin: '540px 905px' }, { filter: 'blur(0px)', scale: 1, duration: 1.5, ease: 'power3.out' }, t0 + .05);
+  const a = h(`<div class="abs disp" style="left:70px;top:190px;font-size:92px;white-space:nowrap">Every detail,</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:288px;font-size:124px;font-weight:600;white-space:nowrap">in focus.</div>`, s);
   tl.fromTo([a, b], { filter: 'blur(26px)', opacity: .0, y: 30 }, { filter: 'blur(0px)', opacity: 1, y: 0, duration: 1.3, ease: 'power3.out', stagger: .25 }, t0 + .02);
   b.classList.add('gt'); 
-  const lock = h(`<div class="chip glass" style="left:300px;top:1150px;height:76px;font-size:26px;letter-spacing:.24em;font-family:JBM,monospace;font-weight:700"><span class="dot"></span>IN FOCUS · LOCKED</div>`, s);
+  const lock = h(`<div class="chip glass" style="left:300px;top:1235px;height:70px;font-size:24px;letter-spacing:.24em;font-family:JBM,monospace;font-weight:700"><span class="dot"></span>IN FOCUS · LOCKED</div>`, s);
   tl.fromTo(lock, { opacity: 0, y: 30, scale: .85 }, { opacity: 1, y: 0, scale: 1, duration: .4, ease: E.back }, t0 + 1.45);
   [['f/1.4', 'APERTURE'], ['1/60', 'SHUTTER'], ['100', 'ISO']].forEach(([v, l], i) => {
-    const c = h(`<div class="glass" style="left:${60 + i * 322}px;top:1270px;width:300px;height:132px;border-radius:30px"><div class="abs mono" style="left:26px;top:20px;font-size:50px;font-weight:700">${v}</div><div class="abs mono" style="left:28px;top:90px;font-size:19px;letter-spacing:.3em;color:rgba(244,239,233,.6)">${l}</div></div>`, s);
+    const c = h(`<div class="glass" style="left:${60 + i * 322}px;top:1330px;width:300px;height:124px;border-radius:30px"><div class="abs mono" style="left:26px;top:16px;font-size:48px;font-weight:700">${v}</div><div class="abs mono" style="left:28px;top:82px;font-size:19px;letter-spacing:.3em;color:rgba(244,239,233,.7)">${l}</div></div>`, s);
     tl.fromTo(c, { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: .45, ease: E.out }, t0 + 1.2 + i * .12);
   });
 })();
