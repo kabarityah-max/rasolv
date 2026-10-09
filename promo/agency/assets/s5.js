@@ -47,7 +47,7 @@
   const word = h(`<div class="abs disp center" style="top:960px;font-size:190px;font-weight:600;white-space:nowrap;letter-spacing:.06em">RASOLV</div>`, s);
   reveal(chars(word), t0 + .25, { stagger: .06, d: .6, y: 120 });
   const vs = h(`<div class="abs mono center" style="top:1210px;font-size:40px;letter-spacing:.3em;white-space:nowrap;color:#FF9A3D">VISION THAT SOLVES.</div>`, s);
-  tl.fromTo(vs, { opacity: 0, y: 30, letterSpacing: '.9em' }, { opacity: 1, y: 0, letterSpacing: '.3em', duration: .6, ease: E.out }, t0 + 1.1);
+  tl.fromTo(vs, { opacity: 0, y: 30, filter: 'blur(10px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .6, ease: E.out }, t0 + 1.1);
   const cta = h(`<div class="chip" style="left:150px;top:1350px;width:780px;height:116px;border-radius:58px;justify-content:center;font-size:44px;font-weight:600;background:#FF6E05;color:#05060a;box-shadow:0 20px 70px rgba(255,110,5,.55), inset 0 2px 0 rgba(255,255,255,.55), inset 0 0 0 1.5px rgba(255,255,255,.35);overflow:hidden">Let's build yours.<i id="o-sh" style="position:absolute;top:-10%;left:-30%;width:22%;height:120%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));transform:skewX(-18deg)"></i></div>`, s);
   tl.fromTo('#o-sh', { x: 0 }, { x: 1100, duration: .9, ease: 'power2.inOut', repeat: 3, repeatDelay: .8 }, t0 + 2.4);
   tl.fromTo(cta, { scale: .3, opacity: 0, y: 90 }, { scale: 1, opacity: 1, y: 0, duration: .5, ease: E.back }, t0 + 1.75);
