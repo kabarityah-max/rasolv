@@ -48,7 +48,7 @@
   reveal(chars(word), t0 + .25, { stagger: .06, d: .6, y: 120 });
   const vs = h(`<div class="abs mono center" style="top:1210px;font-size:32px;letter-spacing:.38em;white-space:nowrap;color:#FF9A3D">VISION THAT SOLVES.</div>`, s);
   tl.fromTo(vs, { opacity: 0, y: 30, letterSpacing: '.9em' }, { opacity: 1, y: 0, letterSpacing: '.38em', duration: .6, ease: E.out }, t0 + 1.1);
-  const cta = h(`<div class="chip" style="left:150px;top:1330px;width:780px;height:116px;border-radius:58px;justify-content:center;font-size:44px;font-weight:600;background:#FF6E05;color:#05060a;box-shadow:0 20px 70px rgba(255,110,5,.55), inset 0 2px 0 rgba(255,255,255,.55)">Let's build yours →</div>`, s);
+  const cta = h(`<div class="chip" style="left:150px;top:1330px;width:780px;height:116px;border-radius:58px;justify-content:center;font-size:44px;font-weight:600;background:#FF6E05;color:#05060a;box-shadow:0 20px 70px rgba(255,110,5,.55), inset 0 2px 0 rgba(255,255,255,.55)">Let's build yours.</div>`, s);
   tl.fromTo(cta, { scale: .3, opacity: 0, y: 90 }, { scale: 1, opacity: 1, y: 0, duration: .5, ease: E.back }, t0 + 1.75);
   tl.to(cta, { scale: 1.035, duration: .234, yoyo: true, repeat: 14, ease: 'sine.inOut' }, t0 + 2.3);
   tl.set('#caps', { opacity: 0 }, t0 + 1.7);

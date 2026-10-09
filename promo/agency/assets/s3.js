@@ -42,7 +42,7 @@
 (() => {
   const s = $('#sG .in'); const t0 = T(52), cx = 540, cy = 905;
   const hud = h(`<div class="abs" id="g-hud" style="inset:0"></div>`, s);
-  const inner = h(`<div class="abs" style="inset:0;transform:scale(.84);transform-origin:540px ${cy}px"></div>`, hud);
+  const inner = h(`<div class="abs" style="inset:0;transform:scale(.94);transform-origin:540px ${cy}px"></div>`, hud);
   const arc = (r, a0, a1) => { const p = a => [(Math.cos(a) * r).toFixed(1), (Math.sin(a) * r).toFixed(1)]; const A = p(a0), B = p(a1); return `M${A[0]},${A[1]}A${r},${r} 0 0 1 ${B[0]},${B[1]}`; };
   const deg = [...Array(12)].map((_, i) => `<text transform="rotate(${i * 30}) translate(0,-492)" text-anchor="middle" font-family="JetBrains Mono" font-size="19" fill="rgba(244,239,233,.55)" letter-spacing="2">${String(i * 30).padStart(3, '0')}</text>`).join('');
   const segs = [...Array(36)].map((_, i) => `<path class="gs" d="${arc(352, (i * 10 + 1.5) * Math.PI / 180, (i * 10 + 8.5) * Math.PI / 180)}" stroke="#FF6E05" stroke-width="16" fill="none" opacity=".12"/>`).join('');
@@ -59,7 +59,7 @@
   h(`<div class="abs" style="left:58px;top:30px;width:150px;height:70px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.7),rgba(255,255,255,0) 70%);transform:rotate(-28deg)"></div>`, orb);
   const ret = h(`<svg class="abs" style="left:0;top:0;z-index:6" width="1080" height="1920" viewBox="0 0 1080 1920"><g transform="translate(${cx} ${cy})" id="g-ret" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="square"><path d="M-1 -1" /><g class="rb"><path d="M-60 0H0V-60" transform="translate(0 0)"/></g></g></svg>`, inner);
   const g = $('#g-ret'); g.innerHTML = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => `<path class="rb" d="M${sx * -70} ${sy * 0}H0V${sy * -70}" transform="scale(${sx} ${sy})"/>`).join('') + `<path d="M-14 0H14M0 -14V14" stroke-width="3"/>`;
-  const chips = ['Type', 'Light', 'Motion', 'Depth', 'Sound'].map(l => h(`<div class="chip glass" style="left:0;top:0;height:66px;font-size:28px;opacity:0"><span class="dot"></span>${l}</div>`, inner));
+  const chips = ['Type', 'Light', 'Motion', 'Depth', 'Sound'].map(l => h(`<div class="chip glass" style="left:0;top:0;height:68px;font-size:30px;opacity:0"><span class="dot"></span>${l}</div>`, inner));
   const segEls = $$('.gs', inner), trEls = $$('.gt2', inner);
   const cm = $('#g-cm');
   drive(t0 - .1, 3.9, p => {
@@ -82,10 +82,10 @@
   const a = h(`<div class="abs disp" style="left:70px;top:190px;font-size:92px;white-space:nowrap">Every detail,</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:288px;font-size:124px;font-weight:600;white-space:nowrap">in focus.</div>`, s);
   tl.fromTo([a, b], { filter: 'blur(26px)', opacity: .0, y: 30 }, { filter: 'blur(0px)', opacity: 1, y: 0, duration: 1.3, ease: 'power3.out', stagger: .25 }, t0 + .02);
   b.classList.add('gt'); 
-  const lock = h(`<div class="chip glass" style="left:300px;top:1235px;height:70px;font-size:24px;letter-spacing:.24em;font-family:JBM,monospace;font-weight:700"><span class="dot"></span>IN FOCUS · LOCKED</div>`, s);
+  const lock = h(`<div class="chip glass" style="left:290px;top:1262px;height:70px;font-size:24px;letter-spacing:.24em;font-family:JBM,monospace;font-weight:700"><span class="dot"></span>IN FOCUS · LOCKED</div>`, s);
   tl.fromTo(lock, { opacity: 0, y: 30, scale: .85 }, { opacity: 1, y: 0, scale: 1, duration: .4, ease: E.back }, t0 + 1.45);
   [['f/1.4', 'APERTURE'], ['1/60', 'SHUTTER'], ['100', 'ISO']].forEach(([v, l], i) => {
-    const c = h(`<div class="glass" style="left:${60 + i * 322}px;top:1330px;width:300px;height:124px;border-radius:30px"><div class="abs mono" style="left:26px;top:16px;font-size:48px;font-weight:700">${v}</div><div class="abs mono" style="left:28px;top:82px;font-size:19px;letter-spacing:.3em;color:rgba(244,239,233,.7)">${l}</div></div>`, s);
+    const c = h(`<div class="glass" style="left:${60 + i * 322}px;top:1350px;width:300px;height:118px;border-radius:30px"><div class="abs mono" style="left:26px;top:16px;font-size:48px;font-weight:700">${v}</div><div class="abs mono" style="left:28px;top:82px;font-size:19px;letter-spacing:.3em;color:rgba(244,239,233,.7)">${l}</div></div>`, s);
     tl.fromTo(c, { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: .45, ease: E.out }, t0 + 1.2 + i * .12);
   });
 })();

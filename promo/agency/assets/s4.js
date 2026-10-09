@@ -69,7 +69,7 @@
   drive(t0 + .35, 1.2, p => { const seg = Math.min(1.999, p * 2), i = Math.floor(seg), k = ease('power3.inOut', seg - i); const A = shapes[i], B = shapes[i + 1]; const w = A[0] + (B[0] - A[0]) * k, hh = A[1] + (B[1] - A[1]) * k;
     src.style.width = w + 'px'; src.style.height = hh + 'px'; src.style.left = (540 - w / 2) + 'px'; src.style.top = (900 - hh / 2) + 'px'; draw(w, hh); lab.textContent = k > .5 ? B[2] : A[2]; });
   tl.to(src, { opacity: 0, scale: .9, duration: .25 }, t0 + 1.62); tl.to(lab, { opacity: 0, duration: .2 }, t0 + 1.6);
-  const F = [frame(160, 500, 760, 428, '16:9'), frame(160, 1000, 340, 340, '1:1'), frame(580, 980, 240, 427, '9:16')];
+  const F = [frame(110, 470, 860, 484, '16:9'), frame(110, 1010, 400, 400, '1:1'), frame(570, 990, 270, 480, '9:16')];
   F.forEach(([f, l], i) => { tl.fromTo(f, { scale: .2, opacity: 0, y: 150 - i * 30 }, { scale: 1, opacity: 1, y: 0, duration: .5, ease: E.back }, t0 + 1.72 + i * .14); tl.fromTo(l, { opacity: 0 }, { opacity: 1, duration: .3 }, t0 + 2.0 + i * .14); });
 })();
 

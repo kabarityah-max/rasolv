@@ -2,13 +2,12 @@
 (() => {
   const s = $('#sA .in');
   // viewfinder (brand mark present from the first frame)
-  const ghost = h(`<div class="abs" id="a-ghost" style="left:290px;top:510px;width:500px;height:500px;opacity:.16"></div>`, s); ap(ghost, { r: 37, grow: 1, bp: 1, gap: '#05060a' }); tl.to(ghost, { rotation: 60, duration: 3.8, ease: 'none' }, 0);
+  const ghost = h(`<div class="abs" id="a-ghost" style="left:290px;top:510px;width:500px;height:500px;opacity:.3;filter:drop-shadow(0 0 30px rgba(255,110,5,.5))"></div>`, s); ap(ghost, { r: 37, grow: 1, bp: 1, gap: '#05060a' }); tl.to(ghost, { rotation: 60, duration: 3.8, ease: 'none' }, 0);
   const vf = h(`<svg class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"><g transform="translate(540 760)" id="a-vf">${tickRing(420, 120, 8, 5, 'rgba(244,239,233,.5)', 2)}<circle r="400" fill="none" stroke="rgba(244,239,233,.18)" stroke-width="1.5"/><circle r="330" fill="none" stroke="rgba(255,110,5,.5)" stroke-width="2" stroke-dasharray="3 14"/><path d="M-470 0H-300M300 0H470M0 -470V-300M0 300V470" stroke="rgba(244,239,233,.35)" stroke-width="2"/></g></svg>`, s);
   tl.fromTo('#a-vf', { rotation: -30, scale: 1.25, opacity: 0, svgOrigin: '540 760' }, { rotation: 20, scale: 1, opacity: 1, duration: 3.8, ease: 'power1.out', svgOrigin: '540 760' }, 0);
   // title
-  const l1 = h(`<div class="abs disp" style="left:70px;top:610px;font-size:124px;white-space:nowrap">This entire film</div>`, s);
-  const c1 = chars(l1);
-  c1.forEach((c, i) => { if (i > 11) c.classList.add('gt'); });
+  const l1 = h(`<div class="abs disp" style="left:70px;top:520px;font-size:168px;white-space:nowrap">This entire</div>`, s), l1b = h(`<div class="abs disp" style="left:70px;top:690px;font-size:196px;font-weight:600;white-space:nowrap">film</div>`, s);
+  const c1 = chars(l1).concat(chars(l1b, 'ch gt'));
   reveal(c1, 0.0, { stagger: .03, d: .55 });
   tl.to(c1, { y: -520, opacity: 0, filter: 'blur(14px)', duration: .4, ease: E.in, stagger: .012 }, 1.45);
   // terminal
@@ -49,7 +48,7 @@
    <div class="abs mono" style="left:36px;top:96px;width:60px;font-size:28px;line-height:1.62;color:rgba(244,239,233,.28);white-space:pre">${src.map((_, i) => i + 1).join('\n')}</div>
    <div class="abs mono" style="left:100px;top:96px;width:850px;font-size:28px;line-height:1.62;color:#F4EFE9;white-space:pre">${src.map(l => `<div class="bl" style="opacity:0">${l || '&nbsp;'}</div>`).join('')}</div>`;
   tl.fromTo(code, { y: -800, rotationX: 30, opacity: 0 }, { y: 0, rotationX: 0, opacity: 1, duration: .55, ease: E.snap }, 3.62);
-  $$('.bl', code).forEach((l, i) => tl.fromTo(l, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: .16 }, 3.95 + i * .17));
+  $$('.bl', code).forEach((l, i) => tl.fromTo(l, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: .14 }, 3.9 + i * .13));
   // render stage: filmstrip + counter
   const strip = h(`<div class="abs" id="b-strip" style="left:56px;top:960px;width:968px;height:240px"></div>`, s);
   for (let i = 0; i < 8; i++) h(`<div class="glass" style="left:${i * 122}px;top:0;width:106px;height:188px;border-radius:20px;background:linear-gradient(${150 + i * 12}deg,rgba(255,110,5,${.2 + i * .07}),rgba(255,255,255,.04))"><div class="abs mono" style="left:12px;bottom:10px;font-size:20px;color:rgba(255,255,255,.8)">${String(i * 257).padStart(4, '0')}</div></div>`, strip);

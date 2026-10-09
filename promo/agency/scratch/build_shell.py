@@ -41,7 +41,7 @@ html = f'''<!doctype html>
   <div id="hdr" class="clip" data-start="0" data-duration="60" data-track-index="8"></div>
   <div id="caps" class="clip" data-start="0" data-duration="60" data-track-index="9"></div>
   <div id="foot" class="clip" data-start="0" data-duration="60" data-track-index="8">CREATED BY CLAUDE CODE  ·  RENDERED WITH HYPERFRAMES</div>
-  <div id="prog" class="clip" data-start="0" data-duration="60" data-track-index="8"><i></i></div>
+  
   <audio id="mix" src="assets/mix.wav" data-start="0" data-duration="60" data-track-index="10" data-volume="1"></audio>
 </div>
 <script src="assets/map.js"></script>

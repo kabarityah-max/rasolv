@@ -11,16 +11,17 @@
   enter('sI', 'slice', { flash: .35 });
   enter('sJ', 'push', { flash: .25 });
   enter('sK', 'shutter');
-  enter('sL', 'zoom', { s: 1.35, flash: .3 });
+  enter('sL', 'shutter');
   enter('sM', 'slice', { flash: .35 });
   enter('sO', 'iris', { x: 540, y: 760, flash: .85 });
   /* production credit only where it belongs: the opening and the end card */
-  tl.set('#foot', { opacity: 1 }, 0).to('#foot', { opacity: 0, duration: .4 }, 11.3).set('#foot', { opacity: 0 }, 11.7);
+  tl.set('#foot', { opacity: 0 }, 0);
+  /* captions only where the on-screen headline does not already spell the line */
+  [[0, 3.7], [9.4, 20.6 + 3.8], [24.4, 28.1], [39.4, 60]].forEach(([a, b]) => { tl.set('#caps', { opacity: 0 }, a === 0 ? .01 : a); tl.set('#caps', { opacity: 1 }, b); });
   /* background drift + progress */
   tl.to('.b1', { x: 500, y: -500, duration: 60, ease: 'sine.inOut' }, 0);
   tl.to('.b2', { x: -450, y: 900, duration: 60, ease: 'sine.inOut' }, 0);
   tl.to('.b3', { x: 400, y: 600, duration: 60, ease: 'sine.inOut' }, 0);
-  tl.to('#prog i', { scaleX: 1, duration: 60, ease: 'none' }, 0);
   /* viewfinder frame */
   const hud = $('#hud');
   [['left:56px;top:56px;border-left-width:2px;border-top-width:2px'], ['right:56px;top:56px;border-right-width:2px;border-top-width:2px'], ['left:56px;bottom:56px;border-left-width:2px;border-bottom-width:2px'], ['right:56px;bottom:56px;border-right-width:2px;border-bottom-width:2px']].forEach(([st]) => h(`<div class="crop" style="${st}"></div>`, hud));
