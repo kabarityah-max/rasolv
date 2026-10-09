@@ -2,3 +2,10 @@ promo/out/
 promo/film/out/
 promo/cinema/out/
 promo/aw2candine/out/
+promo/agency/node_modules/
+promo/agency/snaps/
+promo/agency/review/*/raw/
+promo/agency/renders/
+promo/agency/.hyperframes/
+promo/agency/scratch/__pycache__/
+promo/agency/scratch/*.log

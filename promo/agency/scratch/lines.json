@@ -1,0 +1,117 @@
+{
+ "voice": "af_heart",
+ "lines": [
+  {
+   "i": 0,
+   "start": 0.35,
+   "dur": 2.429,
+   "sr": 24000,
+   "text": "This entire video? Built by Claude Code."
+  },
+  {
+   "i": 1,
+   "start": 3.87,
+   "dur": 3.066,
+   "sr": 24000,
+   "text": "Every frame, written as code. Rendered with HyperFrames."
+  },
+  {
+   "i": 2,
+   "start": 7.62,
+   "dur": 2.966,
+   "sr": 24000,
+   "text": "With our agency, RASOLV, we can do the same for you."
+  },
+  {
+   "i": 3,
+   "start": 11.37,
+   "dur": 1.869,
+   "sr": 24000,
+   "text": "Motion graphics that never sit still."
+  },
+  {
+   "i": 4,
+   "start": 13.245,
+   "dur": 1.632,
+   "sr": 24000,
+   "text": "Liquid glass, in real time."
+  },
+  {
+   "i": 5,
+   "start": 15.12,
+   "dur": 1.56,
+   "sr": 24000,
+   "text": "Maps that fly to your customers."
+  },
+  {
+   "i": 6,
+   "start": 18.87,
+   "dur": 2.464,
+   "sr": 24000,
+   "text": "Your product, in 3D. Spinning on the beat."
+  },
+  {
+   "i": 7,
+   "start": 22.62,
+   "dur": 2.54,
+   "sr": 24000,
+   "text": "Live data. Orbiting. Counting. Alive."
+  },
+  {
+   "i": 8,
+   "start": 26.37,
+   "dur": 2.744,
+   "sr": 24000,
+   "text": "Training films. Launch films. Brand stories."
+  },
+  {
+   "i": 9,
+   "start": 30.12,
+   "dur": 2.772,
+   "sr": 24000,
+   "text": "Voiceover, music and captions. All generated."
+  },
+  {
+   "i": 10,
+   "start": 33.87,
+   "dur": 1.376,
+   "sr": 24000,
+   "text": "Every cut lands on the beat."
+  },
+  {
+   "i": 11,
+   "start": 37.62,
+   "dur": 1.641,
+   "sr": 24000,
+   "text": "Then five critics tear it apart."
+  },
+  {
+   "i": 12,
+   "start": 41.37,
+   "dur": 1.761,
+   "sr": 24000,
+   "text": "Under seventy-five? Rejected."
+  },
+  {
+   "i": 13,
+   "start": 45.12,
+   "dur": 2.361,
+   "sr": 24000,
+   "text": "Brief in. Video out. Hours, not weeks."
+  },
+  {
+   "i": 14,
+   "start": 48.87,
+   "dur": 2.393,
+   "sr": 24000,
+   "text": "Wherever your customers are, we're one tap away."
+  },
+  {
+   "i": 15,
+   "start": 54.375,
+   "dur": 2.747,
+   "sr": 24000,
+   "text": "RASOLV. Vision that solves. Let's build yours."
+  }
+ ]
+}

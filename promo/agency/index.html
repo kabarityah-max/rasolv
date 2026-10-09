@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face { font-family: 'Rubik'; src: url('assets/Rubik.woff2') format('woff2'); font-weight: 300 900; }
+@font-face { font-family: 'JBM'; src: url('assets/jetbrains-mono-latin-400-normal.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'JBM'; src: url('assets/jetbrains-mono-latin-700-normal.woff2') format('woff2'); font-weight: 700; }
+:root { --or: #FF6E05; --or2: #FFA24A; --ink: #060606; --warm: #F4EFE9; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: #060606; }
+body { font-family: 'Rubik', sans-serif; color: var(--warm); -webkit-font-smoothing: antialiased; }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #060606; }
+#bg, .scene, #grain, #flash, #hdr, #caps, #prog { position: absolute; inset: 0; }
+#bg { z-index: 0; background: radial-gradient(120% 80% at 50% 110%, #1b0d03, #060606 60%); }
+.blob { position: absolute; border-radius: 50%; filter: blur(110px); }
+.b1 { width: 900px; height: 900px; left: -300px; top: 1100px; background: radial-gradient(circle, rgba(255,110,5,.85), rgba(255,110,5,0) 68%); }
+.b2 { width: 760px; height: 760px; left: 600px; top: -260px; background: radial-gradient(circle, rgba(255,150,60,.5), rgba(255,110,5,0) 68%); }
+.b3 { width: 600px; height: 600px; left: 250px; top: 700px; background: radial-gradient(circle, rgba(255,70,0,.28), rgba(255,110,5,0) 70%); }
+.scene { z-index: 2; overflow: hidden; }
+.in { position: absolute; inset: 0; will-change: transform; }
+#grain { z-index: 20; opacity: .09; mix-blend-mode: overlay; pointer-events: none; }
+#flash { z-index: 40; opacity: 0; pointer-events: none; }
+#hdr { z-index: 30; pointer-events: none; }
+#caps { z-index: 31; pointer-events: none; }
+#foot { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; font: 700 22px/1 'JBM', monospace; letter-spacing: .28em; color: rgba(244,239,233,.5); z-index: 30; }
+#prog { z-index: 30; height: 6px; bottom: auto; background: rgba(255,255,255,.08); }
+#prog i { display: block; height: 100%; width: 100%; background: var(--or); transform-origin: 0 50%; transform: scaleX(0); }
+/* ---------- liquid glass ---------- */
+.glass { position: absolute; border-radius: 52px; overflow: hidden;
+  background: linear-gradient(150deg, rgba(255,255,255,.24), rgba(255,255,255,.06) 42%, rgba(255,255,255,.12));
+  backdrop-filter: blur(28px) saturate(1.8) brightness(1.12); -webkit-backdrop-filter: blur(28px) saturate(1.8) brightness(1.12);
+  border: 1.5px solid rgba(255,255,255,.34);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.6), inset 0 -3px 6px rgba(255,255,255,.12), inset 4px 4px 0 rgba(255,90,0,.20), inset -4px -4px 0 rgba(60,170,255,.16), 0 40px 90px rgba(0,0,0,.55); }
+.glass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(130% 55% at 18% -8%, rgba(255,255,255,.5), rgba(255,255,255,0) 58%), radial-gradient(60% 40% at 92% 108%, rgba(255,160,70,.35), rgba(255,160,70,0) 70%); mix-blend-mode: screen; opacity: .6; }
+#sweep { left: 0; top: -150px; width: 760px; height: 2220px; border-radius: 0; opacity: 0; z-index: 35; backdrop-filter: blur(40px) saturate(2) brightness(1.25); -webkit-backdrop-filter: blur(40px) saturate(2) brightness(1.25); background: linear-gradient(100deg, rgba(255,255,255,.05), rgba(255,160,70,.35) 50%, rgba(255,255,255,.08)); }
+.abs { position: absolute; }
+.big { font-weight: 900; text-transform: uppercase; line-height: .86; letter-spacing: -.02em; }
+.or { color: var(--or); }
+.mono { font-family: 'JBM', monospace; }
+.center { left: 0; right: 0; text-align: center; }
+.chip { position: absolute; display: flex; align-items: center; gap: 14px; padding: 0 34px; height: 92px; border-radius: 46px; font-weight: 700; font-size: 38px; white-space: nowrap; }
+.dot { width: 18px; height: 18px; border-radius: 50%; background: var(--or); box-shadow: 0 0 18px var(--or); flex: none; }
+.cap { position: absolute; left: 40px; right: 40px; top: 1486px; display: flex; justify-content: center; text-align: center; font-weight: 800; font-size: 60px; line-height: 1.12; letter-spacing: -.01em; opacity: 0; text-shadow: 0 6px 30px rgba(0,0,0,.6); }
+.cap span { display: inline-block; margin: 0 .13em; color: rgba(244,239,233,.55); }
+.cap .cp { display: inline-block; padding: 14px 40px 20px; border-radius: 48px; background: rgba(8,8,8,.62); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1.5px solid rgba(255,255,255,.18); box-shadow: inset 0 2px 0 rgba(255,255,255,.25), 0 14px 40px rgba(0,0,0,.45); max-width: 1000px; }
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="refract" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="38" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="grainf"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"/><feColorMatrix type="saturate" values="0"/></filter>
+  </defs>
+</svg>
+<div id="root" data-composition-id="main" data-start="0" data-duration="60" data-width="1080" data-height="1920">
+  <div id="bg" class="clip" data-start="0" data-duration="60" data-track-index="0">
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+    <section class="scene clip" id="sA" data-i="0" data-start="0.000" data-duration="4.050" data-track-index="1"><div class="in"></div></section>
+    <section class="scene clip" id="sB" data-i="1" data-start="3.550" data-duration="4.250" data-track-index="2"><div class="in"></div></section>
+    <section class="scene clip" id="sC" data-i="2" data-start="7.300" data-duration="4.250" data-track-index="3"><div class="in"></div></section>
+    <section class="scene clip" id="sD1" data-i="3" data-start="11.050" data-duration="2.375" data-track-index="1"><div class="in"></div></section>
+    <section class="scene clip" id="sD2" data-i="4" data-start="12.925" data-duration="2.375" data-track-index="2"><div class="in"></div></section>
+    <section class="scene clip" id="sE" data-i="5" data-start="14.800" data-duration="4.250" data-track-index="3"><div class="in"></div></section>
+    <section class="scene clip" id="sF" data-i="6" data-start="18.550" data-duration="4.250" data-track-index="1"><div class="in"></div></section>
+    <section class="scene clip" id="sG" data-i="7" data-start="22.300" data-duration="4.250" data-track-index="2"><div class="in"></div></section>
+    <section class="scene clip" id="sH" data-i="8" data-start="26.050" data-duration="4.250" data-track-index="3"><div class="in"></div></section>
+    <section class="scene clip" id="sI" data-i="9" data-start="29.800" data-duration="4.250" data-track-index="1"><div class="in"></div></section>
+    <section class="scene clip" id="sJ" data-i="10" data-start="33.550" data-duration="4.250" data-track-index="2"><div class="in"></div></section>
+    <section class="scene clip" id="sK" data-i="11" data-start="37.300" data-duration="4.250" data-track-index="3"><div class="in"></div></section>
+    <section class="scene clip" id="sL" data-i="12" data-start="41.050" data-duration="4.250" data-track-index="1"><div class="in"></div></section>
+    <section class="scene clip" id="sM" data-i="13" data-start="44.800" data-duration="4.250" data-track-index="2"><div class="in"></div></section>
+    <section class="scene clip" id="sN" data-i="14" data-start="48.550" data-duration="6.125" data-track-index="3"><div class="in"></div></section>
+    <section class="scene clip" id="sO" data-i="15" data-start="54.175" data-duration="5.825" data-track-index="1"><div class="in"></div></section>
+  <div id="grain" class="clip" data-start="0" data-duration="60" data-track-index="5"><svg width="1080" height="1920"><rect width="1080" height="1920" filter="url(#grainf)"/></svg></div>
+  <div id="sweep" class="clip glass" data-start="0" data-duration="60" data-track-index="6"></div>
+  <div id="flash" class="clip" data-start="0" data-duration="60" data-track-index="7"></div>
+  <div id="hdr" class="clip" data-start="0" data-duration="60" data-track-index="8"></div>
+  <div id="caps" class="clip" data-start="0" data-duration="60" data-track-index="9"></div>
+  <div id="foot" class="clip" data-start="0" data-duration="60" data-track-index="8">MADE WITH CLAUDE CODE  ·  HYPERFRAMES</div>
+  <div id="prog" class="clip" data-start="0" data-duration="60" data-track-index="8"><i></i></div>
+  <audio id="mix" src="assets/mix.wav" data-start="0" data-duration="60" data-track-index="10" data-volume="1"></audio>
+</div>
+<script src="assets/map.js"></script>
+<script src="assets/captions.js"></script>
+<script src="assets/aperture.js"></script>
+<script src="assets/lib.js"></script>
+<script src="assets/s1.js"></script>
+<script src="assets/s2.js"></script>
+<script src="assets/s3.js"></script>
+<script src="assets/s4.js"></script>
+<script src="assets/s5.js"></script>
+<script src="assets/main.js"></script>
+<script>window.__timelines = window.__timelines || {}; window.__timelines["main"] = tl;</script>
+</body>
+</html>
