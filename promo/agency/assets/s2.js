@@ -2,17 +2,20 @@
 (() => {
   const s = $('#sD1 .in'); const t0 = T(24);
   const wall = h(`<div class="abs" style="inset:0;perspective:1400px"></div>`, s);
-  const glyph = k => { const c = 'stroke="#F4EFE9" stroke-width="5" fill="none" stroke-linejoin="round"'; return [`<circle cx="50" cy="50" r="28" ${c}/>`, `<path d="M50 20 L82 76 H18Z" ${c}/>`, `<rect x="24" y="24" width="52" height="52" rx="6" ${c}/>`, `<path d="M50 16 L84 50 L50 84 L16 50Z" ${c}/>`, `<path d="M50 18 L78 34 V66 L50 82 L22 66 V34Z" ${c}/>`, `<path d="M50 20V80M20 50H80" ${c}/>`, `<circle cx="50" cy="50" r="30" ${c}/><circle cx="50" cy="50" r="10" fill="#FF6E05"/>`, `<path d="M22 70 Q50 10 78 70" ${c}/>`][k % 8]; };
+  const COL = ['#FF6E05', '#F4EFE9', '#FFA24A', '#FF6E05', '#F4EFE9', '#FF8A33', '#FFC59A', '#F4EFE9'];
   const tiles = [];
   for (let r = 0; r < 5; r++) for (let c = 0; c < 4; c++) {
+    if (r === 2 || r === 3) continue;
     const i = r * 4 + c;
-    const t = h(`<div class="glass" style="left:${52 + c * 246}px;top:${200 + r * 246}px;width:226px;height:226px;border-radius:40px;opacity:0"><svg viewBox="0 0 100 100" width="226" height="226">${glyph(i * 3 + r)}</svg></div>`, wall);
+    const t = h(`<div class="glass" style="left:${52 + c * 246}px;top:${200 + r * 246}px;width:226px;height:226px;border-radius:40px;opacity:0"><div class="abs" style="left:43px;top:43px;width:140px;height:140px" data-tile></div></div>`, wall);
+    ap($('[data-tile]', t), { r: 37, grow: 1, bp: 0, color: COL[(i * 3 + r) % 8], gap: (i + r) % 3 === 0 ? '#F4EFE9' : '#05060a', lines: false });
+    if ((i + r) % 3 === 0) t.style.background = 'linear-gradient(155deg,rgba(255,110,5,.5),rgba(255,110,5,.12))';
     tiles.push(t);
   }
-  tl.fromTo(tiles, { rotationY: 100, opacity: 0, scale: .8 }, { rotationY: 0, opacity: (i) => (i >= 4 && i < 16 ? .09 : .34), scale: 1, duration: .42, ease: E.out, stagger: { each: .025, from: 'center', grid: [5, 4] } }, t0 - .15);
-  tl.to(tiles, { rotationX: 360, backgroundColor: 'rgba(255,110,5,.2)', duration: .5, ease: 'power3.inOut', stagger: { each: .02, from: 'edges', grid: [5, 4] } }, t0 + .85);
+  tl.fromTo(tiles, { rotationY: 100, opacity: 0, scale: .8 }, { rotationY: 0, opacity: .38, scale: 1, duration: .42, ease: E.out, stagger: .03 }, t0 - .15);
+  tl.to(tiles, { rotationX: 360, backgroundColor: 'rgba(255,110,5,.2)', duration: .5, ease: 'power3.inOut', stagger: .02 }, t0 + .85);
   h(`<div class="abs" style="inset:0;background:radial-gradient(70% 26% at 42% 52%,rgba(5,6,10,.88),rgba(5,6,10,0))"></div>`, s);
-  const a = h(`<div class="abs disp" style="left:70px;top:610px;font-size:270px;white-space:nowrap">Your</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:860px;font-size:276px;font-weight:600;white-space:nowrap">brand.</div>`, s);
+  const a = h(`<div class="abs disp" style="left:70px;top:620px;font-size:240px;white-space:nowrap">Your</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:850px;font-size:250px;font-weight:500;white-space:nowrap">brand.</div>`, s);
   reveal(chars(a), t0 + .02, { stagger: .05, d: .5, y: 90 }); reveal(chars(b, 'ch gt'), t0 + .2, { stagger: .05, d: .55, y: 90 });
   tl.to([a, b], { scale: 1.06, duration: .5, ease: 'sine.inOut' }, t0 + .6);
 })();
@@ -22,23 +25,15 @@
   const s = $('#sD2 .in'); const t0 = T(28);
   const lines = [...Array(14)].map((_, i) => h(`<div class="abs" style="left:-200px;top:${200 + i * 98}px;width:${300 + (i * 97) % 500}px;height:2px;background:linear-gradient(90deg,transparent,rgba(244,239,233,${.18 + (i % 3) * .1}),transparent)"></div>`, s));
   lines.forEach((l, i) => tl.fromTo(l, { x: -400 }, { x: 1700, duration: .8 + (i % 4) * .15, ease: 'power2.in' }, t0 - .2 + (i % 5) * .08));
-  const mk = cls => `<div class="abs ${cls}" style="inset:0"><div class="abs disp" style="left:70px;top:620px;font-size:250px;white-space:nowrap">In</div><div class="abs disp" style="left:70px;top:850px;font-size:262px;font-weight:600;white-space:nowrap;color:#FF8A33">motion.</div></div>`;
+  const mk = cls => `<div class="abs ${cls}" style="inset:0"><div class="abs disp" style="left:70px;top:630px;font-size:230px;white-space:nowrap">In</div><div class="abs disp" style="left:70px;top:850px;font-size:236px;font-weight:500;white-space:nowrap;color:#FF8A33">motion.</div></div>`;
   const base = h(mk('d2b'), s);
   // ghost trail
   const ghosts = [1, 2, 3, 4].map(k => { const g = h(mk('d2g'), s); g.style.opacity = 0; return g; });
   tl.fromTo(base, { x: -900, opacity: 0, filter: 'blur(24px)' }, { x: 0, opacity: 1, filter: 'blur(0px)', duration: .5, ease: E.snap }, t0 - .05);
   ghosts.forEach((g, k) => tl.fromTo(g, { x: -900, opacity: .0 }, { x: -60 * (k + 1) + 60 * (k + 1) * 0, opacity: .22 - k * .04, duration: .5, ease: E.snap, filter: 'blur(' + (6 + k * 4) + 'px)' }, t0 - .05 + k * .03));
   tl.to(ghosts, { opacity: 0, x: 0, duration: .3 }, t0 + .6);
-  const mag = h(mk('d2m'), s); mag.style.clipPath = 'circle(0px at 540px 960px)';
-  const lens = h(`<div class="abs" style="left:0;top:0;width:430px;height:430px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.75), inset 8px 12px 36px rgba(255,255,255,.4), inset -10px -14px 36px rgba(255,110,5,.4), 0 36px 90px rgba(0,0,0,.6), 0 0 0 8px rgba(255,255,255,.07);background:radial-gradient(120% 90% at 30% 15%, rgba(255,255,255,.26), rgba(255,255,255,0) 52%)"></div>`, s);
-  const fr = h(`<div class="abs" style="left:0;top:0;width:430px;height:430px;border-radius:50%;box-shadow:inset 3px 0 0 rgba(255,40,0,.55), inset -3px 0 0 rgba(0,160,255,.5);"></div>`, s);
-  const path = p => [190 + p * 700, 1010 + Math.sin(p * 6.0) * 60];
-  drive(t0 + .2, 1.55, p => {
-    const [x, y] = path(p), k = Math.min(1, p * 7), r = 215 * k;
-    base.style.webkitMaskImage = base.style.maskImage = `radial-gradient(circle ${r + 2}px at ${x}px ${y}px, transparent ${r - 1}px, #000 ${r + 2}px)`;
-    mag.style.clipPath = `circle(${r / 1.4}px at ${x}px ${y}px)`; mag.style.transformOrigin = `${x}px ${y}px`; mag.style.transform = 'scale(1.4)';
-    const tr = `translate(${x - 215}px,${y - 215}px) scale(${k})`; lens.style.transform = tr; fr.style.transform = tr;
-  }, 'power1.inOut');
+  const band = h(`<div class="abs" id="d2-band" style="left:-420px;top:560px;width:300px;height:640px;transform:skewX(-14deg);background:linear-gradient(90deg,rgba(255,255,255,.07),rgba(255,235,215,.3) 50%,rgba(255,255,255,.07));backdrop-filter:brightness(1.7) saturate(1.5);-webkit-backdrop-filter:brightness(1.7) saturate(1.5);border-left:2px solid rgba(255,255,255,.55);border-right:2px solid rgba(255,200,150,.5);box-shadow:0 0 60px rgba(255,160,70,.35)"></div>`, s);
+  tl.fromTo(band, { x: 0 }, { x: 1750, duration: 1.2, ease: 'power2.inOut' }, t0 + .3);
   const lbl = h(`<div class="abs mono center" style="top:1250px;font-size:30px;letter-spacing:.5em;color:rgba(244,239,233,.7)">— MOTION · LIGHT · DEPTH —</div>`, s);
   tl.fromTo(lbl, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .4 }, t0 + .45);
 })();
@@ -91,6 +86,9 @@
     $('#e-arcs').setAttribute('opacity', Math.max(0, 1 - p * 5)); $('#e-pins').setAttribute('opacity', Math.max(0, 1 - p * 5));
     ring.style.opacity = Math.max(0, (p - .55) / .3); ring.style.transform = `scale(${.4 + (p - .55) * 1.5 + .08 * Math.sin(p * 40)})`;
   });
+  h(`<div class="abs" style="left:0;top:0;width:1080px;height:560px;background:linear-gradient(180deg,rgba(5,6,10,.92),rgba(5,6,10,0))"></div>`, s);
+  const ro = h(`<div class="abs mono center" style="top:1040px;font-size:30px;letter-spacing:.3em;color:#FFC59A;opacity:0">35.76° N · 5.80° W</div>`, s);
+  tl.fromTo(ro, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .4 }, t2 + 1.2);
   // headline
   const a = h(`<div class="abs disp" style="left:70px;top:200px;font-size:118px;white-space:nowrap">Your story,</div>`, s);
   const a2 = h(`<div class="abs mono" style="left:76px;top:340px;font-size:30px;letter-spacing:.36em;color:#FF9A3D;text-shadow:0 4px 20px #000">IN FRONT OF CUSTOMERS</div>`, s);

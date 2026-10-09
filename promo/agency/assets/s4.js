@@ -56,7 +56,7 @@
   const s = $('#sK .in'); const t0 = T(84);
   const a = h(`<div class="abs disp" style="left:70px;top:190px;font-size:104px;white-space:nowrap">One source.</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:304px;font-size:128px;font-weight:600;white-space:nowrap">Every format.</div>`, s);
   reveal(chars(a), t0 - .05, { stagger: .03, d: .5 }); reveal(chars(b, 'ch gt'), t0 + .12, { stagger: .03, d: .55 });
-  const body = (w, hh) => { const m = Math.min(w, hh); return `<div class="abs" style="inset:0;background:linear-gradient(160deg,#2a1204,#07080c 70%)"></div><div class="abs" style="left:${w / 2 - m * .17}px;top:${hh * .16}px;width:${m * .34}px;height:${m * .34}px" data-ap></div><div class="abs disp" style="left:0;right:0;text-align:center;top:${hh * .58}px;font-size:${m * .13}px;font-weight:600;line-height:1">Your brand.</div><div class="abs" style="left:${w * .18}px;right:${w * .18}px;bottom:${hh * .1}px;height:${Math.max(3, m * .014)}px;background:#FF6E05"></div>`; };
+  const body = (w, hh) => { const m = Math.min(w, hh); return `<div class="abs" style="inset:0;background:linear-gradient(160deg,#5a2308,#0a0b11 72%)"></div><div class="abs" style="left:${w / 2 - m * .17}px;top:${hh * .16}px;width:${m * .34}px;height:${m * .34}px" data-ap></div><div class="abs disp" style="left:0;right:0;text-align:center;top:${hh * .58}px;font-size:${m * .13}px;font-weight:600;line-height:1">Your brand.</div><div class="abs" style="left:${w * .18}px;right:${w * .18}px;bottom:${hh * .1}px;height:${Math.max(3, m * .014)}px;background:#FF6E05"></div>`; };
   const frame = (x, y, w, hh, label) => { const f = h(`<div class="glass" style="left:${x}px;top:${y}px;width:${w}px;height:${hh}px;border-radius:${Math.min(w, hh) * .07}px">${body(w, hh)}</div>`, s); ap($('[data-ap]', f), { r: 37, grow: 1, bp: 0, gap: '#07080c', lines: false }); const l = h(`<div class="abs mono" style="left:${x}px;top:${y + hh + 14}px;font-size:30px;letter-spacing:.3em;color:#FF9A3D">${label}</div>`, s); return [f, l]; };
   // morphing source frame
   const mw = { w: 300, h: 533 };
@@ -83,18 +83,18 @@
   h(`<div class="abs mono" style="left:62px;top:220px;font-size:28px;letter-spacing:.34em;color:#FF9A3D">// 01 · PRECISION</div>`, s);
   const full = 'Precision of code.'; drive(t0 + .05, .8, p => { const n = Math.floor(p * full.length); pr.innerHTML = p >= 1 ? full : full.slice(0, n) + '<span style="color:#FF6E05">▍</span>'; });
   // cinema strip
-  const strip = h(`<div class="abs" id="l-strip" style="left:0;top:600px;width:1080px;height:452px;overflow:hidden;background:radial-gradient(60% 90% at 50% 50%,#2a1305,#07080c)"></div>`, s);
-  const sk = h(`<div class="abs" style="left:0;top:0;width:1080px;height:452px"></div>`, strip);
+  const strip = h(`<div class="abs" id="l-strip" style="left:0;top:590px;width:1080px;height:520px;overflow:hidden;background:radial-gradient(60% 90% at 50% 50%,#2a1305,#07080c)"></div>`, s);
+  const sk = h(`<div class="abs" style="left:0;top:0;width:1080px;height:520px"></div>`, strip);
   for (let i = 0; i < 9; i++) h(`<div class="abs" style="left:${60 + i * 120}px;top:${60 + (i * 83) % 280}px;width:${50 + (i * 37) % 70}px;height:${50 + (i * 37) % 70}px;border-radius:50%;background:radial-gradient(circle,rgba(255,170,90,.55),rgba(255,110,5,0) 70%);filter:blur(4px)" class="bk"></div>`, sk);
-  const host = h(`<div class="abs" id="l-ap" style="left:420px;top:86px;width:240px;height:240px"></div>`, strip); ap(host, { r: 37, grow: 1, bp: 1, gap: '#07080c' });
-  const streak = h(`<div class="abs" id="l-streak" style="left:-100px;top:219px;width:1280px;height:5px;background:linear-gradient(90deg,transparent,rgba(255,200,150,.95) 30%,#fff 50%,rgba(255,200,150,.95) 70%,transparent);filter:blur(1.5px);box-shadow:0 0 36px 6px rgba(255,140,50,.7)"></div>`, strip);
+  const host = h(`<div class="abs" id="l-ap" style="left:410px;top:100px;width:260px;height:260px"></div>`, strip); ap(host, { r: 37, grow: 1, bp: 1, gap: '#07080c' });
+  const streak = h(`<div class="abs" id="l-streak" style="left:-100px;top:252px;width:1280px;height:6px;background:linear-gradient(90deg,transparent,rgba(255,200,150,.95) 30%,#fff 50%,rgba(255,200,150,.95) 70%,transparent);filter:blur(1.5px);box-shadow:0 0 36px 6px rgba(255,140,50,.7)"></div>`, strip);
   h(`<div class="abs mono" style="left:30px;top:18px;font-size:20px;letter-spacing:.3em;color:rgba(244,239,233,.7)">2.39:1 · 24P</div><div class="abs mono" style="right:30px;top:18px;font-size:20px;letter-spacing:.3em;color:rgba(244,239,233,.7)">● REC</div>`, strip);
   tl.fromTo(strip, { clipPath: 'inset(50% 0 50% 0)' }, { clipPath: 'inset(0% 0 0% 0)', duration: .55, ease: E.io }, t0 + 1.0);
   tl.fromTo(host, { scale: .5, rotation: -80, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: .8, ease: E.out }, t0 + 1.2);
   tl.fromTo(streak, { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: .5, ease: E.out }, t0 + 1.35);
   $$('.bk', sk).forEach((b, i) => tl.fromTo(b, { x: 0, opacity: 0 }, { x: -80 - i * 14, opacity: 1, duration: 2, ease: 'none' }, t0 + 1.0));
   tl.to(sk, { scale: 1.08, duration: 2.5, ease: 'none' }, t0 + 1.0);
-  h(`<div class="abs mono" style="left:62px;top:1105px;font-size:28px;letter-spacing:.34em;color:#FF9A3D">// 02 · CINEMA</div>`, s);
-  const fc = h(`<div class="abs disp" style="left:60px;top:1160px;font-size:134px;white-space:nowrap"><span>Feel of </span><b class="gt">cinema.</b></div>`, s);
+  h(`<div class="abs mono" style="left:62px;top:1150px;font-size:28px;letter-spacing:.34em;color:#FF9A3D">// 02 · CINEMA</div>`, s);
+  const fc = h(`<div class="abs disp" style="left:60px;top:1205px;font-size:128px;white-space:nowrap"><span>Feel of </span><b class="gt">cinema.</b></div>`, s);
   const cs = chars(fc.firstElementChild).concat(chars(fc.lastElementChild, 'ch gt')); reveal(cs, t0 + 1.25, { stagger: .035, d: .55, y: 70 });
 })();

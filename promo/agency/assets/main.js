@@ -15,7 +15,7 @@
   enter('sM', 'slice', { flash: .35 });
   enter('sO', 'iris', { x: 540, y: 760, flash: .85 });
   /* production credit only where it belongs: the opening and the end card */
-  tl.set('#foot', { opacity: 1 }, 0).to('#foot', { opacity: 0, duration: .4 }, 11.3).set('#foot', { opacity: 0 }, 11.7).to('#foot', { opacity: 1, duration: .5 }, 52.6);
+  tl.set('#foot', { opacity: 1 }, 0).to('#foot', { opacity: 0, duration: .4 }, 11.3).set('#foot', { opacity: 0 }, 11.7);
   /* background drift + progress */
   tl.to('.b1', { x: 500, y: -500, duration: 60, ease: 'sine.inOut' }, 0);
   tl.to('.b2', { x: -450, y: 900, duration: 60, ease: 'sine.inOut' }, 0);
@@ -26,9 +26,9 @@
   [['left:56px;top:56px;border-left-width:2px;border-top-width:2px'], ['right:56px;top:56px;border-right-width:2px;border-top-width:2px'], ['left:56px;bottom:56px;border-left-width:2px;border-bottom-width:2px'], ['right:56px;bottom:56px;border-right-width:2px;border-bottom-width:2px']].forEach(([st]) => h(`<div class="crop" style="${st}"></div>`, hud));
   /* header: mark + wordmark, record dot + frame timecode */
   const hd = $('#hdr');
-  h(`<div class="abs" style="left:96px;top:96px;display:flex;align-items:center;gap:16px"><div id="hd-ap" style="width:46px;height:46px"></div><div style="font-weight:600;font-size:28px;letter-spacing:.32em">RASOLV</div></div>`, hd);
+  h(`<div class="abs" style="left:96px;top:96px;display:flex;align-items:center;gap:16px"><div id="hd-ap" style="width:46px;height:46px"></div><div style="font-weight:600;font-size:30px;letter-spacing:.32em">RASOLV</div></div>`, hd);
   ap($('#hd-ap'), { r: 37, grow: 1, bp: 0, gap: '#05060a', lines: false });
-  h(`<div class="abs mono" style="right:96px;top:104px;font-size:22px;letter-spacing:.16em;color:rgba(244,239,233,.7);display:flex;gap:14px;align-items:center"><i id="hd-rec" style="width:12px;height:12px;border-radius:50%;background:#ff3b30;display:block"></i><span id="hd-t">00:00:00</span></div>`, hd);
+  h(`<div class="abs mono" style="right:96px;top:100px;font-size:26px;letter-spacing:.14em;color:rgba(244,239,233,.7);display:flex;gap:14px;align-items:center"><i id="hd-rec" style="width:12px;height:12px;border-radius:50%;background:#FF6E05;display:block"></i><span id="hd-t">00:00:00</span></div>`, hd);
   drive(0, 60, p => { const f = Math.floor(p * 1800); $('#hd-t').textContent = String(Math.floor(f / 1800)).padStart(2, '0') + ':' + String(Math.floor(f / 30) % 60).padStart(2, '0') + ':' + String(f % 30).padStart(2, '0'); $('#hd-rec').style.opacity = (Math.floor(p * 60 * 1.5) % 2) ? .25 : 1; });
   /* karaoke captions */
   const caps = $('#caps');

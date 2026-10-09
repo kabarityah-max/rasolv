@@ -26,7 +26,7 @@
   const c = h(`<div class="abs disp" style="left:70px;top:1130px;font-size:94px;white-space:nowrap">Then we</div>`, s), d = h(`<div class="abs disp" style="left:70px;top:1236px;font-size:156px;font-weight:600;white-space:nowrap">solve it.</div>`, s);
   reveal(chars(c), t0 + 2.1, { stagger: .03, d: .45 }); reveal(chars(d, 'ch gt'), t0 + 2.3, { stagger: .04, d: .6, y: 80 });
   // see · decide · solve tracker
-  const lab = [['SEE', .4], ['DECIDE', 1.3], ['SOLVE', 2.3]].map(([l, t], i) => { const e = h(`<div class="abs mono" style="left:${70 + i * 300}px;top:1040px;font-size:24px;letter-spacing:.34em;color:rgba(244,239,233,.4);font-weight:700">0${i + 1} ${l}</div>`, s); tl.set(e, { color: '#FF8A33' }, t0 + t); return e; });
+  const lab = [['SEE', .4], ['SOLVE', 2.3]].map(([l, t], i) => { const e = h(`<div class="abs mono" style="left:${70 + i * 760}px;top:1040px;font-size:30px;letter-spacing:.34em;color:rgba(244,239,233,.5);font-weight:700;${i ? 'text-align:right;width:0;white-space:nowrap;direction:rtl;left:1010px' : ''}">${l}</div>`, s); tl.set(e, { color: '#FF8A33' }, t0 + t); return e; });
   h(`<div class="abs" style="left:70px;top:1090px;width:900px;height:2px;background:rgba(255,255,255,.2)"><i id="m-tr" style="display:block;height:100%;width:100%;background:#FF6E05;transform-origin:0 50%;transform:scaleX(0)"></i></div>`, s);
   tl.to('#m-tr', { scaleX: 1, duration: 2.7, ease: 'none' }, t0 + .3);
 })();

@@ -21,7 +21,7 @@
   L.forEach(([id, txt, t, d]) => { const el = $('#' + id); const plain = txt.replace(/<[^>]+>/g, ''); drive(t, d, p => { const n = Math.floor(p * plain.length); el.innerHTML = p >= 1 ? txt : plain.slice(0, n) + '<span style="opacity:.8">▍</span>'; }); });
   tl.to('#a-bar', { scaleX: 1, duration: 1.7, ease: 'power1.inOut' }, 2.0);
   // was created by / Claude Code
-  const cb = h(`<div class="abs mono" style="left:72px;top:760px;font-size:36px;letter-spacing:.42em;color:rgba(244,239,233,.75)">WAS CREATED BY</div>`, s);
+  const cb = h(`<div class="abs mono" style="left:72px;top:760px;font-size:36px;letter-spacing:.42em;color:rgba(244,239,233,.95)">WAS CREATED BY</div>`, s);
   const n1 = h(`<div class="abs disp" style="left:64px;top:840px;font-size:176px;font-weight:400">Claude</div>`, s), n2 = h(`<div class="abs disp" style="left:64px;top:1020px;font-size:176px;font-weight:500">Code</div>`, s);
   const ch1 = chars(n1), ch2 = chars(n2, 'ch gt');
   tl.fromTo(cb, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: .35 }, 1.7);
@@ -97,6 +97,5 @@
   const mini = h(`<div class="abs" id="c-mini" style="left:70px;top:330px;width:150px;height:150px"></div>`, grp);
   drive(9.6, .5, p => ap(mini, { r: 37, grow: 1, bp: p, gap: '#05060a' }));
   tl.fromTo(mini, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: .5, ease: E.back }, 9.6);
-  const xl = h(`<div class="abs mono" style="left:250px;top:376px;font-size:28px;letter-spacing:.4em;color:rgba(244,239,233,.7)">RASOLV  ×  YOU</div>`, grp);
-  tl.fromTo(xl, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: .4 }, 9.8);
+
 })();
