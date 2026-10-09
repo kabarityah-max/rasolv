@@ -14,8 +14,8 @@
   }
   tl.fromTo(tiles, { rotationY: 100, opacity: 0, scale: .8 }, { rotationY: 0, opacity: .38, scale: 1, duration: .42, ease: E.out, stagger: .03 }, t0 - .15);
   tl.to(tiles, { rotationX: 360, backgroundColor: 'rgba(255,110,5,.2)', duration: .5, ease: 'power3.inOut', stagger: .02 }, t0 + .85);
-  h(`<div class="abs" style="inset:0;background:radial-gradient(70% 26% at 42% 52%,rgba(5,6,10,.88),rgba(5,6,10,0))"></div>`, s);
-  const a = h(`<div class="abs disp" style="left:70px;top:620px;font-size:240px;white-space:nowrap">Your</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:850px;font-size:250px;font-weight:500;white-space:nowrap">brand.</div>`, s);
+  h(`<div class="abs" style="inset:0;background:radial-gradient(70% 26% at 42% 58%,rgba(5,6,10,.88),rgba(5,6,10,0))"></div>`, s);
+  const a = h(`<div class="abs disp" style="left:70px;top:700px;font-size:240px;white-space:nowrap">Your</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:930px;font-size:250px;font-weight:500;white-space:nowrap">brand.</div>`, s);
   reveal(chars(a), t0 + .02, { stagger: .05, d: .5, y: 90 }); reveal(chars(b, 'ch gt'), t0 + .2, { stagger: .05, d: .55, y: 90 });
   tl.to([a, b], { scale: 1.06, duration: .5, ease: 'sine.inOut' }, t0 + .6);
 })();
@@ -25,17 +25,15 @@
   const s = $('#sD2 .in'); const t0 = T(28);
   const lines = [...Array(14)].map((_, i) => h(`<div class="abs" style="left:-200px;top:${200 + i * 98}px;width:${300 + (i * 97) % 500}px;height:2px;background:linear-gradient(90deg,transparent,rgba(244,239,233,${.18 + (i % 3) * .1}),transparent)"></div>`, s));
   lines.forEach((l, i) => tl.fromTo(l, { x: -400 }, { x: 1700, duration: .8 + (i % 4) * .15, ease: 'power2.in' }, t0 - .2 + (i % 5) * .08));
-  const mk = cls => `<div class="abs ${cls}" style="inset:0"><div class="abs disp" style="left:70px;top:630px;font-size:230px;white-space:nowrap">In</div><div class="abs disp" style="left:70px;top:850px;font-size:236px;font-weight:500;white-space:nowrap;color:#FF8A33">motion.</div></div>`;
+  const mk = cls => `<div class="abs ${cls}" style="inset:0"><div class="abs disp" style="left:70px;top:700px;font-size:230px;white-space:nowrap">In</div><div class="abs disp" style="left:70px;top:920px;font-size:236px;font-weight:500;white-space:nowrap;color:#FF8A33">motion.</div></div>`;
   const base = h(mk('d2b'), s);
   // ghost trail
   const ghosts = [1, 2, 3, 4].map(k => { const g = h(mk('d2g'), s); g.style.opacity = 0; return g; });
   tl.fromTo(base, { x: -900, opacity: 0, filter: 'blur(24px)' }, { x: 0, opacity: 1, filter: 'blur(0px)', duration: .5, ease: E.snap }, t0 - .05);
   ghosts.forEach((g, k) => tl.fromTo(g, { x: -900, opacity: .0 }, { x: -60 * (k + 1) + 60 * (k + 1) * 0, opacity: .22 - k * .04, duration: .5, ease: E.snap, filter: 'blur(' + (6 + k * 4) + 'px)' }, t0 - .05 + k * .03));
   tl.to(ghosts, { opacity: 0, x: 0, duration: .3 }, t0 + .6);
-  const band = h(`<div class="abs" id="d2-band" style="left:-420px;top:560px;width:300px;height:640px;transform:skewX(-14deg);background:linear-gradient(90deg,rgba(255,255,255,.07),rgba(255,200,160,.22) 50%,rgba(255,255,255,.07));backdrop-filter:brightness(1.22);-webkit-backdrop-filter:brightness(1.22);border-left:2px solid rgba(255,255,255,.55);border-right:2px solid rgba(255,200,150,.5);box-shadow:0 0 60px rgba(255,160,70,.35)"></div>`, s);
+  const band = h(`<div class="abs" id="d2-band" style="left:-420px;top:640px;width:300px;height:640px;transform:skewX(-14deg);background:linear-gradient(90deg,rgba(255,255,255,.07),rgba(255,200,160,.22) 50%,rgba(255,255,255,.07));backdrop-filter:brightness(1.22);-webkit-backdrop-filter:brightness(1.22);border-left:2px solid rgba(255,255,255,.55);border-right:2px solid rgba(255,200,150,.5);box-shadow:0 0 60px rgba(255,160,70,.35)"></div>`, s);
   tl.fromTo(band, { x: 0 }, { x: 1750, duration: 1.2, ease: 'power2.inOut' }, t0 + .3);
-  const lbl = h(`<div class="abs mono center" style="top:1250px;font-size:30px;letter-spacing:.5em;color:rgba(244,239,233,.7)">— MOTION · LIGHT · DEPTH —</div>`, s);
-  tl.fromTo(lbl, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .4 }, t0 + .45);
 })();
 
 /* ===== E · maps: customers everywhere → dive (15–20.6 s) ===== */
@@ -45,7 +43,7 @@
   const cam = h(`<div class="abs" id="e-cam" style="left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 900px"></div>`, stage);
   const world = h(`<div class="abs" id="e-world" style="left:0;top:0;width:2400px;height:1200px;transform-origin:0 0"></div>`, cam);
   world.innerHTML = `<svg width="2400" height="1200" viewBox="0 0 2400 1200"><path id="e-grat" d="${M.grat}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1.4"/>
-    <g id="e-dots" fill="rgba(244,239,233,.74)">${M.dots.map(d => `<circle cx="${d[0]}" cy="${d[1]}" r="3.6"/>`).join('')}</g>
+    <g id="e-dots" fill="rgba(255,222,196,.8)">${M.dots.map(d => `<circle cx="${d[0]}" cy="${d[1]}" r="3.6"/>`).join('')}</g>
     <g id="e-arcs"></g><g id="e-pins"></g></svg>`;
   const mid = ks => ks.reduce((a, k) => [a[0] + P[k][0] / ks.length, a[1] + P[k][1] / ks.length], [0, 0]);
   const shot = (ks, sc) => { const c = mid(ks); return { x: 540 - sc * c[0], y: 900 - sc * c[1], s: sc, c }; };

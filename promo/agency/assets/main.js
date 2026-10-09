@@ -9,7 +9,7 @@
   enter('sG', 'zoom', { s: 1.15, flash: .25 });
   enter('sH', 'up', { flash: .25 });
   enter('sI', 'slice', { flash: .35 });
-  enter('sJ', 'push', { flash: .25 });
+  enter('sJ', 'shutter');
   enter('sK', 'shutter');
   enter('sL', 'shutter');
   enter('sM', 'slice', { flash: .35 });
@@ -17,7 +17,7 @@
   /* production credit only where it belongs: the opening and the end card */
   tl.set('#foot', { opacity: 0 }, 0);
   /* captions only where the on-screen headline does not already spell the line */
-  [[0, 3.7], [9.4, 20.6 + 3.8], [24.4, 28.1], [39.4, 60]].forEach(([a, b]) => { tl.set('#caps', { opacity: 0 }, a === 0 ? .01 : a); tl.set('#caps', { opacity: 1 }, b); });
+  [[0, 3.7], [8.5, 24.4 + .05], [31.85, 35.62], [39.4, 60]].forEach(([a, b]) => { tl.set('#caps', { opacity: 0 }, a === 0 ? .01 : a); tl.set('#caps', { opacity: 1 }, b); });
   /* background drift + progress */
   tl.to('.b1', { x: 500, y: -500, duration: 60, ease: 'sine.inOut' }, 0);
   tl.to('.b2', { x: -450, y: 900, duration: 60, ease: 'sine.inOut' }, 0);

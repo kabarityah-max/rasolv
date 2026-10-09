@@ -51,7 +51,7 @@
   $$('.bl', code).forEach((l, i) => tl.fromTo(l, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: .14 }, 3.9 + i * .13));
   // render stage: filmstrip + counter
   const strip = h(`<div class="abs" id="b-strip" style="left:56px;top:960px;width:968px;height:240px"></div>`, s);
-  for (let i = 0; i < 8; i++) h(`<div class="glass" style="left:${i * 122}px;top:0;width:106px;height:188px;border-radius:20px;background:linear-gradient(${150 + i * 12}deg,rgba(255,110,5,${.2 + i * .07}),rgba(255,255,255,.04))"><div class="abs mono" style="left:12px;bottom:10px;font-size:20px;color:rgba(255,255,255,.8)">${String(i * 257).padStart(4, '0')}</div></div>`, strip);
+  for (let i = 0; i < 8; i++) h(`<div class="glass" style="left:${i * 122}px;top:0;width:106px;height:188px;border-radius:20px;background:linear-gradient(${150 + i * 12}deg,rgba(255,110,5,${.38 + i * .06}),rgba(255,255,255,.06))"><div class="abs mono" style="left:12px;bottom:10px;font-size:20px;color:rgba(255,255,255,.8)">${String(i * 257).padStart(4, '0')}</div></div>`, strip);
   const ph = h(`<div class="abs" style="left:0;top:-12px;width:4px;height:212px;background:#fff;border-radius:2px;box-shadow:0 0 22px #fff"></div>`, strip);
   tl.fromTo(strip, { opacity: 0, y: 200 }, { opacity: 1, y: 0, duration: .45, ease: E.out }, 4.7);
   tl.fromTo(ph, { x: 0 }, { x: 962, duration: 2.0, ease: 'power1.inOut' }, 4.9);

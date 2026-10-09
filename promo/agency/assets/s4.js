@@ -1,13 +1,15 @@
 /* ===== I · sound (31.875–35.625 s)  "Voice, music and captions, composed around you." ===== */
 (() => {
   const s = $('#sI .in'); const t0 = T(68);
-  const a = h(`<div class="abs disp" style="left:70px;top:190px;font-size:104px;white-space:nowrap">Composed</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:304px;font-size:140px;font-weight:600;white-space:nowrap">around you.</div>`, s);
+  const a = h(`<div class="abs disp" style="left:70px;top:190px;font-size:104px;white-space:nowrap">Voice, music</div>`, s), b = h(`<div class="abs disp" style="left:70px;top:304px;font-size:128px;font-weight:600;white-space:nowrap">& captions.</div>`, s);
+  const sb = h(`<div class="abs mono" style="left:76px;top:456px;font-size:30px;letter-spacing:.36em;color:#FF9A3D">COMPOSED AROUND YOU</div>`, s);
+  tl.fromTo(sb, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: .4 }, t0 + .5);
   reveal(chars(a), t0 - .05, { stagger: .03, d: .5 }); reveal(chars(b, 'ch gt'), t0 + .1, { stagger: .03, d: .55 });
   const bars = n => `<div class="abs" style="left:44px;right:44px;top:108px;height:110px;display:flex;align-items:center;gap:4px">${'<i style="flex:1;border-radius:3px;background:linear-gradient(180deg,#FFC59A,#FF6E05);height:12px;display:block"></i>'.repeat(n)}</div>`;
   const row = (y, label, sub, inner) => h(`<div class="glass" style="left:60px;top:${y}px;width:960px;height:250px;border-radius:44px"><div class="abs disp" style="left:44px;top:28px;font-size:48px;font-weight:500">${label}</div><div class="abs mono" style="right:44px;top:42px;font-size:22px;letter-spacing:.28em;color:rgba(244,239,233,.7)">${sub}</div>${inner}</div>`, s);
-  const r1 = row(520, 'Voice', 'NATURAL · ON BRAND', bars(100));
-  const r2 = row(800, 'Music', 'ORIGINAL SCORE', bars(100));
-  const r3 = row(1080, 'Captions', 'SYNCED TO EVERY WORD', `<div class="abs disp" id="i-cap" style="left:44px;top:112px;font-size:76px;white-space:nowrap;font-weight:500"><span>Voice,</span> <span>music</span> <span>and</span> <span>captions</span></div>`);
+  const r1 = row(540, 'Voice', 'NATURAL · ON BRAND', bars(100));
+  const r2 = row(820, 'Music', 'ORIGINAL SCORE', bars(100));
+  const r3 = row(1100, 'Captions', 'SYNCED TO EVERY WORD', `<div class="abs disp" id="i-cap" style="left:44px;top:112px;font-size:76px;white-space:nowrap;font-weight:500"><span>Voice,</span> <span>music</span> <span>and</span> <span>captions</span></div>`);
   [[r1, -1100], [r2, 1100], [r3, -1100]].forEach(([r, x], i) => tl.fromTo(r, { x, opacity: 0 }, { x: 0, opacity: 1, duration: .5, ease: E.snap }, t0 + .1 + i * .35));
   const A = $$('i', r1), B = $$('i', r2);
   drive(t0, 3.75, p => { const t = p * 3.75;
@@ -31,6 +33,8 @@
   const pv = h(`<div class="glass" style="left:375px;top:800px;width:330px;height:590px;border-radius:44px"></div>`, s);
   pv.innerHTML = `<div class="abs" id="j-pbg" style="inset:0;opacity:.55"></div><div class="abs" id="j-pap" style="left:95px;top:90px;width:140px;height:140px"></div><div class="abs disp" id="j-pt" style="left:0;right:0;text-align:center;top:290px;font-size:50px;font-weight:600;line-height:1"></div><div class="abs mono" style="left:0;right:0;text-align:center;top:360px;font-size:18px;letter-spacing:.3em;color:rgba(255,255,255,.7)">YOUR BRAND</div><div class="abs" style="left:34px;right:34px;bottom:44px;height:6px;border-radius:3px;background:rgba(255,255,255,.2)"><i id="j-pg" style="display:block;height:100%;width:60%;border-radius:3px"></i></div>`;
   tl.fromTo(pv, { y: 900, opacity: 0, scale: .9 }, { y: 0, opacity: 1, scale: 1, duration: .55, ease: E.snap }, t0 + .15);
+  const chg = h(`<div class="chip glass" style="left:60px;top:738px;height:64px;font-size:24px;letter-spacing:.2em;font-family:JBM,monospace;font-weight:700;padding:0 26px"><span class="dot"></span>1 LINE CHANGED → FILM UPDATED</div>`, s);
+  tl.fromTo(chg, { opacity: 0, y: -20, scale: .9 }, { opacity: 1, y: 0, scale: 1, duration: .4, ease: E.back }, t0 + .55);
   const lab1 = h(`<div class="abs mono" id="j-v" style="left:60px;top:1060px;font-size:26px;letter-spacing:.3em;color:rgba(244,239,233,.7)">VERSION 01</div>`, s);
   const lab2 = h(`<div class="abs mono" id="j-x" style="right:60px;top:1060px;font-size:26px;letter-spacing:.2em;text-align:right;color:rgba(244,239,233,.7)">#FF6E05</div>`, s);
   const V = [['Spring Launch', '#FF6E05'], ['Autumn Offer', '#4F8CFF'], ['Summer Drop', '#2DD4A7']], sw = [.75, 2.0];
@@ -95,6 +99,8 @@
   $$('.bk', sk).forEach((b, i) => tl.fromTo(b, { x: 0, opacity: 0 }, { x: -80 - i * 14, opacity: 1, duration: 2, ease: 'none' }, t0 + 1.0));
   tl.to(sk, { scale: 1.08, duration: 2.5, ease: 'none' }, t0 + 1.0);
   h(`<div class="abs mono" style="left:62px;top:1150px;font-size:28px;letter-spacing:.34em;color:#FF9A3D">// 02 · CINEMA</div>`, s);
+  const cg = h(`<div class="abs mono" style="left:64px;top:1370px;font-size:30px;letter-spacing:.3em;color:rgba(244,239,233,.85)">CINEMA-GRADE FINISH</div>`, s);
+  tl.fromTo(cg, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: .45 }, t0 + 1.9);
   const fc = h(`<div class="abs disp" style="left:60px;top:1205px;font-size:128px;white-space:nowrap"><span>Feel of </span><b class="gt">cinema.</b></div>`, s);
   const cs = chars(fc.firstElementChild).concat(chars(fc.lastElementChild, 'ch gt')); reveal(cs, t0 + 1.25, { stagger: .035, d: .55, y: 70 });
 })();
