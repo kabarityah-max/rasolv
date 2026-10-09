@@ -16,7 +16,7 @@
     const open = ease('power3.out', (t - .5) / 1.6) * (1 - ease('power2.in', (t - 3.6) / .9) * .85); ap(ah, { r: 8 + 46 * open, grow: 1, bp: 0, gap: '#0a0a0f', lines: false }); ah.style.transform = `rotate(${t * 20}deg)`;
     const col = ease('power3.in', (t - 2.0) / .7);   // chips collapse into the sphere on "solve"
     chips.forEach((c, i) => { const a = i / 6 * 6.283 + t * 1.2 + .5; const R = 470 * (1 - col), z = Math.sin(a) * .5 + .5; const x = cx + R * Math.cos(a), y = cy + (R * .26) * Math.sin(a) + 20 * (1 - col); c.style.transform = `translate(${x - 90}px,${y - 32}px) scale(${(.7 + z * .5) * (1 - col * .6)})`; c.style.zIndex = z > .5 ? 8 : 3; c.style.opacity = Math.min(1, Math.max(0, (t - .5 - i * .08) * 5)) * (1 - col); });
-    $('#m-orb').style.transform = `scale(${1 + .07 * Math.sin(Math.max(0, t - 2.0) * 7) * Math.max(0, 1 - (t - 2.0) / 1.2) + ease('power2.in', (t - 4.6) / 1.0) * .5})`;
+    $('#m-orb').style.transform = `scale(${1.28 + .07 * Math.sin(Math.max(0, t - 2.0) * 7) * Math.max(0, 1 - (t - 2.0) / 1.2) + ease('power2.in', (t - 4.6) / 1.0) * .5})`;
   });
   tl.set('#flash', { backgroundColor: '#FFD0A8' }, t0 + 2.0).fromTo('#flash', { opacity: .4 }, { opacity: 0, duration: .3 }, t0 + 2.0);
   // text
