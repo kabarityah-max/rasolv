@@ -1,0 +1,59 @@
+1
+00:00:00,500 --> 00:00:02,965
+Bad customer support is quietly billing you.
+
+2
+00:00:03,250 --> 00:00:05,528
+Let's add it up. The fix is at the end.
+
+3
+00:00:05,750 --> 00:00:09,251
+First, the hold queue. 47 minutes of elevator music.
+
+4
+00:00:09,500 --> 00:00:12,706
+Then a chatbot that answers everything except your question.
+
+5
+00:00:13,000 --> 00:00:15,666
+Transferred. Explain it all again. And again.
+
+6
+00:00:15,750 --> 00:00:19,008
+Then a ticket: we'll reply in 3-5 business days.
+
+7
+00:00:19,250 --> 00:00:21,042
+And your refund? Still pending.
+
+8
+00:00:21,250 --> 00:00:23,774
+And that's not one bill. It's per problem.
+
+9
+00:00:24,000 --> 00:00:26,768
+A dozen problems a year, and you've lost weeks.
+
+10
+00:00:27,000 --> 00:00:28,260
+So here's the fix.
+
+11
+00:00:28,500 --> 00:00:32,103
+Rasolv. Describe it once. AI sees the whole picture,
+
+12
+00:00:32,250 --> 00:00:34,418
+and a real expert is on it in seconds.
+
+13
+00:00:34,500 --> 00:00:36,459
+Live updates. Solved in minutes.
+
+14
+00:00:36,750 --> 00:00:38,746
+Every line on that bill? Gone.
+
+15
+00:00:39,000 --> 00:00:40,855
+Rasolv. Vision that solves.

@@ -1,0 +1,706 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>RASOLV Support Receipt</title>
+<style>
+  @font-face { font-family: 'Rubik'; src: url('../fonts/Rubik.woff2') format('woff2'); font-weight: 300 900; }
+  :root { --or: #FF6E05; --or2: #FF9A3D; --ink: #070707; --paper: #FBF8F1; --red: #E2382B; --green: #1FA855; --lt: #F2F1EE; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+  body { font-family: 'Rubik', sans-serif; -webkit-font-smoothing: antialiased; color: #fff; }
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; pointer-events: none; }
+  .bg { position: absolute; inset: 0; background-size: 54px 54px; }
+  #bgDark { background-color: #070707; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); }
+  #bgDark::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 45% at 50% 55%, rgba(255,110,5,.10), transparent 70%), radial-gradient(ellipse 90% 70% at 50% 50%, transparent 50%, rgba(0,0,0,.75)); }
+  #bgLight { background-color: var(--lt); background-image: linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px); }
+  #bgLight::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 90% 70% at 50% 50%, transparent 55%, rgba(0,0,0,.08)); }
+  .scene { position: absolute; inset: 0; display: none; }
+
+  /* ---------- headline caption with selection box ---------- */
+  #head { left: 70px; right: 70px; z-index: 40; text-align: center; font-size: 74px; font-weight: 500; line-height: 1.22; letter-spacing: -1.5px; }
+  #head span { display: inline-block; margin: 0 9px; position: relative; }
+  #head span.k { font-weight: 800; }
+  .sel { position: absolute; inset: -4px -12px -2px; border: 3px solid var(--or); background: rgba(255,110,5,.14); border-radius: 4px; transform-origin: 0 50%; }
+  .sel i { position: absolute; width: 14px; height: 14px; background: #fff; border: 3px solid var(--or); border-radius: 50%; }
+  .sel i:nth-child(1) { left: -9px; top: -9px; } .sel i:nth-child(2) { right: -9px; bottom: -9px; }
+
+  /* ---------- receipt ---------- */
+  #rc { width: 560px; z-index: 30; font-family: 'DejaVu Sans Mono', monospace; color: #1d1a16; transform-origin: 50% 0; }
+  #rcPaper { background: var(--paper); padding: 34px 36px 46px; box-shadow: 0 30px 70px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.05);
+    -webkit-mask: linear-gradient(#000 0 0) top/100% calc(100% - 18px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom/36px 18px repeat-x; }
+  #rcPaper h4 { font-size: 30px; font-weight: 700; letter-spacing: 1px; }
+  #rcPaper .meta { font-size: 17px; color: #8a8378; margin-top: 4px; letter-spacing: .5px; }
+  .rule { border-top: 2px dashed #cfc8ba; margin: 18px 0 10px; }
+  .ln { position: relative; display: flex; justify-content: space-between; align-items: baseline; font-size: 23px; padding: 9px 0 0; overflow: hidden; }
+  .ln .sub { position: absolute; left: 0; top: 40px; font-size: 15px; color: #9a9286; }
+  .ln { height: 0; }
+  .ln b { color: var(--red); font-weight: 700; white-space: nowrap; }
+  .ln .strike { position: absolute; left: -4px; top: 24px; height: 4px; background: var(--green); width: 0; border-radius: 2px; }
+  .ln.x2 b { color: #1d1a16; }
+  #rcTotal { display: flex; justify-content: space-between; font-size: 28px; font-weight: 700; margin-top: 6px; }
+  #rcTotal b { color: var(--red); }
+  #rcBar { position: absolute; left: 50%; top: -26px; width: 620px; height: 30px; transform: translateX(-50%); border-radius: 10px; background: #1a1a1a; box-shadow: inset 0 -6px 0 #0e0e0e, 0 10px 30px rgba(0,0,0,.4); }
+  #rcBar::after { content: ''; position: absolute; left: 24px; right: 24px; top: 20px; height: 5px; border-radius: 3px; background: #000; }
+  .stamp { position: absolute; font-family: 'Rubik', sans-serif; font-weight: 900; letter-spacing: 2px; border: 10px solid currentColor; border-radius: 18px; padding: 6px 30px 10px; white-space: nowrap; background: rgba(255,255,255,.55); mix-blend-mode: multiply; }
+  #stampPer { color: var(--red); font-size: 92px; }
+  #stampSolved { color: var(--green); font-size: 96px; }
+
+  /* ---------- countdown pill ---------- */
+  #pill { left: 50%; top: 1760px; z-index: 45; width: 560px; height: 76px; border-radius: 40px; background: #fff; color: #1a1a1a; box-shadow: 0 16px 40px rgba(0,0,0,.28), inset 0 0 0 1.5px rgba(0,0,0,.06); overflow: hidden; font-size: 26px; font-weight: 600; }
+  #pillFill { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,110,5,.18); }
+  #pill .row { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
+  #pill .row span:first-child { display: flex; align-items: center; gap: 14px; }
+  #pillDot { width: 14px; height: 14px; border-radius: 50%; background: var(--or); }
+  #pillSec { font-variant-numeric: tabular-nums; color: #777; }
+
+  /* ---------- brand tag ---------- */
+  #tag { right: 54px; top: 70px; z-index: 46; display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; letter-spacing: 5px; }
+  #tag svg { width: 40px; height: 40px; }
+
+  /* ---------- UI cards ---------- */
+  .card { position: absolute; border-radius: 40px; background: #fff; color: #111; box-shadow: 0 40px 90px rgba(0,0,0,.18), inset 0 0 0 1.5px rgba(0,0,0,.05); }
+  .card.dk { background: #141414; color: #fff; box-shadow: 0 40px 90px rgba(0,0,0,.6), inset 0 0 0 1.5px rgba(255,255,255,.08); }
+  .muted { color: #8b8b8b; }
+  .row2 { display: flex; align-items: center; gap: 22px; }
+
+  /* hook phone */
+  #phone { width: 500px; height: 1000px; border-radius: 76px; background: #0d0d0d; box-shadow: inset 0 0 0 10px #262626, inset 0 0 0 12px #3a3a3a, 0 50px 120px rgba(0,0,0,.8); overflow: hidden; }
+  #phone::before { content: ''; position: absolute; left: 50%; top: 26px; width: 130px; height: 38px; margin-left: -65px; border-radius: 20px; background: #000; }
+  #phTime { position: absolute; left: 0; right: 0; top: 120px; text-align: center; font-size: 132px; font-weight: 600; letter-spacing: -4px; }
+  #phDate { position: absolute; left: 0; right: 0; top: 100px; text-align: center; font-size: 26px; font-weight: 500; color: rgba(255,255,255,.75); }
+  .note { position: absolute; left: 26px; right: 26px; height: 128px; border-radius: 30px; background: rgba(40,40,40,.92); padding: 20px 22px; display: flex; gap: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .note .ic { width: 56px; height: 56px; border-radius: 14px; flex: none; display: flex; align-items: center; justify-content: center; }
+  .note .ic svg { width: 34px; height: 34px; }
+  .note h5 { font-size: 22px; font-weight: 700; } .note p { font-size: 20px; color: rgba(255,255,255,.72); margin-top: 4px; line-height: 1.25; }
+  .note .now { position: absolute; right: 22px; top: 20px; font-size: 17px; color: rgba(255,255,255,.45); }
+  .note p em { font-style: normal; color: #ff6b5e; font-weight: 700; }
+
+  /* hold */
+  #call { width: 760px; height: 700px; padding: 60px; text-align: center; }
+  #callAv { width: 170px; height: 170px; border-radius: 50%; margin: 0 auto; background: linear-gradient(135deg, #d9d9de, #b9b9c2); display: flex; align-items: center; justify-content: center; font-size: 62px; font-weight: 700; color: #fff; }
+  #call h3 { font-size: 52px; font-weight: 700; margin-top: 30px; letter-spacing: -1px; }
+  #callStat { font-size: 30px; margin-top: 10px; }
+  #callTimer { font-size: 118px; font-weight: 600; letter-spacing: -3px; margin-top: 28px; font-variant-numeric: tabular-nums; }
+  #callPos { display: inline-block; margin-top: 24px; font-size: 28px; font-weight: 600; padding: 14px 28px; border-radius: 30px; background: #fff1e6; color: #c24f00; }
+  .mnote { position: absolute; font-size: 64px; color: var(--or); font-family: 'DejaVu Sans', sans-serif; }
+
+  /* chatbot */
+  #chat { width: 800px; height: 760px; padding: 44px 46px; overflow: hidden; }
+  #chat .top { display: flex; align-items: center; gap: 18px; padding-bottom: 26px; border-bottom: 1.5px solid rgba(255,255,255,.08); }
+  #chat .bot { width: 64px; height: 64px; border-radius: 50%; background: #2a2a2a; display: flex; align-items: center; justify-content: center; }
+  #chat .top h4 { font-size: 30px; } #chat .top p { font-size: 20px; color: #43d17a; }
+  .msgs { position: relative; margin-top: 26px; }
+  .msg { max-width: 560px; font-size: 29px; line-height: 1.3; padding: 20px 26px; border-radius: 30px; margin-bottom: 18px; width: fit-content; }
+  .msg.u { margin-left: auto; background: var(--or); color: #fff; border-bottom-right-radius: 8px; }
+  .msg.b { background: #262626; border-bottom-left-radius: 8px; }
+  .chips { display: flex; gap: 12px; margin: -4px 0 18px; } .chips span { font-size: 24px; padding: 12px 22px; border-radius: 24px; box-shadow: inset 0 0 0 2px #3a3a3a; color: #ddd; }
+  #loop { position: absolute; right: 46px; bottom: 40px; width: 100px; height: 100px; }
+
+  /* transfer */
+  .agent { width: 820px; height: 190px; padding: 34px 38px; display: flex; gap: 28px; align-items: center; }
+  .agent .av { width: 110px; height: 110px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700; color: #fff; }
+  .agent h4 { font-size: 30px; font-weight: 700; } .agent p { font-size: 30px; margin-top: 8px; color: #444; }
+  .agent .tr { position: absolute; right: 36px; top: 30px; font-size: 19px; font-weight: 700; color: #c24f00; background: #fff1e6; padding: 8px 16px; border-radius: 18px; letter-spacing: 1px; }
+  #x3 { width: 190px; height: 190px; border-radius: 50%; background: var(--red); color: #fff; font-size: 84px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 60px rgba(226,56,43,.4); }
+
+  /* ticket */
+  #mail { width: 820px; height: 720px; padding: 50px 54px; }
+  #mail .from { display: flex; align-items: center; gap: 20px; }
+  #mail .from .av { width: 74px; height: 74px; border-radius: 50%; background: #2c2c2c; display: flex; align-items: center; justify-content: center; }
+  #mail h4 { font-size: 28px; } #mail .from p { font-size: 21px; color: #888; }
+  #mail h3 { font-size: 40px; margin-top: 34px; letter-spacing: -.5px; }
+  #mail .body { font-size: 30px; line-height: 1.45; color: #bbb; margin-top: 18px; }
+  #mail .body em { font-style: normal; color: #fff; background: rgba(255,110,5,.28); padding: 0 8px; border-radius: 6px; }
+  #days { display: flex; gap: 14px; margin-top: 40px; }
+  #days div { flex: 1; height: 110px; border-radius: 22px; background: #222; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; color: #888; position: relative; overflow: hidden; }
+  #days div b { font-size: 38px; color: #fff; margin-top: 4px; }
+  #days div i { position: absolute; inset: 0; background: rgba(226,56,43,.85); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 30px; font-weight: 800; color: #fff; }
+
+  /* refund */
+  #refund { width: 800px; height: 720px; padding: 54px 58px; }
+  #refund .amt { font-size: 104px; font-weight: 700; letter-spacing: -3px; margin-top: 8px; }
+  .step { position: relative; display: flex; align-items: center; gap: 26px; height: 112px; font-size: 32px; font-weight: 600; }
+  .step .d { width: 54px; height: 54px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; }
+  .step small { display: block; font-size: 22px; font-weight: 400; color: #999; margin-top: 4px; }
+  .step .line { position: absolute; left: 26px; top: 84px; width: 3px; height: 56px; background: #e2e2e2; }
+  #spin { width: 54px; height: 54px; }
+
+  /* year grid */
+  #grid { left: 90px; width: 900px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .tile { height: 168px; border-radius: 30px; background: #151515; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.08); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; position: relative; }
+  .tile svg { width: 58px; height: 58px; }
+  .tile b { font-size: 24px; color: var(--red); font-weight: 700; }
+  .tile.lit { box-shadow: inset 0 0 0 3px var(--red), 0 0 40px rgba(226,56,43,.25); }
+
+  /* rasolv app */
+  #app { width: 820px; height: 980px; padding: 50px 50px; overflow: hidden; }
+  #app .hd { display: flex; align-items: center; gap: 18px; font-size: 30px; font-weight: 700; letter-spacing: 6px; }
+  #app .hd svg { width: 58px; height: 58px; }
+  #inp { margin-top: 40px; border-radius: 30px; background: #1f1f1f; padding: 30px 34px; font-size: 36px; min-height: 110px; box-shadow: inset 0 0 0 2px rgba(255,110,5,.0); }
+  #inp i { display: inline-block; width: 3px; height: 40px; background: var(--or); vertical-align: -6px; margin-left: 4px; }
+  #sigs { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+  #sigs span { font-size: 25px; padding: 14px 24px; border-radius: 26px; background: #1d1d1d; color: #777; box-shadow: inset 0 0 0 2px #2c2c2c; }
+  #sigs span.on { color: #fff; background: rgba(255,110,5,.18); box-shadow: inset 0 0 0 2px var(--or); }
+  #ex { margin-top: 36px; border-radius: 34px; background: #1c1c1c; padding: 30px; box-shadow: inset 0 0 0 2px rgba(255,110,5,.5), 0 0 60px rgba(255,110,5,.15); }
+  #ex .av { width: 116px; height: 116px; border-radius: 50%; background: linear-gradient(135deg, #ff9a3d, #ff6e05); display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 800; position: relative; flex: none; }
+  #ex .av::after { content: ''; position: absolute; right: 2px; bottom: 4px; width: 26px; height: 26px; border-radius: 50%; background: #43d17a; box-shadow: 0 0 0 5px #1c1c1c; }
+  #ex h4 { font-size: 36px; } #ex p { font-size: 24px; color: #aaa; margin-top: 6px; }
+  #match { margin-left: auto; text-align: right; font-size: 20px; color: #aaa; } #match b { display: block; font-size: 48px; color: var(--or); }
+  #onit { margin-top: 26px; height: 74px; border-radius: 37px; background: var(--or); display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; gap: 12px; }
+
+  /* solve */
+  #live { width: 820px; height: 760px; padding: 50px 56px; }
+  #live .hd2 { display: flex; justify-content: space-between; align-items: center; }
+  #live .hd2 h3 { font-size: 40px; letter-spacing: -.5px; }
+  #livePill { font-size: 22px; font-weight: 700; color: #fff; background: var(--red); padding: 8px 18px; border-radius: 18px; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; }
+  #livePill i { width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+  .ev { position: relative; display: flex; gap: 26px; margin-top: 44px; }
+  .ev .d { width: 46px; height: 46px; border-radius: 50%; background: #eee; flex: none; margin-top: 2px; display: flex; align-items: center; justify-content: center; }
+  .ev h4 { font-size: 34px; font-weight: 600; } .ev p { font-size: 24px; color: #999; margin-top: 6px; }
+  .ev .t { margin-left: auto; font-size: 26px; color: #999; font-variant-numeric: tabular-nums; }
+  #done { margin-top: 50px; height: 110px; border-radius: 30px; background: #e9f8ef; color: var(--green); display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 40px; font-weight: 800; }
+
+  /* outro */
+  #logo { width: 420px; height: 420px; }
+  #word { font-size: 150px; font-weight: 700; letter-spacing: 26px; white-space: nowrap; }
+  #tagline { font-size: 52px; font-weight: 400; color: rgba(255,255,255,.75); white-space: nowrap; }
+  #cta { font-size: 40px; font-weight: 700; padding: 26px 58px; border-radius: 60px; background: var(--or); white-space: nowrap; box-shadow: 0 0 90px rgba(255,110,5,.5); }
+
+  #flash { background: #fff; opacity: 0; z-index: 70; }
+  #grain { opacity: .05; mix-blend-mode: overlay; z-index: 67; width: 1080px; height: 1920px; image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bgDark" class="bg"></div>
+  <div id="bgLight" class="bg" style="opacity:0"></div>
+
+  <div id="world" class="layer">
+    <!-- HOOK: lock screen full of support notifications -->
+    <div id="sHook" class="scene">
+      <div id="phone" class="abs">
+        <div id="phDate">Tuesday, October 14</div>
+        <div id="phTime">9:41</div>
+        <div id="notes"></div>
+      </div>
+    </div>
+
+    <!-- HOLD -->
+    <div id="sHold" class="scene">
+      <div id="call" class="card abs">
+        <div id="callAv">CC</div>
+        <h3>Customer Care</h3>
+        <div id="callStat" class="muted">On hold</div>
+        <div id="callTimer">00:00</div>
+        <div id="callPos">You are caller #23</div>
+      </div>
+      <div id="mnotes"></div>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="sBot" class="scene">
+      <div id="chat" class="card dk abs">
+        <div class="top"><div class="bot"><svg width="36" height="36" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="4" fill="none" stroke="#bbb" stroke-width="1.8"/><circle cx="9.5" cy="13" r="1.4" fill="#bbb"/><circle cx="14.5" cy="13" r="1.4" fill="#bbb"/><path d="M12 7V4" stroke="#bbb" stroke-width="1.8"/></svg></div><div><h4>Support Assistant</h4><p>● online</p></div></div>
+        <div class="msgs">
+          <div class="msg u" id="m1">My order arrived broken.</div>
+          <div class="msg b" id="m2">I can help with that! Choose a topic:</div>
+          <div class="chips" id="m3"><span>Billing</span><span>Account</span><span>Other</span></div>
+          <div class="msg u" id="m4">Other</div>
+          <div class="msg b" id="m5">Sorry, I didn't understand that. Choose a topic:</div>
+        </div>
+        <svg id="loop" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6" fill="none" stroke="#E2382B" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v4h-4" fill="none" stroke="#E2382B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <!-- TRANSFER -->
+    <div id="sTransfer" class="scene">
+      <div id="ag1" class="card agent abs"><div class="av" style="background:#7b8cde">JL</div><div><h4>Jordan · Tier 1</h4><p>“Can you describe the issue?”</p></div><div class="tr">TRANSFERRING →</div></div>
+      <div id="ag2" class="card agent abs"><div class="av" style="background:#d77ba9">SK</div><div><h4>Sam · Billing</h4><p>“Can you describe the issue?”</p></div><div class="tr">TRANSFERRING →</div></div>
+      <div id="ag3" class="card agent abs"><div class="av" style="background:#5fb59a">RT</div><div><h4>Riley · Orders</h4><p>“Can you describe the issue?”</p></div></div>
+      <div id="x3" class="abs">×3</div>
+    </div>
+
+    <!-- TICKET -->
+    <div id="sTicket" class="scene">
+      <div id="mail" class="card dk abs">
+        <div class="from"><div class="av"><svg width="38" height="38" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="#bbb" stroke-width="1.8"/><path d="M4 7l8 6 8-6" fill="none" stroke="#bbb" stroke-width="1.8"/></svg></div><div><h4>no-reply@support</h4><p>Ticket #48213 · auto-reply</p></div></div>
+        <h3>We've received your request.</h3>
+        <div class="body">Our team will get back to you within <em>3–5 business days.</em> Please do not reply to this email.</div>
+        <div id="days"></div>
+      </div>
+    </div>
+
+    <!-- REFUND -->
+    <div id="sRefund" class="scene">
+      <div id="refund" class="card abs">
+        <div class="muted" style="font-size:28px">Refund</div>
+        <div class="amt">$129.00</div>
+        <div style="height:30px"></div>
+        <div class="step"><div class="d" style="background:#1FA855"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div>Requested<small>Sep 30</small></div><div class="line"></div></div>
+        <div class="step"><div class="d" style="background:#1FA855"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div>Approved<small>Oct 2</small></div><div class="line"></div></div>
+        <div class="step"><div class="d"><svg id="spin" viewBox="0 0 54 54"><circle cx="27" cy="27" r="22" fill="none" stroke="#eee" stroke-width="6"/><path d="M27 5a22 22 0 0 1 22 22" fill="none" stroke="#E2382B" stroke-width="6" stroke-linecap="round"/></svg></div><div style="color:#E2382B">Pending<small id="pendDay">day 12</small></div></div>
+      </div>
+    </div>
+
+    <!-- YEAR -->
+    <div id="sYear" class="scene"><div id="grid" class="abs"></div></div>
+
+    <!-- RASOLV APP -->
+    <div id="sApp" class="scene">
+      <div id="app" class="card dk abs">
+        <div class="hd"><svg id="appLogo" viewBox="-100 -100 200 200"></svg>RASOLV</div>
+        <div id="inp"><span id="inpTx"></span><i id="caret"></i></div>
+        <div id="sigs"><span>Order #A-2291</span><span>Payment · $129</span><span>12 days pending</span><span>History</span><span>Urgency · high</span></div>
+        <div id="ex">
+          <div class="row2"><div class="av">MH</div><div><h4>Maya Haddad</h4><p>Billing expert · 4.9★</p></div><div id="match">AI match<b>98%</b></div></div>
+          <div id="onit"><svg width="30" height="30" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="#fff"/></svg>On it · joined in <span id="joinS">12</span>s</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOLVE -->
+    <div id="sSolve" class="scene">
+      <div id="live" class="card abs">
+        <div class="hd2"><h3>Your issue</h3><div id="livePill"><i></i>LIVE</div></div>
+        <div class="ev" id="ev1"><div class="d" style="background:#ffe8d6"><svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#FF6E05"/></svg></div><div><h4>Maya joined</h4><p>Read your order + payment</p></div><div class="t">0:12</div></div>
+        <div class="ev" id="ev2"><div class="d" style="background:#ffe8d6"><svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#FF6E05"/></svg></div><div><h4>Found the stuck refund</h4><p>Escalated with the merchant</p></div><div class="t">1:48</div></div>
+        <div class="ev" id="ev3"><div class="d" style="background:#1FA855"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h4>$129.00 refunded</h4><p>Replacement shipped</p></div><div class="t">4:02</div></div>
+        <div id="done"><svg width="46" height="46" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1FA855"/><path d="M6.5 12.5l3.5 3.5 7.5-8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Solved in 4 minutes</div>
+      </div>
+    </div>
+
+    <!-- OUTRO -->
+    <div id="sOut" class="scene">
+      <svg id="logo" class="abs" viewBox="-100 -100 200 200"></svg>
+      <div id="word" class="abs">RASOLV</div>
+      <div id="tagline" class="abs">Vision that solves.</div>
+      <div id="cta" class="abs">Get help in minutes →</div>
+    </div>
+  </div>
+
+  <!-- persistent receipt -->
+  <div id="rc" class="abs">
+    <div id="rcBar"></div>
+    <div id="rcPaper">
+      <h4>BAD SUPPORT CO.</h4>
+      <div class="meta">invoice · no. 0001 · <span id="rcState">unpaid</span></div>
+      <div class="rule"></div>
+      <div id="rcLines"></div>
+      <div class="rule"></div>
+      <div id="rcTotal"><span>TOTAL</span><b id="rcTot">0 min</b></div>
+    </div>
+    <div id="stampPer" class="stamp">PER PROBLEM</div>
+    <div id="stampSolved" class="stamp">SOLVED</div>
+  </div>
+
+  <div id="head" class="abs"></div>
+  <div id="tag" class="abs"><svg id="tagLogo" viewBox="-100 -100 200 200"></svg>RASOLV</div>
+  <div id="pill" class="abs"><div id="pillFill"></div><div class="row"><span><i id="pillDot"></i><span id="pillTx">the fix · at the end</span></span><span id="pillSec">36s</span></div></div>
+  <canvas id="grain" class="layer" width="270" height="480"></canvas>
+  <div id="flash" class="layer"></div>
+</div>
+<script src="captions.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, d) => clamp((t - a) / d);
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eo5 = x => 1 - Math.pow(1 - x, 5);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x, s = 1.9) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
+const lerp = (a, b, x) => a + (b - a) * x;
+
+const CAP = window.CAPTIONS, DUR = window.DURATION;
+const L = Object.fromEntries(CAP.map(c => [c.scene, c]));
+const W = (s, i) => L[s].words[i][1];
+const S = s => L[s].start - .25;                       // every cut lands half a beat before its line
+
+// scenes: [cut time, element, theme]
+const SC = [
+  [0, 'sHook', 'd'], [S('hold'), 'sHold', 'l'], [S('bot'), 'sBot', 'd'], [S('transfer'), 'sTransfer', 'l'],
+  [S('ticket'), 'sTicket', 'd'], [S('refund'), 'sRefund', 'l'], [S('per'), null, 'l'], [S('year'), 'sYear', 'd'],
+  [S('fix'), null, 'd'], [S('rasolv'), 'sApp', 'd'], [S('solve'), 'sSolve', 'l'], [S('clear'), null, 'l'], [S('outro'), 'sOut', 'd'],
+];
+const CUTS = SC.slice(1).map(s => s[0]);
+const FIX = W('fix', 3);                               // countdown hits zero on "fix."
+const LOCK = W('outro', 0) - .05;
+
+// receipt layout per stretch: [from time, x, top, scale, rot]
+const RCK = [
+  [0, 785, 520, .74, 3], [S('intro'), 540, 470, .98, 0], [S('hold'), 540, -150, .95, -1.5], [S('per'), 540, 300, 1.08, -2],
+  [S('year'), 540, -170, .95, 1.5], [S('fix'), 540, -1100, .74, 6], [S('clear'), 540, 260, 1.08, 0], [S('outro'), 540, -1300, 1, -4],
+];
+// caption y per stretch
+const HDY = [[0, 300], [S('intro'), 300], [S('hold'), 640], [S('per'), 1360], [S('year'), 680], [S('fix'), 860], [S('rasolv'), 280], [S('clear'), 1360], [S('outro'), 1500]];
+
+// receipt lines: [label, sub, amount, appears-at]
+const RL = [
+  ['Hold queue', 'per call', '47 min', W('hold', 4)],
+  ['Chatbot loop', 'answers nothing', '15 min', W('bot', 3)],
+  ['Transfers ×3', 'explain again', '22 min', W('transfer', 0)],
+  ['Ticket wait', '3–5 business days', '4 days', W('ticket', 6)],
+  ['Refund', 'still pending', '$129', W('refund', 2)],
+  ['× 12 problems / yr', '', '×12', W('year', 1)],
+];
+const TOT = [[0, '0 min'], [RL[0][3], '47 min'], [RL[1][3], '1 h 2 min'], [RL[2][3], '1 h 24 min'], [RL[3][3], '4 d 1 h'], [RL[4][3], '4 d + $129'], [RL[5][3] + .5, '7 wks + $1,548']];
+
+function put(el, x, y, { s = 1, r = 0, o = 1, blur = 0, ox = 0, oy = 0 } = {}) {
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+  el.style.transform = `translate(-50%,-50%) translate(${ox}px,${oy}px) rotate(${r}deg) scale(${s})`;
+  el.style.opacity = o; el.style.filter = blur > 0.2 ? `blur(${blur}px)` : '';
+}
+function pop(el, t, t0, x, y, { dur = .45, s0 = .7, dist = 60, r = 0 } = {}) {
+  const p = P(t, t0, dur);
+  put(el, x, y, { s: lerp(s0, 1, back(p, 1.6)), oy: (1 - eo(p)) * dist, o: t < t0 ? 0 : clamp(p * 3), blur: (1 - eo(p)) * 10, r: lerp(r, 0, eo(p)) });
+}
+function slam(el, t, t0, x, y, { from = 2.2, dur = .26, r = 0 } = {}) {
+  const p = P(t, t0, dur), e = eo5(p);
+  put(el, x, y, { s: lerp(from, 1, e), r: lerp(r * 2.5, r, e), o: t < t0 ? 0 : clamp(p * 3), blur: (1 - e) * 14 });
+}
+function reveal(el, t, t0, d = .3) {           // in-flow element: fade + rise
+  const p = P(t, t0, d);
+  el.style.opacity = t < t0 ? 0 : clamp(p * 2.5);
+  el.style.transform = `translateY(${(1 - back(p, 1.5)) * 30}px) scale(${lerp(.92, 1, eo(p))})`;
+}
+const at = (list, t) => list.filter(k => k[0] <= t).pop();
+
+// ================= RASOLV aperture mark (from ../cinema) =================
+function aperture({ r = 37, rot = 0, color = '#FF6E05', gap = '#070707', R = 80 } = {}) {
+  const Pp = (a, rad) => [rad * Math.cos(a * Math.PI / 180), rad * Math.sin(a * Math.PI / 180)];
+  const O = [...Array(6)].map((_, i) => Pp(-90 + 60 * i, R));
+  const I = [...Array(6)].map((_, i) => Pp(-60 + 60 * i + rot, Math.max(r, 0.01)));
+  const ang = q => (Math.atan2(q[1], q[0]) * 180 / Math.PI + 360) % 360;
+  const hit = (p, d) => {
+    let best = null;
+    for (let k = 0; k < 6; k++) {
+      const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]];
+      const den = d[0] * e[1] - d[1] * e[0]; if (Math.abs(den) < 1e-9) continue;
+      const tt = ((a[0] - p[0]) * e[1] - (a[1] - p[1]) * e[0]) / den;
+      const u = ((a[0] - p[0]) * d[1] - (a[1] - p[1]) * d[0]) / den;
+      if (tt > 1e-6 && u >= -1e-6 && u <= 1 + 1e-6 && (!best || tt < best.t)) best = { t: tt, q: [p[0] + tt * d[0], p[1] + tt * d[1]] };
+    }
+    return best.q;
+  };
+  const Pt = I.map((q, i) => { const pr = I[(i + 5) % 6]; return hit(q, [q[0] - pr[0], q[1] - pr[1]]); });
+  const f = q => q[0].toFixed(2) + ',' + q[1].toFixed(2);
+  let blades = '', seps = '';
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6, a0 = ang(Pt[i]), span = (ang(Pt[j]) - a0 + 360) % 360;
+    const mids = O.filter(v => { const d = (ang(v) - a0 + 360) % 360; return d > 1e-3 && d < span - 1e-3; })
+                  .sort((u, v) => ((ang(v) - a0 + 360) % 360) - ((ang(u) - a0 + 360) % 360));
+    blades += `<polygon points="${[I[i], I[j], Pt[j], ...mids, Pt[i]].map(f).join(' ')}" fill="${color}"/>`;
+    seps += `<line x1="${f(I[i]).replace(',', '" y1="')}" x2="${f(Pt[i]).replace(',', '" y2="')}" stroke="${gap}" stroke-width="4.2" stroke-linecap="square"/>`;
+  }
+  return `<g>${blades}${seps}</g>`;
+}
+const apCache = {};
+function setAp(el, opts) {
+  const key = JSON.stringify(opts, (k, v) => typeof v === 'number' ? +v.toFixed(2) : v);
+  if (el.dataset.k === key) return;
+  el.dataset.k = key; el.innerHTML = apCache[key] ??= aperture(opts);
+}
+
+// ================= icons =================
+const ic = {
+  phone: c => `<svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/></svg>`,
+  bot: c => `<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="4" fill="none" stroke="${c}" stroke-width="1.9"/><circle cx="9.5" cy="13" r="1.4" fill="${c}"/><circle cx="14.5" cy="13" r="1.4" fill="${c}"/></svg>`,
+  mail: c => `<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="${c}" stroke-width="1.9"/><path d="M4 7l8 6 8-6" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
+  card: c => `<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5" fill="none" stroke="${c}" stroke-width="1.9"/><path d="M3 10h18" stroke="${c}" stroke-width="1.9"/></svg>`,
+  box: c => `<svg viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5z M3 8l9 5 9-5 M12 13v8" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/></svg>`,
+  lock: c => `<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5" fill="none" stroke="${c}" stroke-width="1.9"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
+  wifi: c => `<svg viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0M6 12.5a9 9 0 0 1 12 0M9.5 16a4 4 0 0 1 5 0" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="19.5" r="1.3" fill="${c}"/></svg>`,
+  plane: c => `<svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-2 7 6 1 1 2-7 1-3 7-2-1 1-6-8 1z" fill="none" stroke="${c}" stroke-width="1.7" stroke-linejoin="round"/></svg>`,
+  bolt: c => `<svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/></svg>`,
+};
+
+let noise = [], noteEls = [], tiles = [], lnEls = [], mnotes = [];
+function build() {
+  const N = [
+    ['#2f7cf6', 'phone', 'Customer Care', 'On hold · you are caller <em>#23</em>', 'hook', 1],
+    ['#7a5af8', 'bot', 'Support Assistant', 'Sorry, I didn\'t understand that.', 'hook', 3],
+    ['#3a3a3a', 'mail', 'Ticket #48213', 'We\'ll reply in <em>3–5 business days</em>', 'hook', 5],
+    ['#1FA855', 'card', 'Bank', 'Refund pending · <em>$129.00</em> · day 12', 'hook', 6],
+  ];
+  $('notes').innerHTML = N.map(n => `<div class="note"><div class="ic" style="background:${n[0]}">${ic[n[1]]('#fff')}</div><div><h5>${n[2]}</h5><p>${n[3]}</p></div><div class="now">now</div></div>`).join('');
+  noteEls = [...$('notes').children].map((el, i) => ({ el, t: W(N[i][4], N[i][5]) - .1 }));
+
+  $('rcLines').innerHTML = RL.map(r => `<div class="ln${r[2] === '×12' ? ' x2' : ''}"><span>${r[0]}</span><b>${r[2]}</b>${r[1] ? `<span class="sub">${r[1]}</span>` : ''}<i class="strike"></i></div>`).join('');
+  lnEls = [...$('rcLines').children];
+
+  $('days').innerHTML = ['MON', 'TUE', 'WED', 'THU', 'FRI'].map((d, i) => `<div>${d}<b>${13 + i}</b><i>…</i></div>`).join('');
+
+  const G = ['box', 'card', 'lock', 'wifi', 'plane', 'bolt', 'phone', 'mail', 'box', 'card', 'lock', 'wifi'];
+  const GL = ['broken order', 'double charge', 'locked out', 'no internet', 'lost bag', 'power bill', 'SIM issue', 'no reply', 'wrong item', 'card blocked', 'reset fail', 'outage'];
+  $('grid').innerHTML = G.map((g, i) => `<div class="tile">${ic[g]('#9a9a9a')}<span style="font-size:20px;color:#888">${GL[i]}</span><b>4 days</b></div>`).join('');
+  tiles = [...$('grid').children];
+
+  $('mnotes').innerHTML = ['♪', '♫', '♪', '♬', '♪', '♫'].map(n => `<div class="mnote">${n}</div>`).join('');
+  mnotes = [...$('mnotes').children];
+
+  setAp($('tagLogo'), { r: 37 });
+  setAp($('appLogo'), { r: 37 });
+  for (let k = 0; k < 8; k++) {
+    const c = document.createElement('canvas'); c.width = 270; c.height = 480; const g = c.getContext('2d'); const im = g.createImageData(270, 480);
+    let sd = 1234 + k * 7919; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < im.data.length; i += 4) { const v = rnd() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+    g.putImageData(im, 0, 0); noise.push(c);
+  }
+}
+
+// ---------- headline caption: rolling chunks, keyword gets the selection box ----------
+const CHUNKS = [];
+CAP.forEach(c => {
+  let cur = [];
+  c.words.forEach((w, i) => {
+    cur.push(i);
+    const brk = /[.,:?!]$/.test(w[0]) || cur.length >= 5;
+    if (brk || i === c.words.length - 1) {
+      const end = i + 1 < c.words.length ? c.words[i + 1][1] - .02 : c.end + .25;
+      CHUNKS.push({ c, idx: cur, start: c.words[cur[0]][1] - .06, end }); cur = [];
+    }
+  });
+});
+let headKey = '', headEls = [];
+function head(t) {
+  const el = $('head');
+  const ch = CHUNKS.find(k => t >= k.start && t < k.end);
+  const ny = at(HDY, t)[1];
+  el.style.top = ny + 'px';
+  if (!ch) { el.style.opacity = 0; return; }
+  const key = ch.start.toFixed(3);
+  if (key !== headKey) {
+    headKey = key;
+    el.innerHTML = ch.idx.map(i => { const w = ch.c.words[i]; return `<span class="${w[3] ? 'k' : ''}">${w[3] ? '<em class="sel"><i></i><i></i></em>' : ''}${w[0]}</span>`; }).join('');
+    headEls = [...el.children];
+  }
+  const dark = theme(t) === 'd';
+  el.style.opacity = clamp((ch.end - t) / .08);
+  el.style.color = dark ? '#fff' : '#111';
+  ch.idx.forEach((wi, n) => {
+    const w = ch.c.words[wi], sp = headEls[n], p = P(t, w[1] - .04, .2), e = eo5(p);
+    sp.style.opacity = t < w[1] - .04 ? 0 : clamp(p * 3);
+    sp.style.transform = `translateY(${(1 - e) * 26}px)`;
+    sp.style.filter = p < 1 ? `blur(${(1 - e) * 8}px)` : '';
+    sp.style.color = w[3] ? (dark ? '#fff' : '#111') : (dark ? 'rgba(255,255,255,.62)' : 'rgba(17,17,17,.55)');
+    const sel = sp.querySelector('.sel');
+    if (sel) { const q = eo5(P(t, w[1] + .04, .22)); sel.style.transform = `scaleX(${q})`; sel.style.opacity = q > 0 ? 1 : 0; }
+  });
+}
+
+function theme(t) { return at(SC, t)[2]; }
+
+// ---------- receipt ----------
+function receipt(t) {
+  const k = RCK.filter(r => r[0] <= t), cur = k[k.length - 1], prev = k[k.length - 2] || cur;
+  const e = eio(P(t, cur[0], .55));
+  const x = lerp(prev[1], cur[1], e), y = lerp(prev[2], cur[2], e), s = lerp(prev[3], cur[3], e), r = lerp(prev[4], cur[4], e);
+  const rc = $('rc'), pin = P(t, W('hook', 3) - .2, .6);
+  rc.style.left = x + 'px'; rc.style.top = y + 'px';
+  rc.style.transform = `translateX(-50%) rotate(${r}deg) scale(${s})`;
+  rc.style.opacity = t < W('hook', 3) - .2 ? 0 : 1;
+  // paper "prints" out of the bar at first
+  $('rcPaper').style.clipPath = `inset(0 0 ${(1 - eo(pin)) * 100}% 0)`;
+  $('rcPaper').style.transform = `translateY(${-(1 - eo(pin)) * 40}px)`;
+  $('rcBar').style.opacity = clamp(1 - P(t, S('intro') + .2, .3));
+  lnEls.forEach((el, i) => {
+    const t0 = RL[i][3], p = P(t, t0, .35), h = RL[i][1] ? 70 : 46;
+    el.style.height = lerp(0, h, eo(p)) + 'px';
+    el.style.background = t >= t0 && t < t0 + .6 ? `rgba(226,56,43,${.16 * (1 - P(t, t0 + .2, .4))})` : '';
+    const sk = P(t, W('clear', 0) + i * .14, .2);
+    el.querySelector('.strike').style.width = (eo(sk) * 104) + '%';
+    el.querySelector('b').style.color = sk > .5 ? 'var(--green)' : '';
+    el.style.opacity = sk > .5 ? .6 : 1;
+  });
+  const tot = $('rcTot'), cleared = t >= W('clear', 5) - .05;
+  const txt = cleared ? '4 min · $0' : at(TOT, t)[1];
+  if (tot.textContent !== txt) tot.textContent = txt;
+  const lastT = at(TOT, t)[0], bump = cleared ? P(t, W('clear', 5) - .05, .3) : P(t, lastT, .3);
+  tot.style.color = cleared ? 'var(--green)' : '';
+  tot.style.display = 'inline-block'; tot.style.transform = `scale(${1 + .25 * Math.sin(bump * Math.PI)})`;
+  $('rcState').textContent = cleared ? 'paid' : 'unpaid';
+  const sp = P(t, W('per', 6) - .05, .22), se = eo5(sp);
+  put($('stampPer'), 300, 260, { s: lerp(2.6, 1, se), r: -12, o: t < W('per', 6) - .05 ? 0 : clamp(sp * 3) * (t < W('clear', 0) ? 1 : 0), blur: (1 - se) * 10 });
+  const ss = P(t, W('clear', 5) + .05, .22), sse = eo5(ss);
+  put($('stampSolved'), 300, 330, { s: lerp(2.6, 1, sse), r: -10, o: t < W('clear', 5) + .05 ? 0 : clamp(ss * 3), blur: (1 - sse) * 10 });
+}
+
+function render(t) {
+  const cutIdx = SC.filter(s => s[0] <= t).length - 1;
+  const [ct, sid, th] = SC[cutIdx];
+  // the scene with an element keeps showing through null (overlay-only) stretches
+  let vis = null; for (let i = cutIdx; i >= 0; i--) if (SC[i][1]) { vis = SC[i][1]; break; }
+  SC.forEach(s => { if (s[1]) $(s[1]).style.display = s[1] === vis ? 'block' : 'none'; });
+  const visCut = SC.find(s => s[1] === vis)[0];
+  const ein = eo5(P(t, visCut, .4));
+  const next = SC.find(s => s[0] > t && s[1]);
+  const pout = next ? P(t, next[0] - .12, .12) : 0;
+  const sc = $(vis); sc.style.transform = `translateY(${(1 - ein) * 60 - pout * 60}px) scale(${lerp(1.06, 1, ein)})`;
+  sc.style.opacity = clamp(P(t, visCut, .12) + (visCut === 0 ? 1 : 0)) * (1 - pout);
+  // dim the demo while the receipt takes centre stage
+  const dz = [[S('per'), S('year')], [S('fix'), S('rasolv')], [S('clear'), S('outro')]].find(d => t >= d[0] && t < d[1]);
+  sc.style.filter = dz ? `blur(${eo(P(t, dz[0], .4)) * 18}px) opacity(${lerp(1, .45, eo(P(t, dz[0], .4)))})` : '';
+
+  const lightOn = th === 'l';
+  $('bgLight').style.opacity = lightOn ? 1 : 0;
+  $('tag').style.color = lightOn ? '#111' : '#fff';
+  setAp($('tagLogo'), { r: 37, gap: lightOn ? '#F2F1EE' : '#070707' });
+
+  // ---------- HOOK ----------
+  if (vis === 'sHook') {
+    const pz = P(t, S('intro'), .5);
+    put($('phone'), lerp(330, 540, eio(pz)), lerp(1120, 1180, eio(pz)), { s: lerp(lerp(1.08, 1, eo(P(t, 0, 1.2))), .88, eio(pz)), o: clamp(P(t, 0, .3)) * lerp(1, .35, eio(pz)), blur: eio(pz) * 12, r: lerp(-2, 0, eo(P(t, 0, 1.2))) });
+    noteEls.forEach(({ el, t: t0 }, i) => {
+      const p = P(t, t0, .4), order = noteEls.filter(n => n.t <= t).length - 1;  // newest on top, older slide down
+      const slot = order - i;
+      el.style.top = (330 + slot * 142) + 'px';
+      el.style.opacity = t < t0 ? 0 : clamp(p * 3);
+      el.style.transform = `translateY(${(1 - back(p, 1.4)) * -60}px) scale(${lerp(.9, 1, eo(p))})`;
+      el.style.transition = '';
+    });
+  }
+
+  // ---------- HOLD ----------
+  if (vis === 'sHold') {
+    const a = SC[1][0];
+    pop($('call'), t, a + .05, 540, 1230, { s0: .85 });
+    const secs = Math.floor(lerp(0, 47 * 60 + 12, eio(P(t, a + .2, W('hold', 4) - a + .3))));
+    const tx = String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
+    if ($('callTimer').textContent !== tx) $('callTimer').textContent = tx;
+    $('callTimer').style.color = secs > 2400 ? 'var(--red)' : '';
+    mnotes.forEach((m, i) => {
+      const t0 = W('hold', 7) + i * .22, p = P(t, t0, 1.6);
+      put(m, [180, 900, 230, 860, 160, 920][i], lerp(1300, 860, p) + [0, 60, 120, 20, 200, 160][i], { o: t < t0 ? 0 : Math.sin(p * Math.PI), r: Math.sin((t - t0) * 4 + i) * 14, s: lerp(.7, 1.15, p) });
+    });
+  }
+
+  // ---------- CHATBOT ----------
+  if (vis === 'sBot') {
+    const a = SC[2][0];
+    pop($('chat'), t, a + .05, 540, 1250, { s0: .85 });
+    [[1, 'm1', a + .15], [2, 'm2', W('bot', 2)], [3, 'm3', W('bot', 4) - .1], [4, 'm4', W('bot', 5)], [5, 'm5', W('bot', 6)]].forEach(([, id, t0]) => reveal($(id), t, t0));
+    const lp = P(t, W('bot', 7), .3);
+    $('loop').style.opacity = clamp(lp * 3);
+    $('loop').style.transform = `rotate(${Math.max(0, t - W('bot', 7)) * 400}deg) scale(${lerp(.4, 1, back(lp))})`;
+  }
+
+  // ---------- TRANSFER ----------
+  if (vis === 'sTransfer') {
+    const a = SC[3][0];
+    [['ag1', a + .05, 940], ['ag2', W('transfer', 1), 1160], ['ag3', W('transfer', 5) - .05, 1380]].forEach(([id, t0, y], i) => {
+      pop($(id), t, t0, 540, y, { s0: .8, dist: 80, r: i % 2 ? 3 : -3 });
+      const nxt = [W('transfer', 1), W('transfer', 5) - .05, 99][i];
+      $(id).style.filter += t > nxt ? ' grayscale(1)' : '';
+      if (t > nxt) $(id).style.opacity = .55;
+    });
+    slam($('x3'), t, W('transfer', 6), 900, 1560, { r: -8 });
+  }
+
+  // ---------- TICKET ----------
+  if (vis === 'sTicket') {
+    const a = SC[4][0];
+    pop($('mail'), t, a + .05, 540, 1230, { s0: .85 });
+    [...$('days').children].forEach((d, i) => {
+      const t0 = W('ticket', 6) + .1 + i * .18, p = P(t, t0, .18);
+      const x = d.querySelector('i'); x.style.opacity = t < t0 ? 0 : p; x.style.transform = `scale(${lerp(1.6, 1, eo5(p))})`;
+    });
+  }
+
+  // ---------- REFUND ----------
+  if (vis === 'sRefund') {
+    const a = SC[5][0];
+    pop($('refund'), t, a + .05, 540, 1230, { s0: .85 });
+    $('spin').style.transform = `rotate(${t * 360}deg)`;
+    const d = 12 + Math.floor(P(t, W('refund', 4), .8) * 9);
+    const tx = 'day ' + d; if ($('pendDay').textContent !== tx) $('pendDay').textContent = tx;
+  }
+
+  // ---------- YEAR ----------
+  if (vis === 'sYear') {
+    const a = SC[7][0];
+    $('grid').style.top = '920px';
+    tiles.forEach((el, i) => {
+      const t0 = a + .1 + i * .11, p = P(t, t0, .35);
+      el.style.opacity = t < t0 ? 0 : clamp(p * 3);
+      el.style.transform = `scale(${lerp(.6, 1, back(p, 1.6))})`;
+      el.classList.toggle('lit', t >= W('year', 8) + i * .03);
+    });
+  }
+
+  // ---------- RASOLV APP ----------
+  if (vis === 'sApp') {
+    const a = SC[9][0];
+    pop($('app'), t, a + .05, 540, 1230, { s0: .85 });
+    const msg = 'My refund never came.';
+    const n = Math.round(lerp(0, msg.length, P(t, W('rasolv', 1), W('rasolv', 4) - W('rasolv', 1) + .2)));
+    if ($('inpTx').textContent.length !== n) $('inpTx').textContent = msg.slice(0, n);
+    $('caret').style.opacity = Math.floor(t * 3) % 2 ? 1 : .2;
+    $('inp').style.boxShadow = `inset 0 0 0 2px rgba(255,110,5,${t > W('rasolv', 5) ? .8 : 0})`;
+    [...$('sigs').children].forEach((s, i) => {
+      const t0 = W('rasolv', 5) + i * .16; reveal(s, t, t0, .25); s.classList.toggle('on', t >= t0 + .15);
+    });
+    reveal($('ex'), t, W('match', 3) - .1, .4);
+    const m = Math.round(lerp(60, 98, eo(P(t, W('match', 3), .7)))) + '%';
+    if ($('match').lastChild.textContent !== m) $('match').querySelector('b').textContent = m;
+    reveal($('onit'), t, W('match', 5), .3);
+    setAp($('appLogo'), { r: lerp(10, 37, eo(P(t, a, .6))), rot: lerp(-60, 0, eo(P(t, a, .6))), gap: '#141414' });
+  }
+
+  // ---------- SOLVE ----------
+  if (vis === 'sSolve') {
+    const a = SC[10][0];
+    pop($('live'), t, a + .05, 540, 1150, { s0: .85 });
+    $('livePill').querySelector('i').style.opacity = Math.floor(t * 2.5) % 2 ? 1 : .3;
+    reveal($('ev1'), t, a + .2); reveal($('ev2'), t, W('solve', 1)); reveal($('ev3'), t, W('solve', 3));
+    const p = P(t, W('solve', 4), .4); $('done').style.opacity = clamp(p * 3); $('done').style.transform = `scale(${lerp(.7, 1, back(p, 2))})`;
+  }
+
+  // ---------- OUTRO ----------
+  if (vis === 'sOut') {
+    const a = SC[12][0], p = P(t, a, .9);
+    setAp($('logo'), { r: lerp(.5, 37, eo5(p)), rot: lerp(-120, 0, eo5(p)) });
+    put($('logo'), 540, 760, { s: lerp(1.6, 1, eo5(P(t, a, .6))), o: clamp(P(t, a, .2)), blur: (1 - eo5(P(t, a, .5))) * 12 });
+    const ws = P(t, W('outro', 0) - .05, .6);
+    put($('word'), 540, 1100, { o: clamp(ws * 2), s: lerp(1.2, 1, eo5(ws)), blur: (1 - eo5(ws)) * 12 });
+    $('word').style.letterSpacing = lerp(70, 26, eo5(ws)) + 'px';
+    pop($('tagline'), t, W('outro', 1) - .05, 540, 1230, { s0: .9, dist: 30 });
+    pop($('cta'), t, W('outro', 3) + .5, 540, 1440, { s0: .6 });
+  }
+
+  // ---------- receipt / caption / chrome ----------
+  receipt(t);
+  head(t);
+  const pl = $('pill'), pIn = P(t, W('intro', 4), .45);
+  const left = Math.max(0, Math.ceil(FIX - t));
+  const done = t >= FIX;
+  pl.style.transform = `translateX(-50%) translateY(${(1 - back(pIn, 1.5)) * 160}px) scale(${done ? 1 + .12 * Math.sin(P(t, FIX, .35) * Math.PI) : 1})`;
+  pl.style.opacity = (t < W('intro', 4) ? 0 : clamp(pIn * 3)) * (1 - P(t, S('rasolv') + .2, .3));
+  $('pillFill').style.width = (clamp((t - W('intro', 4)) / (FIX - W('intro', 4))) * 100) + '%';
+  $('pillFill').style.background = done ? 'var(--or)' : '';
+  $('pillTx').textContent = done ? 'the fix · now' : 'the fix · at the end';
+  $('pillTx').style.color = done ? '#fff' : '';
+  $('pillSec').textContent = done ? '0s' : left + 's'; $('pillSec').style.color = done ? '#fff' : '';
+  $('pillDot').style.background = done ? '#fff' : 'var(--or)';
+  $('pillDot').style.opacity = Math.floor(t * 2) % 2 ? 1 : .35;
+  $('tag').style.opacity = clamp(P(t, .3, .4)) * (t >= LOCK - .2 ? 1 - P(t, LOCK - .2, .2) : 1);
+
+  const lastCut = [0, ...CUTS].filter(c => c <= t).pop(), df = t - lastCut;
+  let fl = lastCut > 0 ? Math.exp(-df / .05) * .35 : 0;
+  if (t >= FIX) fl = Math.max(fl, Math.exp(-(t - FIX) / .08) * .5);
+  $('flash').style.opacity = fl;
+  $('world').style.transform = `scale(${1 + (lastCut > 0 ? .02 * Math.exp(-df / .1) : 0)})`;
+  const g = $('grain').getContext('2d'); g.drawImage(noise[Math.floor(t * 24) % noise.length], 0, 0);
+  $('stage').style.filter = t > DUR - .4 ? `brightness(${clamp((DUR - t) / .4)})` : '';
+}
+
+window.DURATION = DUR;
+window.seek = t => render(t);
+window.ready = document.fonts.ready.then(() => { build(); render(0); return true; });
+if (!navigator.webdriver) {
+  window.ready.then(() => { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); }; loop(); });
+}
+</script>
+</body>
+</html>
