@@ -1,4 +1,4 @@
-# RASOLV for Business — "Don't lose them at HUMAN!!!"
+# RASOLV for Business — "What does one hour of waiting cost?"
 
 30 s ad aimed at business owners. The founder (animated, from `founder-reference.png`) and the RASOLV
 AI agent present it as a double act. Vertical 1080×1920 master (Reels / TikTok / Stories), 16:9 cut-down
@@ -20,21 +20,21 @@ telecom by changing the message texts only.
 
 | # | Time | Visual | Dialogue / on-screen |
 |---|---|---|---|
-| 1 | 0.0–3.0 | Customer phone, thumb typing: `where is my order` → `HUMAN!!!` → `AGENT!!!` → `cancel my order`. Hard cut to founder. | **Founder:** "Every time a customer types this… you're about to lose them." |
-| 2 | 3.0–6.0 | Agent orb pops in beside him with an iris snap. | **Agent:** "Not on my watch." **Founder:** "Show them." |
+| 1 | 0.0–3.0 | Black. A loud clock tick. A wait timer races `0:00:00 → 1:00:00`; beside it a loss ticker counts up: `−1 order`, `★☆☆☆☆`, `−1 customer`, `Refund requested`. Founder steps into the light. | **Founder (to camera):** "What does one hour of waiting cost your business?" |
+| 2 | 3.0–6.0 | Quick insert: customer phone — `where is my order` → `HUMAN!!!` → `cancel my order`. Agent orb pops in beside the founder with an iris snap; the timer freezes. | **Founder:** "Usually… this customer." **Agent:** "Not on my watch." **Founder:** "Show them." |
 | 3 | 6.0–11.0 | Wall of incoming messages floods the frame. Agent sorts them into lanes; chips light up: *Orders · Billing · Tech*, *Urgent*, *Frustrated*. | **Agent:** "Orders, billing, tech. I read every message — who's angry, who's urgent." |
 | 4 | 11.0–15.0 | Orange routing lines snap to staff cards: "Maya · Billing expert", "Youssef · Orders". Card shows "Answer drafted ✓". | **Founder:** "Then it hands off to a real expert on your team — answer already drafted." |
-| 5 | 15.0–19.0 | Back to the customer phone: LIVE badge, "Refund issued in 4 min", ★★★★★. | **Agent:** "Your customer never waits. Your team never starts from zero." |
+| 5 | 15.0–19.0 | Back to the customer phone: LIVE badge, "Refund issued in 4 min", ★★★★★. | **Agent:** "Not one hour. Four minutes. And your team never starts from zero." |
 | 6 | 19.0–24.0 | Insights card builds: "38% of complaints this week: late delivery — Branch 4". Founder taps it. | **Founder:** "And it tells you *why* they're complaining — before it costs you." |
 | 7 | 24.0–27.0 | Lock closes over the dashboard. | **Agent:** "Your data stays yours." |
 | 8 | 27.0–30.0 | Founder + Agent side by side; aperture iris opens → RASOLV wordmark. | **Founder:** "RASOLV. Your customers get a human. You get the whole picture." Super: *Book a demo* |
 
 ## Alternate hooks (A/B test the first 3 s)
 
-1. "Every time a customer types 'HUMAN!!!', you're about to lose them." (default)
-2. "Your customers aren't angry about the problem. They're angry about the wait."
-3. "You have 312 unanswered messages. We have zero."
-4. "What does one hour of waiting cost your business?"
+1. "What does one hour of waiting cost your business?" (chosen)
+2. "Every time a customer types 'HUMAN!!!', you're about to lose them."
+3. "Your customers aren't angry about the problem. They're angry about the wait."
+4. "You have 312 unanswered messages. We have zero."
 
 ## To confirm before publishing
 
