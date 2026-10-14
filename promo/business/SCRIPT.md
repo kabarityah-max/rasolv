@@ -73,12 +73,10 @@ telecom by changing the message texts only.
 - [ ] CTA: "Book a demo" vs. a URL / QR.
 - [ ] Founder voice: own recording (recommended) or generated.
 
-## Production plan
+## Production
 
-Cinematic build (recommended): AI-generated live shots of the founder (Higgsfield, from the reference
-photo) for the face/hero shots, with the screens, chips, terminal and type composited in code.
-
-Code-only fallback: same deterministic pipeline as `../cinema/`: `index.html` `render(t)` timeline → `render.js` (Playwright →
-frames → ffmpeg) → `score.py` (original score + SFX + VO ducking) → `vo.py` (Kokoro; two voices: founder,
-Claude Code). Founder rendered as a stylised vector character drawn from the reference photo, with simple
-mouth/blink/head-tilt rigs synced to the VO timings. Brand: orange `#FF6E05`, ink `#070707`, Rubik.
+Fully coded (no AI-generated footage) — see `README.md`. Same deterministic pipeline as `../cinema/`:
+`index.html` `render(t)` timeline → `render.js` (Playwright → frames → ffmpeg) → `score.py` (original 128 BPM score +
+SFX + VO ducking) → `vo.py` (Kokoro; two voices: founder, Claude Code). The founder is a stylised vector character
+drawn from the reference photo, with blink / eye-open / head-tilt rigs and lip sync driven by the voice envelope.
+The knuckle crack (shot 7) became a step-into-frame with the lens flare. Brand: orange `#FF6E05`, ink `#070707`, Rubik.
