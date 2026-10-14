@@ -4,7 +4,10 @@
 present it as a double act. Vertical 1080×1920 master (Reels / TikTok / Stories), 16:9 cut-down
 for LinkedIn / YouTube.
 
-**Promise:** your customers get a human in minutes; you get the whole picture.
+**Promise:** everyone has AI — not everyone knows how to use it. RASOLV does: we turn Claude Code into
+fast, human support for your business, better than your competitors (or you) would on your own.
+
+**Edge (the line the whole ad builds to):** *Same AI. Different hands.*
 
 ## Characters
 
@@ -24,13 +27,13 @@ telecom by changing the message texts only.
 | # | Time | Visual | Dialogue / on-screen |
 |---|---|---|---|
 | 1 | 0.0–3.0 | Black. A loud clock tick. A wait timer races `0:00:00 → 1:00:00`; beside it a loss ticker counts up: `−1 order`, `★☆☆☆☆`, `−1 customer`, `Refund requested`. Founder steps into the light. | **Founder (to camera):** "What does one hour of waiting cost your business?" |
-| 2 | 3.0–6.0 | Quick insert: customer phone — `where is my order` → `HUMAN!!!` → `cancel my order`. A terminal window snaps open beside the founder and Claude Code pops out; the timer freezes. | **Founder:** "Usually… this customer." **Claude Code:** "Not on my watch." **Founder:** "Show them." |
-| 3 | 6.0–11.0 | Wall of incoming messages floods the frame. Claude Code sorts them into lanes; chips light up: *Orders · Billing · Tech*, *Urgent*, *Frustrated*. | **Claude Code:** "Orders, billing, tech. I read every message — who's angry, who's urgent." |
-| 4 | 11.0–15.0 | Orange routing lines snap to staff cards: "Maya · Billing expert", "Youssef · Orders". Card shows "Answer drafted ✓". | **Founder:** "Then it hands off to a real expert on your team — answer already drafted." |
-| 5 | 15.0–19.0 | Back to the customer phone: LIVE badge, "Refund issued in 4 min", ★★★★★. | **Claude Code:** "Not one hour. Four minutes. And your team never starts from zero." |
-| 6 | 19.0–24.0 | Insights card builds: "38% of complaints this week: late delivery — Branch 4". Founder taps it. | **Founder:** "And it tells you *why* they're complaining — before it costs you." |
-| 7 | 24.0–27.0 | Lock closes over the dashboard. | **Claude Code:** "Your data stays yours." |
-| 8 | 27.0–30.0 | Founder + Claude Code side by side; aperture iris opens → RASOLV wordmark; small line under it: *Built with Claude Code*. | **Founder:** "RASOLV. Your customers get a human. You get the whole picture." Super: *Book a demo* |
+| 2 | 3.0–6.0 | Quick insert: customer phone — `where is my order` → `HUMAN!!!` → `cancel my order`. | **Founder:** "Usually… this customer." |
+| 3 | 6.0–10.0 | Split screen. Left: a generic business owner typing into an AI chat `make my customer service better pls` → a wall of bland bullet points. Right: a terminal snaps open beside the founder and Claude Code pops out. | **Founder:** "And you already have AI. So does everyone." **Claude Code:** "Most people ask me for bullet points." |
+| 4 | 10.0–12.0 | Founder cracks his knuckles, steps up to the terminal. Super: **Same AI. Different hands.** | **Founder:** "We don't." |
+| 5 | 12.0–17.0 | Wall of incoming messages floods the frame. Claude Code sorts them into lanes; chips light up: *Orders · Billing · Tech*, *Urgent*, *Frustrated*. | **Claude Code:** "Orders, billing, tech. Who's angry, who's urgent — sorted." |
+| 6 | 17.0–21.0 | Orange routing lines snap to staff cards: "Maya · Billing expert", "Youssef · Orders". Card shows "Answer drafted ✓". Customer phone: LIVE, "Refund issued in 4 min", ★★★★★. | **Founder:** "A real expert on your team, answer ready." **Claude Code:** "Not one hour. Four minutes." |
+| 7 | 21.0–25.0 | Insights card builds: "38% of complaints this week: late delivery — Branch 4". Lock closes over the dashboard. | **Founder:** "Plus *why* they're complaining — and your data stays yours." |
+| 8 | 25.0–30.0 | Founder + Claude Code side by side. Aperture iris opens → RASOLV wordmark; small line under it: *Built with Claude Code*. | **Founder:** "Everyone has AI. Not everyone knows how to use it." **Claude Code:** "He does." Super: **RASOLV** · *Book a demo* |
 
 ## Alternate hooks (A/B test the first 3 s)
 
@@ -38,6 +41,7 @@ telecom by changing the message texts only.
 2. "Every time a customer types 'HUMAN!!!', you're about to lose them."
 3. "Your customers aren't angry about the problem. They're angry about the wait."
 4. "You have 312 unanswered messages. We have zero."
+5. "Everyone has AI. Not everyone knows how to use it." (also works as a cold open)
 
 ## To confirm before publishing
 
