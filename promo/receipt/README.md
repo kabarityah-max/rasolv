@@ -1,6 +1,7 @@
-# RASOLV "support receipt" short (vertical, 43.5 s)
+# RASOLV "support receipt" short (vertical 4K, 43.5 s)
 
-1080×1920, 60 fps, H.264 + AAC 320 kbps, −14 LUFS. An explainer short in the "running invoice" format: a receipt
+`RASOLV_Support_Receipt.mp4`: 2160×3840 (4K), 60 fps, H.264 High@5.2 two-pass at ~5.2 Mb/s + AAC 160 kbps,
+−14 LUFS, 29.6 MB (SSIM 0.996 vs. the 4K render master). An explainer short in the "running invoice" format: a receipt
 prints and keeps adding up what bad customer support costs you, a countdown pill promises "the fix · at the end", and
 RASOLV clears the bill.
 
@@ -22,7 +23,17 @@ printer/stamp/typing sound design and voice ducking), `build.sh`.
 
 ```bash
 KOKORO_DIR=/path/to/kokoro ./build.sh   # full build
-SKIP_VO=1 ./build.sh                     # reuse voiceover/captions
+SKIP_VO=1 ./build.sh                     # reuse voiceover/captions (1080x1920)
+SCALE=2 SKIP_VO=1 OUT=rasolv_receipt_4k_master ./build.sh   # 4K master (2160x3840)
+```
+
+Delivery file under 30 MB from the 4K master (two-pass):
+
+```bash
+cd out && M=rasolv_receipt_4k_master.mp4
+X="-c:v libx264 -preset slower -b:v 5200k -maxrate 9000k -bufsize 18000k -profile:v high -level:v 5.2 -pix_fmt yuv420p -tune animation"
+ffmpeg -y -i $M $X -pass 1 -an -f null /dev/null
+ffmpeg -y -i $M $X -pass 2 -c:a aac -b:a 160k -movflags +faststart ../RASOLV_Support_Receipt.mp4
 ```
 
 All the numbers (47 min, $129, 7 weeks, 98%, 4 min) and names are illustrative. Swap in real ones before publishing.
