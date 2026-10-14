@@ -22,18 +22,40 @@ fast, human support for your business, better than your competitors (or you) wou
 Example business: a restaurant chain (ties in with existing A&W Tanger work). Swap for e-commerce /
 telecom by changing the message texts only.
 
-## Script
+## Look & pace
 
-| # | Time | Visual | Dialogue / on-screen |
+- **Cinematic:** shallow depth of field, anamorphic orange flares, film grain, motion blur, ink-black
+  shadows with a single orange (`#FF6E05`) key light. Low angles and slow push-ins on the founder; macro
+  ECUs on screens, thumbs, digits.
+- **Fast:** cut on the beat. 128 BPM → 1 beat = 0.47 s, 1 bar = 1.875 s, 16 bars = 30 s. ~30 shots, none
+  longer than 2 bars except the hero shot. Whip pans, speed ramps, smash cuts, glitch transitions.
+- **Sound arc:** clock tick (cold) → heartbeat riser → hard silence → **beat drop on the tagline** →
+  driving montage → sub-bass hit + silence on the logo.
+- **Lines are short.** Nobody speaks more than ~8 words at a time; VO rides over the cuts.
+
+## Shot list
+
+| Bars | Time | Shot | Sound / dialogue |
 |---|---|---|---|
-| 1 | 0.0–3.0 | Black. A loud clock tick. A wait timer races `0:00:00 → 1:00:00`; beside it a loss ticker counts up: `−1 order`, `★☆☆☆☆`, `−1 customer`, `Refund requested`. Founder steps into the light. | **Founder (to camera):** "What does one hour of waiting cost your business?" |
-| 2 | 3.0–6.0 | Quick insert: customer phone — `where is my order` → `HUMAN!!!` → `cancel my order`. | **Founder:** "Usually… this customer." |
-| 3 | 6.0–10.0 | Split screen. Left: a generic business owner typing into an AI chat `make my customer service better pls` → a wall of bland bullet points. Right: a terminal snaps open beside the founder and Claude Code pops out. | **Founder:** "And you already have AI. So does everyone." **Claude Code:** "Most people ask me for bullet points." |
-| 4 | 10.0–12.0 | Founder cracks his knuckles, steps up to the terminal. Super: **Same AI. Different hands.** | **Founder:** "We don't." |
-| 5 | 12.0–17.0 | Wall of incoming messages floods the frame. Claude Code sorts them into lanes; chips light up: *Orders · Billing · Tech*, *Urgent*, *Frustrated*. | **Claude Code:** "Orders, billing, tech. Who's angry, who's urgent — sorted." |
-| 6 | 17.0–21.0 | Orange routing lines snap to staff cards: "Maya · Billing expert", "Youssef · Orders". Card shows "Answer drafted ✓". Customer phone: LIVE, "Refund issued in 4 min", ★★★★★. | **Founder:** "A real expert on your team, answer ready." **Claude Code:** "Not one hour. Four minutes." |
-| 7 | 21.0–25.0 | Insights card builds: "38% of complaints this week: late delivery — Branch 4". Lock closes over the dashboard. | **Founder:** "Plus *why* they're complaining — and your data stays yours." |
-| 8 | 25.0–30.0 | Founder + Claude Code side by side. Aperture iris opens → RASOLV wordmark; small line under it: *Built with Claude Code*. | **Founder:** "Everyone has AI. Not everyone knows how to use it." **Claude Code:** "He does." Super: **RASOLV** · *Book a demo* |
+| **ACT 1 — THE COST** | | | |
+| 1 | 0.0–1.9 | ECU second hand ticking · smash cut ECU wait timer digits blurring `0:00:00 → 1:00:00` · micro-cuts on each tick: `−1 order` / `★☆☆☆☆` / cart empties / shop door swings shut | Tick… tick… **Founder (VO, low):** "What does one hour of waiting…" |
+| 2 | 1.9–3.8 | Dark. Orange key light snaps on — ECU founder's eyes open, slow push-in | **Founder:** "…cost your business?" |
+| 3 | 3.8–5.6 | Macro: a thumb hammering `HUMAN!!!` `HUMAN!!!` — handheld shake, each tap a hit · glitch · `cancel my order` → send-whoosh | Heartbeat riser |
+| 4 | 5.6–7.5 | Hard silence. Founder in silhouette, half-lit | **Founder:** "Usually… this customer." |
+| **ACT 2 — THE EDGE** | | | |
+| 5 | 7.5–9.4 | Whip pan → owner at a laptop typing `make my business better pls` · speed-ramp on an endless scroll of bland AI bullet points | **Founder:** "Everyone has AI." |
+| 6 | 9.4–11.3 | Whip pan back → terminal snaps open in the dark, Claude Code pops out, cursor blinking | **Claude Code:** "Most people ask me for bullet points." |
+| 7 | 11.3–13.1 | Low-angle dolly-in: founder steps into frame, cracks knuckles, orange flare across lens | **Founder:** "We don't." — riser cuts dead |
+| 8 | 13.1 | **DROP.** Super slams full-frame: **SAME AI. DIFFERENT HANDS.** | Beat drop + impact |
+| **ACT 3 — WHAT WE DO FOR YOU** (cut every beat) | | | |
+| 8–9 | 13.1–16.9 | Messages flood toward camera · Claude Code slices them into lanes · chips slam on, one per beat: `ORDERS` `BILLING` `URGENT` `FRUSTRATED` | **Claude Code:** "Sorted. Who's angry. Who's urgent." |
+| 10 | 16.9–18.8 | Orange routing lines whip across frame → staff cards snap: `Maya · Billing`, `Youssef · Orders` · macro hands typing · `Answer drafted ✓` | **Founder:** "Straight to a real expert." |
+| 11 | 18.8–20.6 | Customer phone: `LIVE` pulse → `Refund issued in 4 min` → five stars stamp on, one per beat | **Claude Code:** "Not one hour." *(stutter cut)* "Four minutes." |
+| 12 | 20.6–22.5 | Rack focus onto insights card: `38% of complaints: late delivery — Branch 4`, Branch 4 flares orange | **Founder:** "Know *why* they complain." |
+| 13 | 22.5–24.4 | Steel lock clamps shut over the dashboard — metallic hit | **Claude Code:** "Your data stays yours." |
+| **ACT 4 — HERO** | | | |
+| 14–15 | 24.4–28.1 | Slow-mo after a hit: founder + Claude Code side by side, backlit orange, low angle, 180° orbit, sparks/dust in the light | **Founder:** "Everyone has AI. Not everyone knows how to use it." **Claude Code:** "He does." |
+| 16 | 28.1–30.0 | Aperture iris opens → **RASOLV** wordmark · small: *Built with Claude Code* · *Book a demo* | Sub-bass hit → silence |
 
 ## Alternate hooks (A/B test the first 3 s)
 
@@ -53,7 +75,10 @@ telecom by changing the message texts only.
 
 ## Production plan
 
-Same deterministic pipeline as `../cinema/`: `index.html` `render(t)` timeline → `render.js` (Playwright →
+Cinematic build (recommended): AI-generated live shots of the founder (Higgsfield, from the reference
+photo) for the face/hero shots, with the screens, chips, terminal and type composited in code.
+
+Code-only fallback: same deterministic pipeline as `../cinema/`: `index.html` `render(t)` timeline → `render.js` (Playwright →
 frames → ffmpeg) → `score.py` (original score + SFX + VO ducking) → `vo.py` (Kokoro; two voices: founder,
 Claude Code). Founder rendered as a stylised vector character drawn from the reference photo, with simple
 mouth/blink/head-tilt rigs synced to the VO timings. Brand: orange `#FF6E05`, ink `#070707`, Rubik.
