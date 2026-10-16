@@ -322,7 +322,7 @@ function build() {
     line.words.forEach((w, i) => {
       cur.push(w);
       const last = i === line.words.length - 1;
-      if (last || (/[.,!?،؟]$/.test(w[0]) && cur.length >= 3) || cur.length >= 7) { capChunks.push({ words: cur, a: cur[0][1], b: last ? line.end : null, lang: line.lang, tr: NO_TR.has(li) ? '' : line.tr }); cur = []; }
+      if (last || (/[.,!?،؟]$/.test(w[0]) && cur.length >= 3) || cur.length >= 8) { capChunks.push({ words: cur, a: cur[0][1], b: last ? line.end : null, lang: line.lang, tr: NO_TR.has(li) ? '' : line.tr }); cur = []; }
     });
   });
   capChunks.forEach((c, i) => { if (c.b === null) c.b = capChunks[i + 1].a; });
