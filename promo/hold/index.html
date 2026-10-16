@@ -1,0 +1,616 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>RASOLV — on hold</title>
+<style>
+  @font-face { font-family: 'Rubik'; src: url('../fonts/Rubik.woff2') format('woff2'); font-weight: 300 900; }
+  :root { --or: #FF6E05; --ink: #171717; --mono: 'Liberation Mono', 'Courier 10 Pitch', 'DejaVu Sans Mono', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #d9d9d9; }
+  body { font-family: 'Rubik', sans-serif; -webkit-font-smoothing: antialiased; color: var(--ink); }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: #d6d6d6; }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; pointer-events: none; }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .light { background: radial-gradient(ellipse 85% 60% at 50% 42%, #efefef 0%, #e2e2e2 45%, #cfcfcf 100%); }
+  svg { display: block; overflow: visible; }
+
+  /* top chrome */
+  #hl { left: 70px; right: 70px; top: 150px; text-align: center; z-index: 40; }
+  #hlT { font-size: 64px; font-weight: 700; line-height: 1.1; letter-spacing: -1.5px; color: var(--ink); }
+  #hlS { margin-top: 16px; font-family: var(--mono); font-size: 21px; font-weight: 700; letter-spacing: 2.5px; color: #6e6e6e; text-transform: uppercase; }
+  #counter { left: 0; right: 0; top: 352px; text-align: center; font-family: var(--mono); font-size: 38px; font-weight: 700; letter-spacing: 2px; color: var(--ink); z-index: 40; }
+  .dark #hlT, .dark #counter { color: #f1f1f1; } .dark #hlS { color: #a9a9a9; }
+
+  /* you */
+  #youWrap { left: 0; right: 0; top: 1250px; text-align: center; z-index: 30; }
+  #youLab { font-family: var(--mono); font-size: 26px; font-weight: 700; letter-spacing: 3px; color: var(--ink); }
+  #you { width: 300px; height: 450px; margin: 8px auto 0; }
+
+  /* caption pill */
+  #cap { left: 0; right: 0; top: 1332px; text-align: center; z-index: 50; }
+  #capIn { display: inline-block; padding: 14px 36px 18px; border-radius: 50px; background: rgba(28,28,28,.93); color: #fff; font-size: 44px; font-weight: 700; letter-spacing: -.3px; line-height: 1.1; white-space: nowrap; box-shadow: 0 12px 34px rgba(0,0,0,.18); }
+  #capIn span { display: inline-block; }
+
+  /* labels */
+  .lab { position: absolute; text-align: center; font-size: 32px; font-weight: 700; line-height: 1.15; letter-spacing: -.5px; color: var(--ink); }
+  .tag { position: absolute; text-align: center; font-family: var(--mono); font-size: 22px; font-weight: 700; letter-spacing: 3px; color: #2a2a2a; text-transform: uppercase; }
+  .sign { position: absolute; background: #f7f7f7; border-radius: 10px; box-shadow: 0 18px 40px rgba(0,0,0,.35), inset 0 0 0 2px rgba(0,0,0,.05); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+  .sign .screw { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #9a9a9a; }
+  .sign .txt { font-family: var(--mono); font-weight: 700; color: var(--or); text-align: center; letter-spacing: 1px; line-height: 1.15; }
+  .bub { position: absolute; background: #fff; border-radius: 30px; box-shadow: 0 8px 20px rgba(0,0,0,.25); display: flex; align-items: center; justify-content: center; }
+  .bub::after { content: ''; position: absolute; left: 50%; bottom: -16px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transform: translateX(-50%); }
+
+  /* phone frame (recap) */
+  #frame { left: 320px; top: 440px; width: 440px; height: 700px; border-radius: 44px; background: #1f1f1f; padding: 12px; box-shadow: 0 30px 60px rgba(0,0,0,.25); }
+  #frameIn { position: absolute; inset: 12px; border-radius: 34px; overflow: hidden; background: radial-gradient(ellipse 85% 60% at 50% 42%, #efefef 0%, #e2e2e2 45%, #cfcfcf 100%); }
+  #mini { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; transform: scale(.385); }
+  #slider { left: 320px; top: 1158px; width: 440px; }
+  #slTrack { height: 6px; border-radius: 3px; background: #bdbdbd; position: relative; }
+  #slFill { height: 100%; width: 0; border-radius: 3px; background: #1f1f1f; }
+  #slKnob { position: absolute; top: -7px; width: 20px; height: 20px; border-radius: 50%; background: #1f1f1f; margin-left: -10px; }
+  #slTxt { display: flex; justify-content: space-between; margin-top: 14px; font-family: var(--mono); font-size: 22px; font-weight: 700; letter-spacing: 2px; color: var(--ink); }
+
+  /* end */
+  #mark { left: 390px; top: 500px; width: 300px; height: 300px; }
+  #word { left: 0; right: 0; top: 820px; text-align: center; font-size: 150px; font-weight: 900; letter-spacing: 10px; color: var(--ink); line-height: 1; }
+  #tagline { left: 0; right: 0; top: 960px; text-align: center; font-family: var(--mono); font-size: 26px; font-weight: 700; letter-spacing: 6px; color: #5a5a5a; }
+  #cta { left: 0; right: 0; top: 1050px; text-align: center; }
+  #ctaIn { display: inline-block; padding: 20px 54px 24px; border-radius: 60px; background: var(--or); color: #fff; font-size: 40px; font-weight: 700; letter-spacing: -.3px; box-shadow: 0 16px 40px rgba(255,110,5,.35); }
+  .row { position: absolute; left: 190px; width: 700px; height: 96px; border-radius: 48px; background: #fff; box-shadow: 0 12px 30px rgba(0,0,0,.12); display: flex; align-items: center; gap: 22px; padding: 0 30px; font-size: 36px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .row .ck { width: 48px; height: 48px; border-radius: 50%; background: var(--or); flex: none; display: flex; align-items: center; justify-content: center; }
+  .card { position: absolute; width: 330px; height: 250px; border-radius: 30px; background: #fff; box-shadow: 0 18px 40px rgba(0,0,0,.18); padding: 26px 28px; }
+  .card .who { display: flex; align-items: center; gap: 14px; font-size: 24px; font-weight: 700; }
+  .card .av { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #ff9a3d, #c2410c); color: #fff; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+  .card .msg { margin-top: 18px; font-size: 26px; line-height: 1.25; color: #333; }
+  .card .ok { position: absolute; left: 28px; bottom: 24px; padding: 8px 18px 10px; border-radius: 30px; background: var(--or); color: #fff; font-size: 22px; font-weight: 700; }
+  #live { position: absolute; left: 0; right: 0; top: 420px; text-align: center; }
+  #liveIn { display: inline-flex; align-items: center; gap: 14px; padding: 10px 26px 12px; border-radius: 40px; background: #fff; font-family: var(--mono); font-size: 22px; font-weight: 700; letter-spacing: 3px; color: var(--ink); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+  #liveIn i { width: 14px; height: 14px; border-radius: 50%; background: var(--or); box-shadow: 0 0 12px var(--or); }
+
+  #vig { background: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 55%, rgba(0,0,0,.22) 100%); z-index: 60; }
+  #grain { opacity: .07; mix-blend-mode: multiply; z-index: 61; width: 1080px; height: 1920px; image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dedede"/><stop offset="1" stop-color="#a8a8a8"/></linearGradient>
+    <linearGradient id="gM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfbfbf"/><stop offset="1" stop-color="#7c7c7c"/></linearGradient>
+    <linearGradient id="gD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e8e8e"/><stop offset="1" stop-color="#4f4f4f"/></linearGradient>
+    <linearGradient id="gK" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b3b3b"/><stop offset="1" stop-color="#0f0f0f"/></linearGradient>
+    <linearGradient id="gW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ececec"/><stop offset="1" stop-color="#b9b9b9"/></linearGradient>
+    <linearGradient id="gYou" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b4b4b4"/><stop offset="1" stop-color="#6a6a6a"/></linearGradient>
+    <linearGradient id="gOr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a33"/><stop offset="1" stop-color="#e85f00"/></linearGradient>
+    <linearGradient id="gPed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d2d2d2"/><stop offset="1" stop-color="#b3b3b3"/></linearGradient>
+  </defs>
+</svg>
+<div id="stage">
+  <div id="world" class="layer">
+
+    <!-- STREET: Levy's factory, 1962 -->
+    <div id="sStreet" class="scene light">
+      <svg id="street" class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+      <div id="crowd" class="abs" style="left:0;top:0;width:1080px;height:1920px"></div>
+    </div>
+
+    <!-- DARK: the recording -->
+    <div id="sDark" class="scene">
+      <div id="darkBg" class="layer" style="background:radial-gradient(ellipse 80% 55% at 50% 40%, #3b3b3b 0%, #2a2a2a 50%, #1b1b1b 100%)"></div>
+      <div id="lightBg" class="layer light" style="opacity:0"></div>
+      <svg id="hall" class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+      <div id="bigSign" class="sign" style="left:330px;top:300px;width:420px;height:320px"></div>
+      <div id="crowd2" class="abs" style="left:0;top:0;width:1080px;height:1920px"></div>
+      <div id="bubbles" class="abs" style="left:0;top:0;width:1080px;height:1920px"></div>
+    </div>
+
+    <!-- PAIR: a tune nobody chose / a line nobody means -->
+    <div id="sPair" class="scene light">
+      <div id="pTune" class="abs" style="left:150px;top:560px;width:300px;height:330px"></div>
+      <div id="pSign" class="sign" style="left:640px;top:590px;width:300px;height:230px"></div>
+      <div id="pLab1" class="lab" style="left:120px;top:940px;width:360px">A tune nobody<br>chose</div>
+      <div id="pLab2" class="lab" style="left:610px;top:940px;width:360px">A line nobody<br>means</div>
+    </div>
+
+    <!-- SAME: this video opened the same way -->
+    <div id="sSame" class="scene light">
+      <div id="frame" class="abs"><div id="frameIn"><div id="mini"></div></div></div>
+      <div id="slider" class="abs"><div id="slTrack"><div id="slFill"></div><div id="slKnob"></div></div><div id="slTxt"><span id="slT">0:00</span><span>NARRATION: NONE</span></div></div>
+    </div>
+
+    <!-- END: so here's your exit -->
+    <div id="sEnd" class="scene light">
+      <div id="eTune" class="abs" style="left:150px;top:560px;width:300px;height:330px"></div>
+      <div id="eSign" class="sign" style="left:640px;top:590px;width:300px;height:230px"></div>
+      <svg id="mark" class="abs" viewBox="-110 -110 220 220"></svg>
+      <div id="word" class="abs">RASOLV</div>
+      <div id="live" class="abs"><div id="liveIn"><i></i>EXPERT · ON IT</div></div>
+      <div id="rows"></div>
+      <div id="wTune" class="abs" style="left:110px;top:560px;width:300px;height:330px"></div>
+      <div id="wCard" class="card" style="left:620px;top:600px"></div>
+      <div id="wOr" class="lab" style="left:480px;top:720px;width:120px;color:#8a8a8a">or</div>
+      <div id="wLab1" class="tag" style="left:80px;top:940px;width:360px">The tune</div>
+      <div id="wLab2" class="tag" style="left:620px;top:940px;width:330px">The answer</div>
+      <div id="tagline" class="abs">VISION THAT SOLVES</div>
+      <div id="cta" class="abs"><div id="ctaIn">Download Rasolv</div></div>
+    </div>
+  </div>
+
+  <div id="youWrap" class="abs"><div id="youLab">YOU</div><div id="you"></div></div>
+  <div id="hl" class="abs"><div id="hlT"></div><div id="hlS"></div></div>
+  <div id="counter" class="abs"></div>
+  <div id="cap" class="abs"><div id="capIn"></div></div>
+  <div id="vig" class="layer"></div>
+  <canvas id="grain" class="layer" width="270" height="480"></canvas>
+</div>
+<script src="captions.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, d) => clamp((t - a) / d);
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x, s = 1.5) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
+const lerp = (a, b, x) => a + (b - a) * x;
+const OR = '#FF6E05';
+
+const CAP = window.CAPTIONS, DUR = window.DURATION;
+const L = Object.fromEntries(CAP.map(c => [c.scene, c]));
+const S = k => L[k].start;
+const W = (s, i) => L[s].words[i][1];
+const X = 0.35;                                  // visual lead before a line starts
+const CUT = { street: 0, dark: S('then') - X, pair: S('pair') - X, same: S('same') - X, end: S('exit') - X };
+const ORDER = [['street', 'sStreet'], ['dark', 'sDark'], ['pair', 'sPair'], ['same', 'sSame'], ['end', 'sEnd']];
+const FREEZE = S('exit') - X;                    // the hold timer stops here
+const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+
+// ---------- headlines (scene -> [title, subline]) ----------
+const HL = {
+  tune:  ['Why is there music on hold?', 'and why you are still listening'],
+  year:  ['New York, 1962', 'Alfred Levy, factory owner'],
+  wire:  ['A loose wire', 'touching a steel girder, by Levy\'s account'],
+  ant:   ['The building becomes<br>an antenna', 'picking up the radio station next door'],
+  hear:  ['Callers on hold hear music', 'nobody planned it'],
+  stop:  ['And they stop hanging up', 'same queue. same wait.'],
+  less:  ['Nobody waited less', 'they just stopped noticing'],
+  pat:   ['Patented, 1966', '"music on hold" · A. Levy'],
+  now:   ['Sixty years later', 'every support line on earth'],
+  what:  ['What did it fix?', ''],
+  noth:  ['Nothing.', ''],
+  trick: ['The trick: fill the silence', 'not to solve it. to keep you on the line.'],
+  then:  ['The second trick', 'same queue. new sentence.'],
+  imp:   ['', ''],
+  every: ['', ''],
+  means: ['Important: keep waiting', 'adj. a way to stay.'],
+  pair:  ['', ''],
+  same:  ['This video opened<br>the same way', '0:00 to 0:04: a phone, a tune, no words'],
+  stay:  ['You stayed.', 'you, still holding at ' + fmt(S('stay'))],
+  exit:  ['So here\'s your exit', 'no queue. no tune. no sentence.'],
+  ras:   ['', ''],
+  exp:   ['', ''],
+  which: ['Which one<br>gets you?', 'the tune or the answer'],
+  logo:  ['', ''],
+};
+const HLKEYS = Object.keys(HL);
+
+// ---------- vector parts ----------
+const HAT = {
+  none: '',
+  fedora: (c) => `<path d="M31 28 Q31 6 50 6 Q69 6 69 28 Z" fill="${c}"/><ellipse cx="50" cy="29" rx="31" ry="6" fill="${c}"/>`,
+  cap: (c) => `<path d="M29 30 Q29 10 50 10 Q71 10 71 30 Z" fill="${c}"/><path d="M62 30 h22 q4 0 2 4 l-22 0 z" fill="${c}"/>`,
+  bun: (c) => `<circle cx="66" cy="20" r="10" fill="${c}"/><path d="M28 34 Q30 12 50 12 Q70 12 72 34 Z" fill="${c}"/>`,
+  scarf: (c) => `<path d="M26 40 Q28 10 50 10 Q72 10 74 40 L66 46 L50 24 L34 46 Z" fill="${c}"/>`,
+};
+function pawn({ g = 'gM', hat = 'none', hatC = '#2b2b2b', phone = false, note = false, glasses = false, flip = false } = {}) {
+  const ph = phone ? `<g transform="translate(76 44) rotate(-18)"><rect x="-7" y="-14" width="14" height="28" rx="3.5" fill="${OR}"/><rect x="-4.5" y="-11" width="9" height="19" rx="1.5" fill="#ffd2b3" opacity=".8"/></g>` : '';
+  const gl = glasses ? `<circle cx="42" cy="38" r="6" fill="none" stroke="#111" stroke-width="2"/><circle cx="58" cy="38" r="6" fill="none" stroke="#111" stroke-width="2"/><line x1="48" y1="38" x2="52" y2="38" stroke="#111" stroke-width="2"/>` : '';
+  return `<svg viewBox="0 0 100 150" width="100%" height="100%"${flip ? ' style="transform:scaleX(-1)"' : ''}>
+    <ellipse cx="50" cy="144" rx="38" ry="6" fill="rgba(0,0,0,.14)"/>
+    <path d="M17 136 C17 92 30 72 50 63 C70 72 83 92 83 136 Q83 142 77 142 L23 142 Q17 142 17 136 Z" fill="url(#${g})"/>
+    <circle cx="50" cy="38" r="22" fill="url(#${g})"/>${gl}${HAT[hat] ? HAT[hat](hatC) : ''}${ph}</svg>`;
+}
+const NOTE = (c = OR) => `<svg viewBox="0 0 60 80" width="100%" height="100%"><ellipse cx="18" cy="64" rx="14" ry="10" transform="rotate(-20 18 64)" fill="${c}"/><rect x="28" y="6" width="7" height="60" rx="2" fill="${c}"/><path d="M35 6 C52 12 56 26 46 42 C50 30 44 22 35 18 Z" fill="${c}"/></svg>`;
+function phoneSVG(off = 0) { // rotary telephone, handset lifted by `off`
+  return `<svg viewBox="0 0 120 90" width="100%" height="100%">
+    <ellipse cx="60" cy="84" rx="50" ry="6" fill="rgba(0,0,0,.15)"/>
+    <path d="M14 82 H106 Q114 82 112 74 L104 46 Q100 36 88 36 H32 Q20 36 16 46 L8 74 Q6 82 14 82 Z" fill="url(#gOr)"/>
+    <circle cx="60" cy="62" r="14" fill="#fff2e6"/><circle cx="60" cy="62" r="9" fill="none" stroke="${OR}" stroke-width="3" stroke-dasharray="3 3"/>
+    <g transform="translate(0 ${-off})"><rect x="22" y="22" width="76" height="16" rx="8" fill="#1f1f1f"/><circle cx="26" cy="30" r="12" fill="#1f1f1f"/><circle cx="94" cy="30" r="12" fill="#1f1f1f"/></g>
+  </svg>`;
+}
+const PED = `<svg viewBox="0 0 140 70" width="100%" height="100%"><ellipse cx="70" cy="64" rx="76" ry="10" fill="rgba(0,0,0,.12)"/><path d="M8 30 V48 A62 16 0 0 0 132 48 V30 Z" fill="#b9b9b9"/><ellipse cx="70" cy="30" rx="62" ry="16" fill="url(#gPed)"/></svg>`;
+function signHTML(size) { // "YOUR CALL IS IMPORTANT TO US"
+  const fs = size === 'big' ? 40 : 28, ic = size === 'big' ? 110 : 76;
+  return `<div class="screw" style="left:10px;top:10px"></div><div class="screw" style="right:10px;top:10px"></div><div class="screw" style="left:10px;bottom:10px"></div><div class="screw" style="right:10px;bottom:10px"></div>
+    <svg viewBox="0 0 120 60" style="width:${ic}px;height:${ic / 2}px"><path d="M10 40 Q60 -10 110 40" fill="none" stroke="${OR}" stroke-width="16" stroke-linecap="round"/><circle cx="12" cy="42" r="12" fill="${OR}"/><circle cx="108" cy="42" r="12" fill="${OR}"/></svg>
+    <div class="txt" style="font-size:${fs}px">YOUR CALL IS<br>IMPORTANT<br>TO US</div>`;
+}
+function tuneHTML() { // note on a pedestal
+  return `<div class="abs" style="left:85px;top:40px;width:120px;height:170px">${NOTE()}</div><div class="abs" style="left:10px;top:200px;width:280px;height:140px">${PED}</div>`;
+}
+
+// ---------- street scene (SVG) ----------
+function buildStreet(svg, mini) {
+  const B = `
+    <polygon id="stageFloor" points="330,660 750,660 1000,1140 80,1140" fill="rgba(255,255,255,.42)"/>
+    <!-- radio mast -->
+    <g id="mast" transform="translate(880 0)">
+      <g id="rings" fill="none" stroke="${OR}" stroke-width="3" opacity="0"></g>
+      <ellipse cx="0" cy="668" rx="34" ry="6" fill="rgba(0,0,0,.12)"/>
+      <polygon points="-26,664 26,664 6,420 -6,420" fill="#6b6b6b"/>
+      <g stroke="#dcdcdc" stroke-width="2"><line x1="-20" y1="610" x2="20" y2="590"/><line x1="20" y1="610" x2="-20" y2="590"/><line x1="-16" y1="560" x2="16" y2="540"/><line x1="16" y1="560" x2="-16" y2="540"/><line x1="-12" y1="510" x2="12" y2="490"/><line x1="12" y1="510" x2="-12" y2="490"/><line x1="-9" y1="462" x2="9" y2="446"/><line x1="9" y1="462" x2="-9" y2="446"/></g>
+      <line x1="0" y1="420" x2="0" y2="380" stroke="#6b6b6b" stroke-width="4"/><circle id="mastLight" cx="0" cy="376" r="7" fill="${OR}"/>
+    </g>
+    <!-- wire from the mast to the beam -->
+    <path id="wire" d="M 872 400 Q 760 520 652 500" fill="none" stroke="#555" stroke-width="3" opacity="0"/>
+    <g id="spark" opacity="0"><circle cx="652" cy="500" r="10" fill="${OR}"/><path d="M652 480 l6 14 14 6 -14 6 -6 14 -6 -14 -14 -6 14 -6z" fill="#fff3e6"/></g>
+    <!-- building -->
+    <g id="bld">
+      <ellipse cx="540" cy="672" rx="300" ry="12" fill="rgba(0,0,0,.14)"/>
+      <rect x="270" y="470" width="540" height="200" rx="10" fill="#e9e9e9"/>
+      <rect x="270" y="470" width="540" height="14" rx="6" fill="#d0d0d0"/>
+      <g id="windows" fill="#5b5b5b"></g>
+      <path d="M498 670 V560 Q540 522 582 560 V670 Z" fill="#1d1d1d"/>
+      <!-- steel beam -->
+      <g id="beam" opacity="0"><rect x="630" y="492" width="44" height="12" fill="#3a3a3a"/><rect x="646" y="496" width="12" height="60" fill="#3a3a3a"/><rect x="630" y="552" width="44" height="12" fill="#3a3a3a"/></g>
+      <g id="signBar" opacity="0"><rect x="400" y="432" width="280" height="42" rx="8" fill="#1f1f1f"/><text x="540" y="462" text-anchor="middle" font-family="Liberation Mono, monospace" font-weight="700" font-size="24" letter-spacing="3" fill="#f1f1f1">LEVY &amp; CO.</text></g>
+    </g>
+    <!-- pedestals with phones -->
+    <g id="peds"></g>
+    <!-- Levy -->
+    <g id="levy" opacity="0"><foreignObject x="-60" y="-160" width="120" height="180"><div xmlns="http://www.w3.org/1999/xhtml" style="width:120px;height:180px">${pawn({ g: 'gK', hat: 'fedora', hatC: '#0e0e0e', glasses: true })}</div></foreignObject></g>
+    <g id="paper" opacity="0"><rect x="-26" y="-36" width="52" height="68" rx="4" fill="#fff" stroke="#999" stroke-width="2"/><g stroke="#9a9a9a" stroke-width="3"><line x1="-14" y1="-18" x2="14" y2="-18"/><line x1="-14" y1="-6" x2="14" y2="-6"/><line x1="-14" y1="6" x2="4" y2="6"/></g><circle cx="10" cy="18" r="8" fill="${OR}"/></g>
+    <g id="notesStreet"></g>`;
+  svg.innerHTML = B;
+  // windows
+  let w = '';
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 10; c++) { if (r === 2 && (c === 4 || c === 5)) continue; w += `<rect x="${292 + c * 50}" y="${500 + r * 50}" width="30" height="32" rx="3"/>`; }
+  svg.querySelector('#windows').innerHTML = w;
+  // pedestals: [x, y, scale]  (y = base), main one front centre
+  const PD = [[240, 760, .72], [840, 760, .72], [130, 1040, .95], [950, 1040, .95], [540, 930, 1.3]];
+  svg.querySelector('#peds').innerHTML = PD.map(([x, y, s], i) => `<g class="ped" transform="translate(${x} ${y}) scale(${s})">
+      <foreignObject x="-70" y="-70" width="140" height="70"><div xmlns="http://www.w3.org/1999/xhtml" style="width:140px;height:70px">${PED}</div></foreignObject>
+      <foreignObject class="phoneBox" x="-60" y="-120" width="120" height="90"><div xmlns="http://www.w3.org/1999/xhtml" class="phoneDiv" style="width:120px;height:90px">${phoneSVG(i === 4 ? 14 : 0)}</div></foreignObject>
+    </g>`).join('');
+  svg.querySelector('#rings').innerHTML = [0, 1, 2, 3].map(() => `<circle cx="0" cy="376" r="20"/>`).join('');
+  svg.querySelector('#notesStreet').innerHTML = [0, 1, 2, 3, 4, 5].map(() => `<foreignObject width="40" height="54"><div xmlns="http://www.w3.org/1999/xhtml" style="width:40px;height:54px">${NOTE()}</div></foreignObject>`).join('');
+}
+
+// ---------- crowd ----------
+function makeCrowd(el, n, seed, dark) {
+  let sd = seed; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  const ps = [];
+  for (let i = 0; i < n; i++) {
+    const r = rnd();
+    const y = lerp(1000, 2000, Math.pow(r, .8));          // foot line
+    const s = lerp(.85, 3.4, (y - 1000) / 1000);            // scale
+    let x = lerp(-60, 1140, rnd());
+    if (y < 1180 && x > 330 && x < 750) x = x < 540 ? x - 320 : x + 320;   // keep the stage clear
+    const hat = ['none', 'fedora', 'bun', 'scarf', 'cap', 'none'][Math.floor(rnd() * 6)];
+    const g = dark ? 'gW' : ['gL', 'gM', 'gD'][Math.floor(rnd() * 3)];
+    ps.push({ x, y, s, hat, g, order: rnd(), notes: rnd() < .3, ph: rnd() * 6.28 });
+  }
+  ps.sort((a, b) => a.y - b.y);
+  el.innerHTML = ps.map(p => `<div class="abs pw" style="left:${p.x - 50 * p.s}px;top:${p.y - 150 * p.s}px;width:${100 * p.s}px;height:${150 * p.s}px;opacity:0">${pawn({ g: p.g, hat: p.hat, hatC: dark ? '#262626' : '#303030', phone: true })}${p.notes ? `<div class="abs nt" style="left:${72 * p.s}px;top:${-10 * p.s}px;width:${22 * p.s}px;height:${30 * p.s}px;opacity:0">${NOTE()}</div>` : ''}</div>`).join('');
+  return ps.map((p, i) => Object.assign(p, { el: el.children[i], nt: el.children[i].querySelector('.nt') }));
+}
+
+let crowd = [], crowd2 = [], bubs = [], rows = [], noise = [], capEls = [], miniPeds, street, hall;
+function build() {
+  street = $('street'); buildStreet(street);
+  $('you').innerHTML = pawn({ g: 'gYou', phone: true });
+  crowd = makeCrowd($('crowd'), 120, 4242, false);
+  crowd2 = makeCrowd($('crowd2'), 110, 9191, true);
+  // hall: doorway
+  hall = $('hall');
+  hall.innerHTML = `<rect x="140" y="640" width="800" height="420" rx="6" fill="#303030"/><rect x="420" y="660" width="240" height="400" rx="6" fill="#4a4a4a"/><rect x="436" y="676" width="208" height="384" rx="4" fill="#0d0d0d"/>
+    <g id="spk" opacity="0"><rect x="516" y="672" width="48" height="28" rx="4" fill="#2a2a2a"/><g fill="none" stroke="${OR}" stroke-width="3"><path d="M576 676 q10 10 0 20"/><path d="M584 670 q18 16 0 32"/></g></g>`;
+  $('bigSign').innerHTML = signHTML('big');
+  // thought bubbles over a few pawns in the dark hall
+  const picks = crowd2.filter(p => p.y > 1150 && p.y < 1700).slice(0, 40).filter((_, i) => i % 6 === 0).slice(0, 5);
+  $('bubbles').innerHTML = picks.map(p => `<div class="bub" style="left:${p.x + 30 * p.s}px;top:${p.y - 215 * p.s}px;width:${54 * p.s}px;height:${44 * p.s}px;opacity:0"><div style="width:${18 * p.s}px;height:${26 * p.s}px">${NOTE('#2a2a2a')}</div></div>`).join('');
+  bubs = [...$('bubbles').children];
+  $('pTune').innerHTML = tuneHTML(); $('eTune').innerHTML = tuneHTML(); $('wTune').innerHTML = tuneHTML();
+  $('pSign').innerHTML = signHTML('small'); $('eSign').innerHTML = signHTML('small');
+  // recap mini scene = a copy of the street at 0:03
+  const m = $('mini');
+  m.innerHTML = `<div class="light layer"></div><svg class="abs" style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+    <div class="abs" style="left:390px;top:1290px;width:300px;height:450px">${pawn({ g: 'gYou', phone: true })}</div>
+    <div class="abs" style="left:0;right:0;top:352px;text-align:center;font-family:var(--mono);font-size:38px;font-weight:700;letter-spacing:2px">ON HOLD: 0:03</div>`;
+  buildStreet(m.querySelector('svg'));
+  m.querySelector('#levy').remove(); m.querySelector('#paper').remove();
+  m.querySelectorAll('#notesStreet foreignObject').forEach((n, i) => { n.setAttribute('x', 560 + i * 26); n.setAttribute('y', 760 - i * 40); n.style.opacity = i < 3 ? .9 - i * .25 : 0; });
+  $('wCard').innerHTML = `<div class="who"><div class="av">MH</div>Maya · Billing</div><div class="msg">Refund issued.<br>You're all set.</div><div class="ok">Solved · 4 min</div>`;
+  const R = [['A real expert, already on it', 0], ['Live updates', 7], ['Answers in minutes', 9]];
+  $('rows').innerHTML = R.map(([tx], i) => `<div class="row" style="top:${960 + i * 112}px;opacity:0"><div class="ck"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M5 12l5 5 9-10" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>${tx}</div>`).join('');
+  rows = [...$('rows').children].map((el, i) => ({ el, t: W('exp', R[i][1]) - .1 }));
+  for (let k = 0; k < 8; k++) {
+    const c = document.createElement('canvas'); c.width = 270; c.height = 480; const g = c.getContext('2d'); const im = g.createImageData(270, 480);
+    let sd = 777 + k * 7919; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < im.data.length; i += 4) { const v = 160 + rnd() * 95; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+    g.putImageData(im, 0, 0); noise.push(c);
+  }
+}
+
+// ================= RASOLV aperture mark (from ../index.html) =================
+function aperture({ r = 37, rot = 0, bp = 1, grow = 1, color = '#FF6E05', gap = '#0A0A0A', R = 80, lines = true } = {}) {
+  const P = (a, rad) => [rad * Math.cos(a * Math.PI / 180), rad * Math.sin(a * Math.PI / 180)];
+  const O = [...Array(6)].map((_, i) => P(-90 + 60 * i, R));
+  const I = [...Array(6)].map((_, i) => P(-60 + 60 * i + rot, Math.max(r, 0.01)));
+  const ang = q => (Math.atan2(q[1], q[0]) * 180 / Math.PI + 360) % 360;
+  const hit = (p, d) => {
+    let best = null;
+    for (let k = 0; k < 6; k++) {
+      const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]];
+      const den = d[0] * e[1] - d[1] * e[0]; if (Math.abs(den) < 1e-9) continue;
+      const t = ((a[0] - p[0]) * e[1] - (a[1] - p[1]) * e[0]) / den;
+      const u = ((a[0] - p[0]) * d[1] - (a[1] - p[1]) * d[0]) / den;
+      if (t > 1e-6 && u >= -1e-6 && u <= 1 + 1e-6 && (!best || t < best.t)) best = { t, q: [p[0] + t * d[0], p[1] + t * d[1]] };
+    }
+    return best.q;
+  };
+  const Pt = I.map((q, i) => { const pr = I[(i + 5) % 6]; return hit(q, [q[0] - pr[0], q[1] - pr[1]]); });
+  const f = q => q[0].toFixed(2) + ',' + q[1].toFixed(2);
+  const ln = (a, b, extra) => `<line x1="${a[0].toFixed(2)}" y1="${a[1].toFixed(2)}" x2="${b[0].toFixed(2)}" y2="${b[1].toFixed(2)}" ${extra || ''}/>`;
+  let blades = '', seps = '';
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6, a0 = ang(Pt[i]), span = (ang(Pt[j]) - a0 + 360) % 360;
+    const mids = O.filter(v => { const d = (ang(v) - a0 + 360) % 360; return d > 1e-3 && d < span - 1e-3; })
+                  .sort((u, v) => ((ang(v) - a0 + 360) % 360) - ((ang(u) - a0 + 360) % 360));
+    const poly = [I[i], I[j], Pt[j], ...mids, Pt[i]];
+    const c = poly.reduce((m, q) => [m[0] + q[0] / poly.length, m[1] + q[1] / poly.length], [0, 0]);
+    const g = 0.6 + 0.4 * clamp(grow * 1.6 - i * 0.12), o = clamp(grow * 2 - i * 0.18);
+    blades += `<polygon points="${poly.map(f).join(' ')}" fill="${color}" opacity="${o}" transform="translate(${f(c)}) scale(${g}) translate(${f([-c[0], -c[1]])})"/>`;
+    seps += ln(I[i], Pt[i], `stroke="${gap}" stroke-width="4.2" stroke-linecap="square"`);
+    if (lines && (i === 0 || i === 3)) {
+      const s0 = [I[i][0] + (I[j][0] - I[i][0]) * 0.55, I[i][1] + (I[j][1] - I[i][1]) * 0.55], d = [Pt[i][0] - I[i][0], Pt[i][1] - I[i][1]];
+      seps += ln([s0[0] + d[0] * .08, s0[1] + d[1] * .08], [s0[0] + d[0] * .62, s0[1] + d[1] * .62], `stroke="${gap}" stroke-width="3.6"`);
+    }
+    if (lines && (i === 1 || i === 4)) seps += ln(I[j], O[(i + 2) % 6], `stroke="${gap}" stroke-width="0.9"`);
+  }
+  let bpS = '';
+  if (bp > 0) {
+    for (let k = 0; k < 6; k++) {
+      const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]], Lh = Math.hypot(...e);
+      const n = [e[1] / Lh, -e[0] / Lh], off = 13, kk = clamp(bp * 1.4 - k * 0.07);
+      const a1 = [a[0] + n[0] * off + e[0] * .08, a[1] + n[1] * off + e[1] * .08], b1 = [a1[0] + e[0] * .84 * kk, a1[1] + e[1] * .84 * kk];
+      const tick = (q, s) => ln([q[0] - n[0] * 4 * s, q[1] - n[1] * 4 * s], [q[0] + n[0] * 4 * s, q[1] + n[1] * 4 * s]);
+      bpS += ln(a1, b1) + tick(a1, kk) + tick(b1, kk) + ln(P(-90 + 60 * k, R + 6), P(-90 + 60 * k, R + 6 + 12 * kk));
+    }
+    bpS = `<g stroke="${color}" stroke-width="1.3" fill="none" opacity="${clamp(bp * 3)}">${bpS}</g>`;
+  }
+  return bpS + `<g>${blades}${seps}</g>`;
+}
+
+// ---------- helpers ----------
+function show(el, t, t0, { dur = .4, dy = 24, dur0 = 0, until = 1e9, s0 = 1 } = {}) {
+  const p = P(t, t0, dur), q = until < 1e8 ? 1 - P(t, until, .3) : 1;
+  const o = (t < t0 ? 0 : eo(p)) * q;
+  el.style.opacity = o;
+  el.style.transform = `translateY(${(1 - eo(p)) * dy - (1 - q) * 20}px) scale(${lerp(s0, 1, eo(p))})`;
+  return o;
+}
+function fadeCrowd(list, t, count, t0, span, notesOn) {
+  list.forEach(p => {
+    const k = p.order * span + t0, on = p.order * list.length < count ? P(t, k, .5) : 0;
+    p.el.style.opacity = on;
+    if (p.nt) {
+      const ph = ((t * 1.1 + p.ph) % 1.6) / 1.6;
+      p.nt.style.opacity = notesOn && on > .5 ? Math.sin(ph * Math.PI) * .9 : 0;
+      p.nt.style.transform = `translateY(${-ph * 60 * p.s}px) rotate(${Math.sin(ph * 6) * 8}deg)`;
+    }
+  });
+}
+
+function render(t) {
+  // ---------- scenes ----------
+  ORDER.forEach(([k, id], i) => {
+    const a = CUT[k], b = i + 1 < ORDER.length ? CUT[ORDER[i + 1][0]] : DUR + 2;
+    const el = $(id);
+    const on = t >= a - .45 && t < b;
+    el.style.opacity = on ? P(t, a - .45, .45) : 0;
+    el.style.zIndex = on ? 10 + i : 0;
+    if (on) el.style.transform = `scale(${lerp(1, 1.035, P(t, a, b - a))})`;
+  });
+  const dark = t >= CUT.dark - .2 && t < S('means') - X;
+  $('stage').classList.toggle('dark', dark);
+
+  // ---------- street ----------
+  if (t < CUT.dark) {
+    const sv = street;
+    // the big phone: handset lifted + bobbing, notes rising
+    const main = sv.querySelectorAll('.ped')[4];
+    main.querySelector('.phoneDiv').innerHTML = phoneSVG(14 + Math.sin(t * 2.2) * 3);
+    const stop = t >= S('stop') - X;
+    sv.querySelectorAll('#notesStreet foreignObject').forEach((n, i) => {
+      const ph = ((t * .55 + i * .37) % 1); const act = t < S('year') - X || (t >= S('hear') - X);
+      n.setAttribute('x', 560 + Math.sin(ph * 6 + i) * 24 + i * 6); n.setAttribute('y', 790 - ph * 260);
+      n.style.opacity = act ? Math.sin(ph * Math.PI) * .95 : 0;
+      n.style.transform = `rotate(${Math.sin(ph * 8 + i) * 12}deg)`;
+    });
+    // building sign + Levy appear at "1962"
+    sv.querySelector('#signBar').style.opacity = P(t, S('year') - .1, .4);
+    const lv = sv.querySelector('#levy');
+    const tl = S('year') - .1, lp = P(t, tl, 1.6);
+    // walk out of the door, then to the beam, then stand by the main phone
+    let lx = lerp(540, 610, eo(lp)), ly = 672, ls = .85;
+    if (t >= S('wire') - X) { const q = eo(P(t, S('wire') - X, 1.2)); lx = lerp(610, 700, q); }
+    if (t >= S('pat') - X) { const q = eo(P(t, S('pat') - X, 1.0)); lx = lerp(700, 430, q); ly = lerp(672, 930, q); ls = lerp(.85, 1.15, q); }
+    lv.setAttribute('transform', `translate(${lx} ${ly + Math.abs(Math.sin(t * 7)) * (lp < 1 ? 4 : 0)}) scale(${ls})`);
+    lv.style.opacity = P(t, tl, .5);
+    const pp = sv.querySelector('#paper'); const ppO = P(t, W('pat', 1), .35);
+    pp.setAttribute('transform', `translate(${lx - 62 * ls} ${ly - 70 * ls}) scale(${ls * lerp(.6, 1, back(ppO))}) rotate(-12)`); pp.style.opacity = ppO;
+    // wire, beam and spark
+    sv.querySelector('#beam').style.opacity = P(t, S('wire') - X, .4);
+    const wp = P(t, W('wire', 2) - .1, .8); const wire = sv.querySelector('#wire');
+    wire.style.opacity = wp > 0 ? 1 : 0; wire.setAttribute('stroke-dasharray', '300'); wire.setAttribute('stroke-dashoffset', String(300 * (1 - eo(wp))));
+    const sp = sv.querySelector('#spark'); const spOn = t >= W('wire', 4) && t < S('now') - X;
+    sp.style.opacity = spOn ? (Math.sin(t * 23) > 0 ? .95 : .3) : 0; sp.setAttribute('transform', `translate(652 500) scale(${spOn ? .8 + .3 * Math.abs(Math.sin(t * 17)) : 1}) translate(-652 -500)`);
+    // antenna rings
+    const rg = sv.querySelector('#rings'); const ra = t >= S('ant') - X && t < S('pat') - X;
+    rg.style.opacity = ra ? P(t, S('ant') - X, .4) : 0;
+    [...rg.children].forEach((c, i) => { const ph = ((t * .8 + i * .25) % 1); c.setAttribute('r', String(20 + ph * 260)); c.style.opacity = (1 - ph) * .8; });
+    sv.querySelector('#mastLight').style.opacity = .5 + .5 * Math.sin(t * 4);
+    // phones on the other pedestals pick up the music: notes handled by the crowd; crowd counts
+    let count = 0, t0 = S('stop') - X, span = 1.2, notesOn = t >= S('hear') - X;
+    if (t >= S('now') - X) { count = 120; t0 = S('now') - X; span = 2.4; }
+    else if (t >= S('stop') - X) { count = 16; }
+    // after "stop" the first 16 stay; from "now" everyone pours in (first 16 keep their earlier fade)
+    crowd.forEach(p => {
+      const first = p.order * 120 < 16;
+      const k = first ? S('stop') - X + p.order * 7.5 * 1.2 / 120 * 120 / 120 : 0; // (kept for clarity)
+      let on;
+      if (first) on = P(t, S('stop') - X + p.order * 120 / 16 * .08, .5);
+      else on = t >= S('now') - X ? P(t, S('now') - X + p.order * 2.4, .5) : 0;
+      if (t >= S('what') - X && !first) on = Math.min(on, 1);
+      p.el.style.opacity = on;
+      if (p.nt) {
+        const ph = ((t * 1.1 + p.ph) % 1.6) / 1.6;
+        p.nt.style.opacity = notesOn && on > .5 && t < S('what') - X ? Math.sin(ph * Math.PI) * .9 : 0;
+        p.nt.style.transform = `translateY(${-ph * 60 * p.s}px) rotate(${Math.sin(ph * 6) * 8}deg)`;
+      }
+    });
+    void count; void t0; void span;
+  }
+
+  // ---------- dark hall ----------
+  if (t >= CUT.dark - .5 && t < CUT.pair) {
+    const a = CUT.dark;
+    $('lightBg').style.opacity = P(t, S('means') - X, .6);
+    const sg = $('bigSign'); const sgT = S('imp') - .15;
+    show(sg, t, sgT, { dur: .45, dy: -30 });
+    sg.style.boxShadow = `0 18px 40px rgba(0,0,0,.35), 0 0 ${lerp(0, 90, P(t, W('imp', 2), .4)) * (t < S('means') - X ? 1 : 0)}px rgba(255,110,5,.45)`;
+    const spk = hall.querySelector('#spk'); spk.style.opacity = P(t, W('imp', 2) - .1, .3) * (t < S('means') - X ? 1 : 0);
+    [...spk.querySelectorAll('path')].forEach((p, i) => p.style.opacity = t >= W('imp', 2) ? (Math.sin(t * 9 + i) > 0 ? 1 : .25) : 0);
+    crowd2.forEach(p => { p.el.style.opacity = P(t, a - .3 + p.order * .6, .5); if (p.nt) { const ph = ((t * 1.1 + p.ph) % 1.6) / 1.6; p.nt.style.opacity = t < S('means') - X ? 0 : 0; } });
+    bubs.forEach((b, i) => { const tb = W('every', 0) + i * .18; show(b, t, tb, { dur: .35, dy: 20, until: S('means') - X }); });
+  }
+
+  // ---------- pair ----------
+  if (t >= CUT.pair - .5 && t < CUT.same) {
+    show($('pTune'), t, W('pair', 0) - .15, { dur: .45, dy: 40, s0: .85 });
+    show($('pLab1'), t, W('pair', 1) - .05, { dur: .4 });
+    show($('pSign'), t, W('pair', 4) - .15, { dur: .45, dy: 40, s0: .85 });
+    show($('pLab2'), t, W('pair', 5) - .05, { dur: .4 });
+  }
+
+  // ---------- same (recap) ----------
+  if (t >= CUT.same - .5 && t < CUT.end) {
+    show($('frame'), t, CUT.same, { dur: .5, dy: 50, s0: .92 });
+    show($('slider'), t, CUT.same + .2, { dur: .4, dy: 10 });
+    const pl = clamp((t - W('same', 7)) / 4.0) * .055;                 // "four seconds" → the knob creeps to 0:04
+    $('slFill').style.width = (pl * 100) + '%'; $('slKnob').style.left = (pl * 100) + '%';
+    $('slT').textContent = '0:0' + Math.min(4, Math.floor(pl / .055 * 4));
+    const ms = $('mini').querySelectorAll('#notesStreet foreignObject');
+    ms.forEach((n, i) => { const ph = ((t * .55 + i * .37) % 1); n.setAttribute('x', 560 + Math.sin(ph * 6 + i) * 24 + i * 6); n.setAttribute('y', 790 - ph * 260); n.style.opacity = Math.sin(ph * Math.PI) * .95; });
+  }
+
+  // ---------- end ----------
+  if (t >= CUT.end - .5) {
+    const tE = CUT.end, tR = S('ras') - X, tW = S('which') - X, tL = S('logo') - X;
+    // the two tricks, then they leave as the exit opens
+    const tGo = W('exit', 3) - .25;
+    show($('eTune'), t, tE, { dur: .4, dy: 30, until: tGo });
+    show($('eSign'), t, tE, { dur: .4, dy: 30, until: tGo });
+    $('eTune').style.transform += ` translateX(${-eo(P(t, tGo, .4)) * 300}px)`; $('eSign').style.transform += ` translateX(${eo(P(t, tGo, .4)) * 300}px)`;
+    // aperture opens on "exit", wordmark on "Rasolv"
+    const ik = eo(P(t, W('exit', 3) - .05, .9)), iOut = eo(P(t, tW, .35)), iBack = eo(P(t, tL, .5));
+    const mk = $('mark');
+    const vis = t >= W('exit', 3) - .05;
+    const mo = vis ? (1 - iOut) + iBack : 0;
+    mk.style.opacity = mo;
+    const mkY = lerp(500, 440, iBack), mkS = lerp(1, .8, iBack);
+    mk.style.top = mkY + 'px'; mk.style.transform = `scale(${lerp(.7, 1, back(ik, 1.2)) * mkS * (1 - .25 * iOut * (1 - iBack))})`;
+    if (vis) mk.innerHTML = aperture({ r: lerp(2, 37, ik), rot: lerp(-90, 0, ik), grow: P(t, W('exit', 3), .5), bp: 0, gap: '#e6e6e6', lines: true });
+    const wd = $('word'); const wk = P(t, W('ras', 0) - .05, .5);
+    wd.style.opacity = t < W('ras', 0) - .05 ? 0 : eo(wk) * ((1 - iOut) + iBack);
+    wd.style.letterSpacing = lerp(40, 10, eo(wk)) + 'px'; wd.style.top = lerp(820, 760, iBack) + 'px'; wd.style.transform = `scale(${lerp(1, .85, iBack)})`;
+    show($('live'), t, W('ras', 1) - .05, { dur: .4, dy: -16, until: tW });
+    $('live').style.top = '420px'; $('liveIn').querySelector('i').style.opacity = .55 + .45 * Math.sin(t * 6);
+    rows.forEach(r => show(r.el, t, r.t, { dur: .4, dy: 30, until: tW }));
+    // which one gets you
+    show($('wTune'), t, W('which', 4) - .1, { dur: .45, dy: 40, s0: .85, until: tL });
+    show($('wLab1'), t, W('which', 5) - .05, { dur: .4, until: tL });
+    show($('wOr'), t, W('which', 6) - .05, { dur: .3, until: tL });
+    show($('wCard'), t, W('which', 7) - .1, { dur: .45, dy: 40, s0: .85, until: tL });
+    show($('wLab2'), t, W('which', 8) - .05, { dur: .4, until: tL });
+    $('wCard').style.transform += ` rotate(${lerp(6, 2, eo(P(t, W('which', 7) - .1, .45)))}deg)`;
+    // lockup
+    show($('tagline'), t, W('logo', 1) - .05, { dur: .5, dy: 14 });
+    show($('cta'), t, W('logo', 3) + .1, { dur: .5, dy: 24, s0: .9 });
+  }
+
+  // ---------- YOU ----------
+  const youOn = (t < CUT.dark || (t >= CUT.pair && t < S('ras') - X));
+  const yw = $('youWrap');
+  yw.style.opacity = youOn ? Math.min(P(t, 0, .01), 1 - P(t, (t < CUT.dark ? CUT.dark : S('ras') - X) - .45, .4)) * (t >= CUT.pair ? P(t, CUT.pair - .45, .45) : 1) : 0;
+  $('youLab').style.opacity = P(t, S('open') - .05, .3);
+  $('you').style.transform = `translateY(${Math.sin(t * 1.4) * 2}px)`;
+
+  // ---------- headline ----------
+  let cur = null, nxt = null;
+  for (let i = 0; i < HLKEYS.length; i++) { const k = HLKEYS[i]; if (t >= S(k) - X) { cur = k; nxt = HLKEYS[i + 1]; } }
+  const hl = $('hl');
+  if (!cur || !HL[cur][0]) hl.style.opacity = 0;
+  else {
+    const a = S(cur) - X, b = nxt ? S(nxt) - X : DUR + 1;
+    const hold = cur === 'year' ? S('wire') - X : b; // "New York, 1962" stays through the Levy line
+    if (hl.dataset.k !== cur) { hl.dataset.k = cur; $('hlT').innerHTML = HL[cur][0]; $('hlS').textContent = HL[cur][1]; }
+    const pin = P(t, a, .4), pout = cur === 'levy' ? 0 : P(t, hold - .25, .25);
+    hl.style.opacity = eo(pin) * (1 - pout);
+    hl.style.transform = `translateY(${(1 - eo(pin)) * 18 - pout * 10}px)`;
+  }
+  if (cur === 'levy') { // keep the 1962 card up
+    if (hl.dataset.k !== 'year') { hl.dataset.k = 'year'; $('hlT').innerHTML = HL.year[0]; $('hlS').textContent = HL.year[1]; }
+    hl.style.opacity = 1 - P(t, S('wire') - X - .25, .25); hl.style.transform = '';
+  }
+
+  // ---------- hold timer ----------
+  const ct = $('counter');
+  const tv = Math.min(t, FREEZE);
+  const showC = t >= 1.0 && t < S('ras') - X && !(t >= S('imp') - .15 && t < CUT.pair);
+  ct.textContent = 'ON HOLD: ' + fmt(tv);
+  ct.style.opacity = showC ? Math.min(P(t, 1.0, .4), 1 - P(t, S('ras') - X - .4, .4)) * (t >= CUT.pair ? P(t, CUT.pair - .45, .45) : 1) * (t >= CUT.dark && t < CUT.pair ? P(t, CUT.dark, .4) : 1) : 0;
+  ct.style.color = t >= FREEZE ? OR : '';
+  ct.style.top = (t >= CUT.same && t < CUT.end) ? '400px' : '352px';
+
+  // ---------- captions (phrase chunks, spoken words light up) ----------
+  const line = CAP.find(c => t >= c.start - .08 && t < c.end);
+  const cap = $('cap');
+  if (!line) cap.style.opacity = 0;
+  else {
+    // chunk the line at punctuation / 5 words
+    if (cap.dataset.k !== String(line.start)) {
+      cap.dataset.k = String(line.start);
+      const chunks = []; let cur = [];
+      line.words.forEach((w, i) => { cur.push(i); if (/[.,;:!?…”]$/.test(w[0]) || cur.length >= 5) { chunks.push(cur); cur = []; } });
+      if (cur.length) chunks.push(cur);
+      cap.dataset.chunks = JSON.stringify(chunks);
+    }
+    const chunks = JSON.parse(cap.dataset.chunks);
+    let ci = chunks.findIndex(ch => t < line.words[ch[ch.length - 1]][2] + .25);
+    if (ci < 0) ci = chunks.length - 1;
+    const ch = chunks[ci], key = line.start + ':' + ci;
+    const capIn = $('capIn');
+    if (capIn.dataset.k !== key) { capIn.dataset.k = key; capIn.innerHTML = ch.map(i => `<span>${line.words[i][0]}</span>`).join(' '); capEls = [...capIn.children]; }
+    const c0 = line.words[ch[0]][1] - .12, c1 = ci + 1 < chunks.length ? line.words[chunks[ci + 1][0]][1] - .12 : line.end;
+    cap.style.opacity = clamp((t - c0) / .14) * clamp((c1 - t) / .14);
+    capIn.style.transform = `scale(${lerp(.96, 1, clamp((t - c0) / .18))})`;
+    ch.forEach((wi, k) => { const on = t >= line.words[wi][1] - .04; capEls[k].style.color = on ? '#fff' : 'rgba(255,255,255,.42)'; });
+  }
+
+  // ---------- grain ----------
+  const g = $('grain').getContext('2d'); g.drawImage(noise[Math.floor(t * 12) % noise.length], 0, 0);
+  $('stage').style.filter = t > DUR - .5 ? `brightness(${clamp((DUR - t) / .5)})` : '';
+}
+
+window.DURATION = DUR;
+window.seek = t => render(t);
+window.ready = document.fonts.ready.then(() => { build(); render(0); return true; });
+if (!navigator.webdriver) {
+  window.ready.then(() => { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); }; loop(); });
+}
+</script>
+</body>
+</html>
