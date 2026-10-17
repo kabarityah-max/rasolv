@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Builds the "Show Your Work" RASOLV TikTok: vertical 9:16, voiceover + captions, original drill score.
+# Builds the "Show Your Work" RASOLV TikTok: vertical 9:16, voiceover + captions, original score (Carousel style).
 #   KOKORO_DIR must contain kokoro-v1.0.onnx + voices-v1.0.bin (github.com/thewh1teagle/kokoro-onnx releases)
 #   SKIP_VO=1 reuses out/vo + captions.js. SCALE=1 (default) → 1080x1920 (TikTok's max), SCALE=2 → 2160x3840. FPS defaults to 60.
 set -euo pipefail
 cd "$(dirname "$0")"
 export NODE_PATH="${NODE_PATH:-$(npm root -g)}" SCALE="${SCALE:-1}"
 mkdir -p out
-if [ "${SKIP_VO:-0}" != 1 ]; then python3 vo.py "$KOKORO_DIR/kokoro-v1.0.onnx" "$KOKORO_DIR/voices-v1.0.bin" "${VOICE:-am_michael}" "${SPEED:-1.1}"; fi
+if [ "${SKIP_VO:-0}" != 1 ]; then python3 vo.py "$KOKORO_DIR/kokoro-v1.0.onnx" "$KOKORO_DIR/voices-v1.0.bin" "${VOICE:-am_michael}" "${SPEED:-0.98}"; fi
 FPS=${FPS:-60}; DUR=$(python3 -c "import json;print(json.load(open('out/vo/lines.json'))['duration'])")
 TOTAL=$(python3 -c "print(round($DUR*$FPS))"); WORKERS=${WORKERS:-4}; CHUNK=$(( (TOTAL + WORKERS - 1) / WORKERS ))
 for ((i=0; i<WORKERS; i++)); do
