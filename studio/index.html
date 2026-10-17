@@ -1,0 +1,1099 @@
+<title>RASOLV Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0B0A09">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one phone-width column (max 760px) between a sticky brand bar and a fixed thumb-reach tab bar; sheets rise from the bottom. */
+:root {
+  --bg: #0B0A09; --surface: #151311; --surface-2: #1E1B18; --line: #2C2824; --fg: #F5F0EB; --muted: #9C928A;
+  --accent: #FF6E05; --accent-soft: rgba(255,110,5,.14); --on-accent: #120700;
+  --ok: #3DD68C; --warn: #F5B83D; --err: #FF5A4E;
+  --display: "Rubik", "Segoe UI", system-ui, sans-serif;
+  --body: "Rubik", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 14px; --tabh: 64px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+  --bg: #F8F5F1; --surface: #FFFFFF; --surface-2: #F0EBE5; --line: #E3DBD3; --fg: #16110D; --muted: #6E645C;
+  --accent: #E35D00; --accent-soft: rgba(227,93,0,.10); --on-accent: #FFFFFF;
+  --ok: #12935A; --warn: #A86A00; --err: #D2372B; color-scheme: light; } }
+:root[data-theme="light"] {
+  --bg: #F8F5F1; --surface: #FFFFFF; --surface-2: #F0EBE5; --line: #E3DBD3; --fg: #16110D; --muted: #6E645C;
+  --accent: #E35D00; --accent-soft: rgba(227,93,0,.10); --on-accent: #FFFFFF;
+  --ok: #12935A; --warn: #A86A00; --err: #D2372B; color-scheme: light; }
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+body.lock { overflow: hidden; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+* { box-sizing: border-box; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: var(--accent); }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.top-in, .wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top-in { display: flex; align-items: center; gap: 10px; height: 54px; }
+.logo { display: flex; align-items: center; gap: 9px; font-family: var(--display); font-weight: 800; letter-spacing: .06em; font-size: 15px; }
+.logo small { font-weight: 500; letter-spacing: .02em; color: var(--muted); font-size: 13px; }
+.top .sp { flex: 1; }
+.wrap { padding-block: 18px calc(var(--tabh) + 34px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 22px; }
+
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.tabs-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); height: var(--tabh); }
+.tab { background: none; border: 0; display: grid; place-items: center; align-content: center; gap: 3px; font-size: 11px; font-weight: 500; color: var(--muted); position: relative; letter-spacing: .02em; }
+.tab svg { width: 23px; height: 23px; }
+.tab[aria-current="page"] { color: var(--fg); }
+.tab[aria-current="page"] svg { color: var(--accent); }
+.tab .dot { position: absolute; top: 9px; left: calc(50% + 8px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--accent); color: var(--on-accent); font-size: 10px; font-weight: 700; display: grid; place-items: center; }
+
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.h1 { font-size: clamp(28px, 8vw, 40px); font-weight: 800; line-height: 1.04; letter-spacing: -.02em; }
+.h1 em { font-style: normal; color: var(--accent); }
+.h2 { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+.muted { color: var(--muted); }
+.sec { display: grid; gap: 12px; }
+.sec-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 600; font-size: 14px; white-space: nowrap; }
+.btn svg { width: 18px; height: 18px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.ghost { background: transparent; }
+.btn.sm { min-height: 36px; padding: 0 12px; font-size: 13px; border-radius: 10px; }
+.btn.xl { min-height: 56px; font-size: 16px; border-radius: 16px; width: 100%; }
+.btn.danger { color: var(--err); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.icon-btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.icon-btn svg { width: 19px; height: 19px; }
+
+.composer { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 14px; display: grid; gap: 12px; }
+.composer:focus-within { border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); }
+textarea, input[type="text"], input[type="search"], input[type="datetime-local"], input[type="time"], select { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; font-size: 16px; }
+textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+.composer textarea { background: transparent; border: 0; padding: 4px 2px; min-height: 104px; font-size: 17px; }
+.composer textarea:focus { outline: none; }
+label.f { display: grid; gap: 6px; font-size: 13px; font-weight: 500; color: var(--muted); }
+
+.scroller { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 2px max(16px, env(safe-area-inset-left, 0px)); scroll-snap-type: x proximity; }
+.scroller::-webkit-scrollbar { display: none; }
+.chip { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; font-weight: 500; white-space: nowrap; }
+.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--fg); }
+.chip .n { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.seg { display: inline-grid; grid-auto-flow: column; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: none; min-height: 34px; padding: 0 12px; border-radius: 9px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+
+.flowcard { flex: none; width: 210px; scroll-snap-align: start; text-align: start; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 13px; display: grid; gap: 8px; }
+.flowcard[aria-pressed="true"] { border-color: var(--accent); background: linear-gradient(180deg, var(--accent-soft), transparent 70%), var(--surface); }
+.flowcard b { font-size: 14px; }
+.flowcard p { font-size: 12px; color: var(--muted); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.agents { display: flex; gap: 3px; flex-wrap: wrap; }
+.agents i { font-style: normal; font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 6px; background: var(--surface-2); color: var(--muted); }
+.agents i.g { color: var(--warn); }
+
+.list { display: grid; gap: 10px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.card.tap { text-align: start; width: 100%; }
+.card.tap:active { transform: scale(.995); }
+.meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.pill { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 999px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.running { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.pill.running::before { animation: pulse 1.1s ease-in-out infinite; }
+.pill.review, .pill.scheduled { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
+.pill.done, .pill.approved, .pill.posted { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
+.pill.error { color: var(--err); border-color: color-mix(in srgb, var(--err) 45%, transparent); }
+.clamp2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.plat { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 500; }
+
+.banner { border: 1px dashed var(--line); border-radius: var(--r); padding: 12px 14px; font-size: 13px; color: var(--muted); display: flex; gap: 10px; align-items: flex-start; }
+.banner svg { width: 20px; height: 20px; flex: none; margin-top: 1px; }
+.banner.hot { border-style: solid; border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); background: var(--accent-soft); color: var(--fg); }
+.empty { text-align: center; padding: 34px 16px; border: 1px dashed var(--line); border-radius: 18px; display: grid; gap: 10px; justify-items: center; color: var(--muted); }
+.empty .h2 { color: var(--fg); }
+
+/* Run */
+.runhead { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
+.ap { display: block; }
+.ap polygon { transition: fill .5s; }
+.ap .lit { fill: var(--accent); }
+.ap .off { fill: var(--surface-2); }
+.ap .now { fill: var(--accent); animation: blade 1.2s ease-in-out infinite; }
+.ap line { stroke: var(--bg); }
+.steps { display: grid; gap: 0; position: relative; }
+.step { display: grid; grid-template-columns: 30px 1fr; gap: 12px; position: relative; padding-bottom: 14px; }
+.step::before { content: ""; position: absolute; left: 14px; top: 30px; bottom: 0; width: 2px; background: var(--line); }
+.step:last-child::before { display: none; }
+.step.done::before { background: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.sn { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); position: relative; z-index: 1; }
+.step.done .sn { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.step.running .sn { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.step.review .sn { border-color: var(--warn); color: var(--warn); }
+.step.error .sn { border-color: var(--err); color: var(--err); }
+.sbody { min-width: 0; display: grid; gap: 8px; }
+.shead { display: flex; align-items: center; gap: 8px; min-height: 30px; flex-wrap: wrap; background: none; border: 0; padding: 0; text-align: start; width: 100%; }
+.shead b { font-size: 15px; }
+.tag { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.out { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; min-width: 0; overflow-wrap: anywhere; }
+.out.collapsed { max-height: 132px; overflow: hidden; -webkit-mask-image: linear-gradient(#000 55%, transparent); mask-image: linear-gradient(#000 55%, transparent); }
+.thinking { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.thinking i { width: 54px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--surface-2), var(--accent), var(--surface-2)); background-size: 200% 100%; animation: shim 1.2s linear infinite; }
+.gate { border: 1px solid color-mix(in srgb, var(--warn) 50%, var(--line)); border-radius: 12px; padding: 12px; display: grid; gap: 10px; background: color-mix(in srgb, var(--warn) 7%, transparent); }
+
+/* Markdown */
+.md > * + * { margin-top: .6em; }
+.md h1, .md h2, .md h3, .md h4 { font-size: 15px; font-weight: 700; margin-top: 1em; }
+.md h1:first-child, .md h2:first-child, .md h3:first-child { margin-top: 0; }
+.md ul, .md ol { padding-inline-start: 1.25em; margin-bottom: 0; }
+.md li + li { margin-top: .25em; }
+.md code { font-family: var(--mono); font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+.md pre { background: var(--surface-2); padding: 10px; border-radius: 10px; overflow-x: auto; }
+.md pre code { background: none; padding: 0; }
+.md blockquote { margin: 0; padding-inline-start: 10px; border-inline-start: 3px solid var(--accent); color: var(--muted); }
+.md hr { border: 0; border-top: 1px solid var(--line); }
+.md .tbl { overflow-x: auto; }
+.md table { border-collapse: collapse; font-size: 13px; min-width: 100%; }
+.md th, .md td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: start; vertical-align: top; }
+.md th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+
+/* Pack */
+.pack { border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 20px; padding: 16px; display: grid; gap: 14px; background: linear-gradient(180deg, var(--accent-soft), transparent 220px), var(--surface); }
+.score { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
+.gauge { width: 64px; height: 64px; }
+.gauge .t { fill: none; stroke: var(--surface-2); stroke-width: 7; }
+.gauge .v { fill: none; stroke: var(--accent); stroke-width: 7; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+.gauge text { font-family: var(--display); font-weight: 800; font-size: 19px; fill: var(--fg); }
+.post { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.post .hook { font-family: var(--display); font-weight: 700; font-size: 17px; line-height: 1.25; text-wrap: balance; }
+.post .body { white-space: pre-wrap; font-size: 14px; overflow-wrap: anywhere; }
+.post .ar { direction: rtl; text-align: right; font-size: 15.5px; line-height: 1.75; border-top: 1px dashed var(--line); padding-top: 10px; white-space: pre-wrap; }
+.tags { font-family: var(--mono); font-size: 12px; color: var(--accent); overflow-wrap: anywhere; }
+.kv { display: grid; grid-template-columns: 74px 1fr; gap: 4px 10px; font-size: 13px; }
+.kv dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+.kv dd { margin: 0; min-width: 0; }
+
+/* Plan */
+.days { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 2px max(16px, env(safe-area-inset-left, 0px)); }
+.days::-webkit-scrollbar { display: none; }
+.day { flex: none; width: 52px; height: 68px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; align-content: center; gap: 2px; position: relative; }
+.day small { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.day b { font-family: var(--display); font-size: 19px; font-weight: 700; }
+.day[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.day[aria-pressed="true"] small { color: inherit; opacity: .8; }
+.day .pip { position: absolute; bottom: 7px; display: flex; gap: 2px; }
+.day .pip i { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+.day[aria-pressed="true"] .pip i { background: var(--on-accent); }
+
+.weekdays { display: flex; gap: 4px; flex-wrap: wrap; }
+.weekdays button { width: 38px; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface-2); font-size: 12px; font-weight: 600; }
+.weekdays button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.switch { width: 46px; height: 28px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); position: relative; flex: none; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--muted); transition: transform .2s, background .2s; }
+.switch[aria-checked="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--accent); }
+
+/* Sheet */
+#sheet { position: fixed; inset: 0; z-index: 40; }
+.scrim { position: absolute; inset: 0; background: rgba(0,0,0,.55); animation: fade .2s; }
+.panel { position: absolute; left: 0; right: 0; bottom: 0; max-height: calc(100% - 40px - env(safe-area-inset-top, 0px)); overflow-y: auto; overscroll-behavior: contain; background: var(--surface); border-radius: 22px 22px 0 0; border: 1px solid var(--line); border-bottom: 0; padding: 8px max(16px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 14px; animation: rise .26s cubic-bezier(.2,.8,.2,1); }
+.panel::before { content: ""; width: 38px; height: 4px; border-radius: 2px; background: var(--line); justify-self: center; }
+.panel-h { display: flex; align-items: center; gap: 10px; }
+@media (min-width: 720px) { .panel { left: 50%; right: auto; width: 640px; transform: translateX(-50%); bottom: 24px; border-radius: 22px; border-bottom: 1px solid var(--line); animation: fade .2s; } }
+
+.toast { position: fixed; left: 50%; bottom: calc(var(--tabh) + 16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 50; background: var(--fg); color: var(--bg); padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 500; max-width: calc(100% - 32px); box-shadow: 0 8px 30px rgba(0,0,0,.35); animation: rise .2s; }
+.toast a { color: inherit; font-weight: 700; }
+.skel { height: 74px; border-radius: var(--r); background: linear-gradient(90deg, var(--surface), var(--surface-2), var(--surface)); background-size: 200% 100%; animation: shim 1.4s linear infinite; }
+.thumb { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 1px solid var(--line); }
+.ideas { display: grid; gap: 8px; }
+.idea { text-align: start; background: none; border: 0; border-top: 1px solid var(--line); padding: 12px 0 2px; display: flex; gap: 12px; align-items: baseline; }
+.idea span:first-child { font-family: var(--mono); font-size: 11px; color: var(--accent); flex: none; width: 56px; text-transform: uppercase; letter-spacing: .06em; }
+
+@keyframes pulse { 50% { opacity: .25; } }
+@keyframes blade { 50% { opacity: .35; } }
+@keyframes shim { to { background-position: -200% 0; } }
+@keyframes rise { from { transform: translateY(16px); opacity: 0; } }
+@keyframes fade { from { opacity: 0; } }
+@media (min-width: 720px) { @keyframes rise { from { opacity: 0; } } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+
+<header class="top"><div class="top-in">
+  <div class="logo" id="logo"></div>
+  <div class="sp"></div>
+  <button class="icon-btn" data-act="brand" aria-label="Brand profile" title="Brand profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5.2 5.7.8-4.1 4 1 5.6L12 16l-5.1 2.6 1-5.6-4.1-4 5.7-.8z"/></svg></button>
+</div></header>
+
+<main class="wrap" id="view"></main>
+
+<nav class="tabs" aria-label="Sections"><div class="tabs-in" id="tabs"></div></nav>
+<div id="sheet" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+"use strict";
+/* ---------- basics ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const clone = o => JSON.parse(JSON.stringify(o ?? null));
+const trim = (s, n) => (s = String(s || "")).length > n ? s.slice(0, n) + "\n…[trimmed]" : s;
+const store = { get(k, d) { try { const v = localStorage.getItem("rs:" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem("rs:" + k, JSON.stringify(v)); } catch {} } };
+
+const PLATFORMS = ["Instagram", "TikTok", "YouTube Shorts", "LinkedIn", "X", "Facebook", "Snapchat", "Email"];
+const LANGS = { en: "English only", ar: "Arabic only", both: "Bilingual: English + Arabic (write both)" };
+const TIERS = { quick: "Fast", default: "Balanced", complex: "Deep" };
+const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const LIB_STATUS = ["draft", "approved", "scheduled", "posted"];
+
+/* ---------- starter flows (copied into your studio on first use) ---------- */
+const TEMPLATES = [
+  { key: "reel", name: "Reel Studio", description: "Short-form video from a one-line idea: strategy, hooks, script, Arabic adaptation, critique, ready-to-post pack.",
+    steps: [
+      ["Strategist", "default", false, "Define the play in under 220 words: objective, who exactly is watching, the one insight that makes them stop, three angles ranked best first, the key message and the brand proof points to use. If a reference image is attached, describe what is in it and how the content should use it."],
+      ["Hook Lab", "default", false, "Write 10 scroll-stopping opening hooks for the top angle, each under 9 words, mixing question, bold claim, pattern interrupt and POV formats. Then pick the best 3 and give a one-line reason for each."],
+      ["Scriptwriter", "default", true, "Write the short-form video script (20 to 35 seconds) using the best hook. Use a Markdown table with columns: Time, On-screen text, Voiceover, Shot. End with a clear CTA. Keep lines short enough to read on a phone."],
+      ["Arabic Adapter", "default", false, "If the language setting includes Arabic: adapt (do not literally translate) the hook, on-screen text and voiceover into natural Modern Standard Arabic that lands in the Gulf and the Maghreb. Keep the brand's Arabic name, use Western digits, and note any line that needed a cultural change. If Arabic is not requested, reply only with two localization ideas for later."],
+      ["Critic", "complex", false, "Act as a ruthless creative director. Score the work 0 to 100 on hook strength, clarity, brand fit and platform fit (one line each). List the 5 fixes that matter most, then output the improved final script with those fixes applied."],
+      ["Packager", "default", false, "", "packager"]
+    ] },
+  { key: "quick", name: "Quick Post", description: "One idea to polished posts for each platform in under a minute.",
+    steps: [
+      ["Writer", "default", false, "Write one strong post per requested platform, native to each platform's format and length. Lead with a hook. Include Arabic versions if requested."],
+      ["Editor", "quick", false, "Tighten every post: cut filler, sharpen the hook, check brand voice and the avoid list. Output the final versions only."],
+      ["Packager", "quick", false, "", "packager"]
+    ] },
+  { key: "repurpose", name: "Repurpose", description: "Paste a transcript, article or notes. Get the best moments cut into posts for every platform.",
+    steps: [
+      ["Moment Miner", "default", false, "The brief contains source material. Extract the 5 strongest moments: quotable lines, surprising facts, stories or how-tos. For each give a title, the exact quote or detail, and why it would perform."],
+      ["Platform Writer", "default", true, "Turn the best moments into native posts for each requested platform (vary formats: carousel outline, short video script, text post, thread). Label each with its platform."],
+      ["Arabic Adapter", "default", false, "If Arabic is requested, adapt every post into natural Modern Standard Arabic (not literal). Otherwise reply only with: Arabic not requested."],
+      ["Packager", "default", false, "", "packager"]
+    ] },
+  { key: "week", name: "Content Week", description: "A 7-day plan across your pillars, every post written and timed.",
+    steps: [
+      ["Planner", "default", true, "Plan 7 days of content starting tomorrow. One post per day, rotating the brand pillars and the requested platforms. Markdown table: Day, Platform, Format, Pillar, Idea, Best time (local)."],
+      ["Batch Writer", "default", false, "Write every post in the plan in full: hook, caption or script, CTA, and a visual note. Include Arabic versions if requested."],
+      ["Packager", "default", false, "Make exactly one item per planned day, in order, with bestTime set to that day and time.", "packager"]
+    ] },
+  { key: "film", name: "Film Brief", description: "A brand-film treatment for the render pipeline: concept, bilingual VO script with timings, shot list.",
+    steps: [
+      ["Concept", "complex", false, "Pitch 3 short concepts for a 30 to 50 second vertical brand film (name, one-line idea, signature visual moment). Recommend one."],
+      ["VO Script", "default", true, "Write the recommended film as a timed script: Markdown table with t (s), Act, English VO, Arabic VO (MSA), On-screen type. Keep VO lines under 12 words. End on the brand name and tagline."],
+      ["Shot List", "default", false, "Write the shot list a motion designer can build: numbered shots with duration, camera move, elements on screen, transition, and the sound hit."],
+      ["Packager", "default", false, "Make one item for the film itself (platform YouTube Shorts, format Short) plus one teaser post per other requested platform.", "packager"]
+    ] }
+];
+function flowFromTemplate(t, order) {
+  return { id: "f-" + t.key + "-" + uid().slice(-4), name: t.name, description: t.description, order, createdAt: Date.now(),
+    steps: t.steps.map(([name, tier, gate, instructions, role]) => ({ id: uid(), name, tier, gate, instructions, role: role || "agent" })) };
+}
+
+/* ---------- state ---------- */
+const S = {
+  tab: "create", brand: null, flows: [], runs: [], library: [], autos: [], autopilot: null, ready: {},
+  openRun: null, brief: store.get("brief", ""), image: null, imageURL: null,
+  flowId: store.get("flowId", null), platforms: store.get("platforms", ["Instagram", "TikTok"]), lang: store.get("lang", "both"),
+  libFilter: "all", libQuery: "", planDay: null, expanded: {}
+};
+let DB = null, SAMPLE = null, MCP = null, CAN_IMG = false, MEMORY = false;
+const LOCALRUN = {};   // working copies of runs this tab is driving
+const LIVE = {};       // streaming state per run: {ctl, stepId, text}
+const IMAGES = {};     // reference image per run (kept in memory only)
+const QUEUE = {};      // one write at a time per document
+
+/* ---------- data layer ---------- */
+const COL = { flows: "flows", runs: "runs", library: "library", autos: "automations" };
+function memApply(key, col, id, data) {
+  const arr = S[key]; const i = arr.findIndex(x => x.id === id);
+  if (data === null) { if (i >= 0) arr.splice(i, 1); } else if (i >= 0) arr[i] = data; else arr.unshift(data);
+  if (key === "flows") arr.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  render();
+}
+function keyOf(col) { return Object.keys(COL).find(k => COL[k] === col); }
+function write(path, fn) {
+  const p = (QUEUE[path] || Promise.resolve()).catch(() => {}).then(fn);
+  QUEUE[path] = p;
+  return p.catch(e => { dbFail(e); throw e; });
+}
+function put(col, data) {
+  data = { ...data, updatedAt: Date.now() };
+  if (!DB) { memApply(keyOf(col), col, data.id, data); return Promise.resolve(); }
+  return write(col + "/" + data.id, () => DB.doc(col + "/" + data.id).set(data));
+}
+function del(col, id) {
+  if (!DB) { memApply(keyOf(col), col, id, null); return Promise.resolve(); }
+  return write(col + "/" + id, () => DB.doc(col + "/" + id).delete());
+}
+function putDoc(path, data) {
+  if (!DB) { if (path === "config/brand") S.brand = data; render(); return Promise.resolve(); }
+  return write(path, () => DB.doc(path).set(data));
+}
+function dbFail(e) {
+  const c = e && e.code;
+  toast(c === "quota_exceeded" ? "Storage is full. Delete old runs or library items, then try again."
+      : c === "invalid_argument" ? "You can view this studio but not change it."
+      : "Couldn't save. Check your connection and try again.");
+}
+function subscribe() {
+  const err = e => { if (e && e.code !== "revoked") toast("Live sync paused. Reload to reconnect."); };
+  const docs = s => s.docs.map(d => d.data());
+  DB.collection(COL.flows).onSnapshot(s => { S.flows = docs(s).sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || (a.createdAt || 0) - (b.createdAt || 0)); S.ready.flows = true; render(); }, err);
+  DB.collection(COL.runs).orderBy("createdAt", "desc").limit(60).onSnapshot(s => { S.runs = docs(s); S.ready.runs = true; render(); }, err);
+  DB.collection(COL.library).orderBy("createdAt", "desc").limit(500).onSnapshot(s => { S.library = docs(s); S.ready.library = true; render(); }, err);
+  DB.collection(COL.autos).onSnapshot(s => { S.autos = docs(s).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)); S.ready.autos = true; render(); }, err);
+  DB.doc("config/brand").onSnapshot(d => { S.brand = d.exists ? d.data() : null; S.ready.brand = true; render(); }, err);
+  DB.doc("config/autopilot").onSnapshot(d => { S.autopilot = d.exists ? d.data() : null; render(); }, err);
+}
+const flowById = id => S.flows.find(f => f.id === id);
+const runById = id => LOCALRUN[id] || S.runs.find(r => r.id === id);
+function currentFlow() { return flowById(S.flowId) || S.flows[0] || null; }
+
+/* ---------- aperture mark (ported from the promo film's aperture()) ---------- */
+const AP = (() => {
+  const P = (a, rad) => [rad * Math.cos(a * Math.PI / 180), rad * Math.sin(a * Math.PI / 180)];
+  const R = 80, r = 34, O = [...Array(6)].map((_, i) => P(-90 + 60 * i, R)), I = [...Array(6)].map((_, i) => P(-60 + 60 * i, r));
+  const ang = q => (Math.atan2(q[1], q[0]) * 180 / Math.PI + 360) % 360;
+  const hit = (p, d) => { let best = null;
+    for (let k = 0; k < 6; k++) { const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]], den = d[0] * e[1] - d[1] * e[0];
+      if (Math.abs(den) < 1e-9) continue;
+      const t = ((a[0] - p[0]) * e[1] - (a[1] - p[1]) * e[0]) / den, u = ((a[0] - p[0]) * d[1] - (a[1] - p[1]) * d[0]) / den;
+      if (t > 1e-6 && u >= -1e-6 && u <= 1 + 1e-6 && (!best || t < best.t)) best = { t, q: [p[0] + t * d[0], p[1] + t * d[1]] }; }
+    return best.q; };
+  const Pt = I.map((q, i) => { const pr = I[(i + 5) % 6]; return hit(q, [q[0] - pr[0], q[1] - pr[1]]); });
+  const f = q => q[0].toFixed(1) + "," + q[1].toFixed(1);
+  const polys = [], seps = [];
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6, a0 = ang(Pt[i]), span = (ang(Pt[j]) - a0 + 360) % 360;
+    const mids = O.filter(v => { const d = (ang(v) - a0 + 360) % 360; return d > 1e-3 && d < span - 1e-3; })
+      .sort((u, v) => ((ang(v) - a0 + 360) % 360) - ((ang(u) - a0 + 360) % 360));
+    polys.push([I[i], I[j], Pt[j], ...mids, Pt[i]].map(f).join(" "));
+    seps.push(`<line x1="${I[i][0].toFixed(1)}" y1="${I[i][1].toFixed(1)}" x2="${Pt[i][0].toFixed(1)}" y2="${Pt[i][1].toFixed(1)}" stroke-width="5"/>`);
+  }
+  return { polys, seps };
+})();
+function aperture(size, lit = 6, now = -1) {
+  return `<svg class="ap" width="${size}" height="${size}" viewBox="-84 -84 168 168" aria-hidden="true">${AP.polys.map((p, i) =>
+    `<polygon points="${p}" class="${i === now ? "now" : i < lit ? "lit" : "off"}"/>`).join("")}${AP.seps.join("")}</svg>`;
+}
+function runBlades(run) {
+  const n = run.steps.length, done = run.steps.filter(s => s.status === "done").length;
+  const lit = Math.round(done / n * 6), active = run.steps.some(s => s.status === "running") ? Math.min(5, lit) : -1;
+  return { lit, active };
+}
+
+/* ---------- icons ---------- */
+const ICON = {
+  create: '<path d="M12 4v16M4 12h16"/>',
+  runs: '<circle cx="12" cy="12" r="8.5"/><path d="M10 8.8v6.4l5-3.2z" fill="currentColor" stroke="none"/>',
+  flows: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="12" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8.5 6h3a3 3 0 0 1 3 3v.5M8.5 18h3a3 3 0 0 0 3-3v-.5"/>',
+  library: '<path d="M4 7l8-4 8 4-8 4z"/><path d="M4 12l8 4 8-4"/><path d="M4 17l8 4 8-4"/>',
+  plan: '<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  photo: '<rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>', mail: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/>',
+  cal: '<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13v4M10 15h4"/>',
+  save: '<path d="M6 3h9l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M8 3v5h7"/>',
+  stop: '<rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor" stroke="none"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/>', spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/>',
+  up: '<path d="M6 15l6-6 6 6"/>', down: '<path d="M6 9l6 6 6-6"/>', trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>', bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'
+};
+const ic = (n, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+
+/* ---------- markdown (escaped first, then a small safe subset) ---------- */
+function inline(s) {
+  return s.replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+    .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+function md(src) {
+  const lines = esc(src).split("\n"); let out = "", i = 0;
+  const isTable = l => /^\s*\|.*\|\s*$/.test(l);
+  while (i < lines.length) {
+    let l = lines[i];
+    if (/^\s*```/.test(l)) { let code = ""; i++; while (i < lines.length && !/^\s*```/.test(lines[i])) code += lines[i++] + "\n"; i++; out += `<pre><code>${code}</code></pre>`; continue; }
+    if (isTable(l)) { const rows = []; while (i < lines.length && isTable(lines[i])) rows.push(lines[i++]);
+      const cells = r => r.trim().replace(/^\||\|$/g, "").split("|").map(c => inline(c.trim()));
+      const body = rows.filter(r => !/^\s*\|?\s*:?-{2,}/.test(r));
+      const [h, ...rest] = body;
+      out += `<div class="tbl"><table><thead><tr>${cells(h || "").map(c => `<th dir="auto">${c}</th>`).join("")}</tr></thead><tbody>${rest.map(r => `<tr>${cells(r).map(c => `<td dir="auto">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`; continue; }
+    let m;
+    if ((m = l.match(/^(#{1,4})\s+(.*)/))) { const n = Math.min(4, m[1].length + 1); out += `<h${n} dir="auto">${inline(m[2])}</h${n}>`; i++; continue; }
+    if (/^\s*(---|\*\*\*)\s*$/.test(l)) { out += "<hr>"; i++; continue; }
+    if (/^\s*&gt;\s?/.test(l)) { let q = []; while (i < lines.length && /^\s*&gt;\s?/.test(lines[i])) q.push(lines[i++].replace(/^\s*&gt;\s?/, "")); out += `<blockquote dir="auto">${inline(q.join("<br>"))}</blockquote>`; continue; }
+    if (/^\s*([-*•]|\d+[.)])\s+/.test(l)) { const ordered = /^\s*\d/.test(l); let items = [];
+      while (i < lines.length && /^\s*([-*•]|\d+[.)])\s+/.test(lines[i])) items.push(lines[i++].replace(/^\s*([-*•]|\d+[.)])\s+/, ""));
+      out += `<${ordered ? "ol" : "ul"} dir="auto">${items.map(t => `<li>${inline(t)}</li>`).join("")}</${ordered ? "ol" : "ul"}>`; continue; }
+    if (!l.trim()) { i++; continue; }
+    let p = []; while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|\s*```|\s*([-*•]|\d+[.)])\s+|\s*&gt;)/.test(lines[i]) && !isTable(lines[i])) p.push(lines[i++]);
+    if (!p.length) { p.push(lines[i++]); }
+    out += `<p dir="auto">${inline(p.join("<br>"))}</p>`;
+  }
+  return `<div class="md">${out}</div>`;
+}
+
+/* ---------- time ---------- */
+function ago(t) { const s = (Date.now() - t) / 1000; if (s < 60) return "just now"; if (s < 3600) return Math.floor(s / 60) + "m ago"; if (s < 86400) return Math.floor(s / 3600) + "h ago"; return Math.floor(s / 86400) + "d ago"; }
+const pad = n => String(n).padStart(2, "0");
+const localISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const dayKey = d => localISO(d).slice(0, 10);
+function fmtWhen(iso) { if (!iso) return ""; const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }); }
+function nextFromBest(best, after) {
+  const m = String(best || "").match(/(sun|mon|tue|wed|thu|fri|sat)[a-z]*\.?\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+  if (!m) return null;
+  let h = +m[2]; const min = +(m[3] || 0), ap = (m[4] || "").toLowerCase();
+  if (ap === "pm" && h < 12) h += 12; if (ap === "am" && h === 12) h = 0;
+  const target = DOW.findIndex(d => d.toLowerCase() === m[1].slice(0, 3).toLowerCase());
+  const d = new Date(after); d.setHours(h, min, 0, 0);
+  let add = (target - d.getDay() + 7) % 7; if (add === 0 && d <= after) add = 7;
+  d.setDate(d.getDate() + add); return localISO(d);
+}
+
+/* ---------- toast & clipboard ---------- */
+let toastT;
+function toast(html, ms = 3200) { const t = $("#toast"); t.innerHTML = html; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, ms); }
+function copy(text) {
+  const fallback = () => { const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.append(ta); ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch {} ta.remove(); toast(ok ? "Copied" : "Select the text and copy it manually"); };
+  try { navigator.clipboard.writeText(text).then(() => toast("Copied"), fallback); } catch { fallback(); }
+}
+
+/* ---------- Claude ---------- */
+const SAMPLE_ERR = {
+  not_granted: "Claude access is off for this page. Allow it from the artifact's Permissions menu, then reload.",
+  sampling_disabled: "Claude isn't available on this account.",
+  rate_limited: "You've hit a usage limit. Wait a bit, then tap Retry.",
+  session_expired: "Your session expired. Sign in to claude.ai again, then retry.",
+  refused: "Claude declined this step. Change the brief and retry.",
+  prompt_too_large: "Too much text for one step. Shorten the brief or source.",
+  invalid_json: "The packager's output was malformed. Tap Retry.",
+  empty_completion: "The agent came back empty. Tap Retry.",
+  image_rejected: "That image couldn't be used. Try a JPEG or PNG under 20 MB."
+};
+const sampleErr = e => SAMPLE_ERR[e && e.code] || "Connection problem. Tap Retry.";
+function brandBlock(b) {
+  if (!b) return "## Brand\n(No brand profile set. Write in a confident, clear, modern voice.)";
+  const f = (k, v) => v ? `- ${k}: ${v}` : "";
+  return ["## Brand", f("Name", b.name), f("Arabic name", b.nameAr), f("What it is", b.oneLiner), f("Voice", b.voice), f("Audience", b.audience),
+    f("Content pillars", b.pillars), f("Tagline", b.tagline), f("Avoid", b.avoid), f("Notes", b.notes)].filter(Boolean).join("\n");
+}
+function contextBlock(run) {
+  return `## Brief\n${run.brief}\n\n- Platforms: ${run.platforms.join(", ")}\n- Language: ${LANGS[run.lang]}\n- Today: ${new Date().toDateString()}`;
+}
+function workSoFar(run, idx) {
+  const prev = run.steps.slice(0, idx).filter(s => s.output).map(s => `### ${s.name}\n${trim(s.output, 7000)}`).join("\n\n");
+  return prev ? "## Work so far (from the agents before you)\n" + prev : "";
+}
+function agentPrompt(run, idx, withImage) {
+  const s = run.steps[idx];
+  return [
+    `You are "${s.name}", one specialist agent in a content team pipeline. Agents before you have done their part; their work is below. Do only your own job, at the level of a top creative agency.`,
+    brandBlock(S.brand), contextBlock(run) + (withImage ? "\n- A reference image is attached. Look at it closely and use what you see." : ""),
+    workSoFar(run, idx),
+    `## Your job\n${s.instructions}`,
+    s.note ? `## Feedback on your previous attempt (apply it)\n${s.note}\n\nPrevious attempt:\n${trim(s.prevOutput, 4000)}` : "",
+    "## Output rules\nMarkdown. Start with the work itself: no greeting, no restating the brief. Arabic must read as natural Modern Standard Arabic, never word-for-word translation."
+  ].filter(Boolean).join("\n\n");
+}
+function packPrompt(run, idx) {
+  const s = run.steps[idx];
+  return [
+    "You are the Packager, the final agent in a content team pipeline. Turn the team's work into ready-to-post content.",
+    brandBlock(S.brand), contextBlock(run), workSoFar(run, idx),
+    s.instructions ? "## Extra instructions\n" + s.instructions : "",
+    s.note ? "## Revision request (apply it)\n" + s.note : "",
+    `## Output
+Reply with ONLY one JSON object of this shape:
+{"title":"short name for this pack","summary":"one sentence","score":0-100 predicted performance,"scoreWhy":"one sentence on what drives the score","items":[{"platform":"one of ${PLATFORMS.join(" | ")}","format":"Reel | Short | Carousel | Post | Thread | Story | Article | Email","hook":"opening line or on-screen hook","body":"the full ready-to-post caption, script or copy (use \\n for line breaks)","bodyAr":"the Arabic version, or empty string if Arabic was not requested","hashtags":["#tag"],"cta":"call to action","visual":"what to show, in one or two sentences","bestTime":"day and local time, e.g. Tue 18:30"}]}
+Rules: at least one item per requested platform; if the work contains a multi-day plan, one item per planned post (up to 14). If the language is Arabic only, put Arabic in both body and bodyAr. 3 to 6 relevant hashtags. Use the final improved versions where a critic or editor revised the work.`
+  ].filter(Boolean).join("\n\n");
+}
+
+/* ---------- the agent runner ---------- */
+async function startRun(flow, brief, platforms, lang, image) {
+  if (!SAMPLE) { toast("Claude isn't available in this view. Open the studio in claude.ai while signed in."); return; }
+  const run = { id: "r-" + uid(), flowId: flow.id, flowName: flow.name, brief, platforms, lang, hasImage: !!image, source: "app",
+    status: "running", createdAt: Date.now(), pack: null,
+    steps: flow.steps.map(s => ({ id: s.id || uid(), name: s.name, role: s.role || "agent", tier: s.tier || "default", gate: !!s.gate, instructions: s.instructions || "", status: "pending", output: "" })) };
+  if (image) IMAGES[run.id] = image;
+  LOCALRUN[run.id] = run;
+  S.openRun = run.id; go("runs");
+  await put(COL.runs, run).catch(() => {});
+  drive(run.id);
+}
+async function save(run) { run.updatedAt = Date.now(); LOCALRUN[run.id] = run; render(); return put(COL.runs, run).catch(() => {}); }
+async function drive(runId) {
+  if (LIVE[runId]) return;
+  const run = clone(runById(runId)); if (!run) return;
+  LOCALRUN[runId] = run;
+  run.status = "running";
+  LIVE[runId] = { text: "" };
+  try {
+    for (let i = 0; i < run.steps.length; i++) {
+      const s = run.steps[i];
+      if (s.status === "done") continue;
+      if (s.status === "review") { run.status = "review"; break; }
+      s.status = "running"; s.startedAt = Date.now(); s.error = "";
+      const ctl = new AbortController(); LIVE[runId] = { ctl, stepId: s.id, text: "" };
+      await save(run);
+      const firstAgent = run.steps.findIndex(x => x.role !== "packager");
+      const img = i === firstAgent ? IMAGES[runId] : null;
+      try {
+        if (s.role === "packager") {
+          const pack = await SAMPLE.json(packPrompt(run, i), { modelTier: s.tier, signal: ctl.signal, cache: false,
+            onText: ({ text }) => { LIVE[runId].text = text; paintLive(runId); } });
+          if (!pack || !Array.isArray(pack.items)) throw { code: "invalid_json" };
+          run.pack = normalizePack(pack);
+          s.output = `**${run.pack.title}**\n\n${run.pack.summary}\n\n${run.pack.items.length} posts packaged · predicted score ${run.pack.score}/100`;
+        } else {
+          const opts = { modelTier: s.tier, signal: ctl.signal, cache: false, onText: ({ text }) => { LIVE[runId].text = text; paintLive(runId); } };
+          if (img) opts.images = [img];
+          const res = await SAMPLE(agentPrompt(run, i, !!img), opts);
+          s.output = res.text + (res.truncated ? "\n\n*(cut short at the length limit)*" : "");
+        }
+        s.endedAt = Date.now(); delete s.note; delete s.prevOutput;
+        s.status = s.gate ? "review" : "done";
+        S.expanded[run.id + s.id] = s.gate;
+        if (s.gate) { run.status = "review"; LIVE[runId] = null; await save(run); toast(`${esc(s.name)} is waiting for your review`); return; }
+      } catch (e) {
+        if (e && e.code === "cancelled") { s.status = "pending"; s.output = ""; run.status = "stopped"; await save(run); return; }
+        s.status = "error"; s.error = sampleErr(e); if (e && e.text) s.output = e.text;
+        run.status = "error"; await save(run); return;
+      }
+    }
+    if (run.steps.every(s => s.status === "done")) { run.status = "done"; run.finishedAt = Date.now(); toast("Content pack ready"); }
+    await save(run);
+  } finally {
+    delete LIVE[runId];
+    setTimeout(() => { if (!LIVE[runId]) { delete LOCALRUN[runId]; render(); } }, 1500);
+  }
+}
+function normalizePack(p) {
+  const str = v => typeof v === "string" ? v : v == null ? "" : String(v);
+  return { title: str(p.title) || "Content pack", summary: str(p.summary), score: Math.max(0, Math.min(100, Math.round(+p.score || 0))), scoreWhy: str(p.scoreWhy),
+    items: p.items.slice(0, 20).map(it => ({ id: uid(), platform: str(it.platform) || "Post", format: str(it.format), hook: str(it.hook), body: str(it.body), bodyAr: str(it.bodyAr),
+      hashtags: Array.isArray(it.hashtags) ? it.hashtags.map(str).slice(0, 8) : [], cta: str(it.cta), visual: str(it.visual), bestTime: str(it.bestTime) })) };
+}
+let paintQ = {};
+function paintLive(runId) {
+  if (paintQ[runId]) return;
+  paintQ[runId] = requestAnimationFrame(() => {
+    paintQ[runId] = 0;
+    const L = LIVE[runId]; if (!L) return;
+    const el = document.getElementById("live-" + runId + "-" + L.stepId); if (!el) return;
+    const s = runById(runId)?.steps.find(x => x.id === L.stepId);
+    el.innerHTML = s && s.role === "packager" ? `<div class="thinking"><i></i>Packaging posts · ${L.text.length.toLocaleString()} chars</div>` : md(L.text);
+  });
+}
+function stopRun(id) { LIVE[id]?.ctl?.abort(); }
+async function resumeRun(id) {
+  const run = clone(runById(id)); if (!run) return;
+  run.steps.forEach(s => { if (s.status === "running" || s.status === "error") { s.status = "pending"; } });
+  if (run.hasImage && !IMAGES[id]) run.hasImage = run.steps.some(s => s.status === "done");
+  LOCALRUN[id] = run; drive(id);
+}
+
+/* ---------- tabs ---------- */
+const TABS = [["create", "Create"], ["runs", "Runs"], ["flows", "Flows"], ["library", "Library"], ["plan", "Plan"]];
+function drawTabs() {
+  const live = S.runs.filter(r => r.status === "review").length + Object.keys(LIVE).filter(k => LIVE[k]).length;
+  $("#tabs").innerHTML = TABS.map(([k, label]) => `<button class="tab" data-act="tab" data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ""}>${ic(k)}<span>${label}</span>${k === "runs" && live ? `<span class="dot">${live}</span>` : ""}</button>`).join("");
+}
+function go(tab) {
+  S.tab = tab; if (tab !== "runs") S.openRun = null;
+  try { history.replaceState(null, "", "#" + tab); } catch {}
+  render(true); window.scrollTo(0, 0);
+}
+
+/* ---------- views ---------- */
+function loading() { return `<div class="sec"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>`; }
+function memoryBanner() { return MEMORY ? `<div class="banner">Saving is off in this view, so work lasts until you close it. Open the studio in claude.ai while signed in to keep everything synced across devices.</div>` : ""; }
+
+function viewCreate() {
+  const flow = currentFlow();
+  const due = dueAutos();
+  const brandName = S.brand?.name || "your brand";
+  return `
+  <section class="sec">
+    <span class="eyebrow">Content studio · ${esc(brandName)}</span>
+    <h1 class="h1">What are we<br><em>making</em> today?</h1>
+  </section>
+  ${memoryBanner()}
+  ${!S.brand && S.ready.brand ? `<button class="banner hot" data-act="brand" style="text-align:start;width:100%">${ic("spark")}<span><b>Set up your brand profile.</b> Every agent reads it: voice, audience, pillars, words to avoid.</span></button>` : ""}
+  ${due.length ? `<div class="banner hot">${ic("bolt")}<div class="grow"><b>${due.length} autopilot ${due.length === 1 ? "run is" : "runs are"} due.</b> ${S.autopilot?.lastCheckAt ? `The morning cloud check picks ${due.length === 1 ? "it" : "them"} up, or run now.` : "Run now to catch up."}</div><button class="btn sm primary" data-act="runDue">Run now</button></div>` : ""}
+  <section class="composer">
+    <textarea id="brief" placeholder="e.g. Teaser for our bilingual brand film: 'One picture. Two languages.' Launching Thursday." aria-label="Brief">${esc(S.brief)}</textarea>
+    ${S.imageURL ? `<div class="row"><img class="thumb" src="${S.imageURL}" alt="Reference image"><span class="muted grow" style="font-size:13px">Reference image attached. The first agent will study it.</span><button class="icon-btn" data-act="dropImg" aria-label="Remove image">${ic("x")}</button></div>` : ""}
+    <div class="row">
+      ${CAN_IMG ? `<label class="btn sm ghost" for="imgIn">${ic("photo")}Photo</label><input id="imgIn" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>` : ""}
+      <div class="seg" role="group" aria-label="Language">${Object.entries({ en: "EN", ar: "AR", both: "EN + AR" }).map(([k, v]) => `<button data-act="lang" data-v="${k}" aria-pressed="${S.lang === k}">${v}</button>`).join("")}</div>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="sec-h"><h2 class="h2">Platforms</h2><span class="muted" style="font-size:13px">${S.platforms.length} selected</span></div>
+    <div class="scroller">${PLATFORMS.map(p => `<button class="chip" data-act="plat" data-v="${esc(p)}" aria-pressed="${S.platforms.includes(p)}">${esc(p)}</button>`).join("")}</div>
+  </section>
+  <section class="sec">
+    <div class="sec-h"><h2 class="h2">Flow</h2><button class="btn sm ghost" data-act="tab" data-tab="flows">Edit flows</button></div>
+    ${!S.ready.flows ? `<div class="skel"></div>` : S.flows.length ? `<div class="scroller">${S.flows.map(f => `
+      <button class="flowcard" data-act="pickFlow" data-id="${f.id}" aria-pressed="${flow && flow.id === f.id}">
+        <b>${esc(f.name)}</b><p>${esc(f.description || "")}</p>
+        <span class="agents">${f.steps.map(s => `<i class="${s.gate ? "g" : ""}">${esc(s.name)}</i>`).join("")}</span>
+      </button>`).join("")}</div>` : `<div class="empty"><span class="h2">No flows yet</span><span>Install the five starter flows: Reel Studio, Quick Post, Repurpose, Content Week and Film Brief.</span><button class="btn primary" data-act="installTemplates">Install starter flows</button></div>`}
+  </section>
+  <button class="btn primary xl" data-act="run" ${!flow || !SAMPLE ? "disabled" : ""}>${ic("play")}Run ${flow ? esc(flow.name) : "flow"}${flow ? ` · ${flow.steps.length} agents` : ""}</button>
+  ${!SAMPLE && SAMPLE_CHECKED ? `<p class="muted" style="font-size:13px;text-align:center">Claude isn't reachable in this view. Open the studio in claude.ai while signed in.</p>` : ""}
+  <section class="sec">
+    <h2 class="h2">Start from an idea</h2>
+    <div class="ideas">${ideas().map(([k, t]) => `<button class="idea" data-act="idea" data-v="${esc(t)}"><span>${k}</span><span>${esc(t)}</span></button>`).join("")}</div>
+  </section>
+  ${recentRuns(3)}`;
+}
+function ideas() {
+  const n = S.brand?.name || "our product";
+  return [["Launch", `Teaser campaign for ${n}'s new bilingual brand film, dropping this Thursday`],
+    ["Pain", `The moment you're stuck on hold for 40 minutes, and how ${n} ends it`],
+    ["People", `Meet the real experts behind ${n}: a day with a billing specialist`],
+    ["Proof", `Before and after: a real problem solved in 4 minutes with ${n}`],
+    ["Trust", `"Your data stays yours": explain ${n}'s privacy promise without jargon`]];
+}
+function recentRuns(n) {
+  const runs = S.runs.slice(0, n).map(r => LOCALRUN[r.id] || r);
+  Object.values(LOCALRUN).forEach(r => { if (!runs.find(x => x.id === r.id)) runs.unshift(r); });
+  if (!runs.length) return "";
+  return `<section class="sec"><div class="sec-h"><h2 class="h2">Recent runs</h2><button class="btn sm ghost" data-act="tab" data-tab="runs">All runs</button></div><div class="list">${runs.slice(0, n).map(runCard).join("")}</div></section>`;
+}
+function runStatus(r) { return LIVE[r.id] ? "running" : r.status === "running" ? "stopped" : r.status; }
+const STATUS_LABEL = { running: "Running", review: "Needs review", done: "Done", error: "Error", stopped: "Paused" };
+function runCard(r) {
+  const st = runStatus(r), b = runBlades(r);
+  return `<button class="card tap" data-act="openRun" data-id="${r.id}" style="grid-template-columns:auto 1fr;align-items:center">
+    ${aperture(40, b.lit, st === "running" ? b.active : -1)}
+    <span style="display:grid;gap:4px;min-width:0"><span class="row" style="gap:8px"><b class="grow clamp2" style="font-size:14px">${esc(r.pack?.title || r.brief)}</b></span>
+    <span class="meta"><span class="pill ${st}">${STATUS_LABEL[st] || st}</span>${esc(r.flowName)} · ${ago(r.createdAt)}${r.source === "autopilot" ? " · autopilot" : ""}</span></span></button>`;
+}
+
+function viewRuns() {
+  if (S.openRun) return viewRun(runById(S.openRun));
+  const runs = S.runs.map(r => LOCALRUN[r.id] || r);
+  Object.values(LOCALRUN).forEach(r => { if (!runs.find(x => x.id === r.id)) runs.unshift(r); });
+  const review = runs.filter(r => runStatus(r) === "review");
+  return `<section class="sec"><span class="eyebrow">Agent runs</span><h1 class="h1">Runs</h1></section>${memoryBanner()}
+  ${!S.ready.runs && !MEMORY ? loading() : !runs.length ? `<div class="empty"><span class="h2">Nothing has run yet</span><span>Write a brief on Create and pick a flow. Each agent's work shows up here live.</span><button class="btn primary" data-act="tab" data-tab="create">Write a brief</button></div>` : `
+  ${review.length ? `<div class="sec"><h2 class="h2">Waiting on you</h2><div class="list">${review.map(runCard).join("")}</div></div>` : ""}
+  <div class="sec"><h2 class="h2">${review.length ? "Everything else" : "Latest"}</h2><div class="list">${runs.filter(r => !review.includes(r)).map(runCard).join("")}</div></div>`}`;
+}
+
+function viewRun(r) {
+  if (!r) return `<div class="empty"><span class="h2">This run is gone</span><button class="btn" data-act="closeRun">Back to runs</button></div>`;
+  const st = runStatus(r), b = runBlades(r), done = r.steps.filter(s => s.status === "done").length;
+  const L = LIVE[r.id];
+  return `
+  <div class="row"><button class="btn sm ghost" data-act="closeRun">${ic("back")}Runs</button><div class="grow"></div>
+    ${st === "running" ? `<button class="btn sm" data-act="stop" data-id="${r.id}">${ic("stop")}Stop</button>` : ""}
+    ${st === "stopped" || st === "error" ? `<button class="btn sm primary" data-act="resume" data-id="${r.id}">${ic("play")}${st === "error" ? "Retry" : "Resume"}</button>` : ""}
+    <button class="btn sm ghost" data-act="rerun" data-id="${r.id}" title="Run the same brief again">Run again</button>
+  </div>
+  <section class="runhead">${aperture(76, b.lit, st === "running" ? b.active : -1)}
+    <div style="display:grid;gap:6px;min-width:0"><span class="meta"><span class="pill ${st}">${STATUS_LABEL[st] || st}</span>${done}/${r.steps.length} agents · ${esc(r.flowName)}</span>
+    <h1 class="h2" style="font-size:20px" dir="auto">${esc(r.pack?.title || trim(r.brief, 140))}</h1>
+    <span class="meta">${esc(r.platforms.join(" · "))} · ${r.lang === "both" ? "EN + AR" : r.lang.toUpperCase()}${r.hasImage ? " · image" : ""}</span></div>
+  </section>
+  ${r.pack?.title ? `<details class="card"><summary class="muted" style="font-size:13px;cursor:pointer">Brief</summary><p dir="auto" style="white-space:pre-wrap">${esc(r.brief)}</p></details>` : ""}
+  <section class="steps">${r.steps.map((s, i) => stepHTML(r, s, i, L)).join("")}</section>
+  ${r.pack ? packHTML(r) : ""}`;
+}
+function stepHTML(r, s, i, L) {
+  const live = L && L.stepId === s.id;
+  const st = live ? "running" : s.status;
+  const open = st === "running" || st === "review" || st === "error" || S.expanded[r.id + s.id];
+  let body = "";
+  if (live) body = `<div class="out" id="live-${r.id}-${s.id}">${L.text ? (s.role === "packager" ? `<div class="thinking"><i></i>Packaging posts · ${L.text.length.toLocaleString()} chars</div>` : md(L.text)) : `<div class="thinking"><i></i>${s.role === "packager" ? "Packaging" : "Thinking"}…</div>`}</div>`;
+  else if (s.output && s.role !== "packager") body = `<div class="out ${open ? "" : "collapsed"}">${md(s.output)}</div>`;
+  else if (s.output) body = `<div class="out">${md(s.output)}</div>`;
+  if (st === "error") body += `<div class="banner" style="border-color:var(--err);color:var(--fg)">${esc(s.error)}</div>`;
+  if (st === "review") body += `<div class="gate"><b style="font-size:14px">Your call</b><span class="muted" style="font-size:13px">Approve to hand this to the next agent, edit it yourself, or send it back with a note.</span>
+    <textarea id="note-${s.id}" placeholder="Note for a redo, e.g. make the hook about waiting on hold" style="min-height:64px"></textarea>
+    <div class="row"><button class="btn sm primary" data-act="approve" data-run="${r.id}" data-step="${s.id}">Approve & continue</button><button class="btn sm" data-act="editStep" data-run="${r.id}" data-step="${s.id}">Edit</button><button class="btn sm ghost" data-act="redo" data-run="${r.id}" data-step="${s.id}">Redo with note</button></div></div>`;
+  return `<div class="step ${st}"><span class="sn">${st === "done" ? "✓" : i + 1}</span><div class="sbody">
+    <button class="shead" data-act="toggleStep" data-key="${r.id + s.id}"><b>${esc(s.name)}</b><span class="tag">${s.role === "packager" ? "packager" : TIERS[s.tier] || s.tier}${s.gate ? " · review gate" : ""}</span>
+    ${s.startedAt && s.endedAt ? `<span class="tag">${Math.max(1, Math.round((s.endedAt - s.startedAt) / 1000))}s</span>` : ""}</button>
+    ${body}
+  </div></div>`;
+}
+function gauge(v) {
+  const C = 2 * Math.PI * 27;
+  return `<svg class="gauge" viewBox="0 0 64 64" aria-label="Predicted score ${v} of 100"><circle class="t" cx="32" cy="32" r="27"/><circle class="v" cx="32" cy="32" r="27" stroke-dasharray="${(C * v / 100).toFixed(1)} ${C.toFixed(1)}"/><text x="32" y="39" text-anchor="middle">${v}</text></svg>`;
+}
+function postHTML(it, opts = {}) {
+  return `<article class="post"><div class="row"><span class="plat">${esc(it.platform)}${it.format ? " · " + esc(it.format) : ""}</span><div class="grow"></div>${it.bestTime ? `<span class="tag">${esc(it.bestTime)}</span>` : ""}</div>
+    ${it.hook ? `<p class="hook" dir="auto">${esc(it.hook)}</p>` : ""}
+    <p class="body" dir="auto">${esc(it.body)}</p>
+    ${it.bodyAr && it.bodyAr !== it.body ? `<p class="ar" lang="ar">${esc(it.bodyAr)}</p>` : ""}
+    ${it.hashtags?.length ? `<p class="tags">${esc(it.hashtags.join(" "))}</p>` : ""}
+    <dl class="kv">${it.cta ? `<dt>CTA</dt><dd dir="auto">${esc(it.cta)}</dd>` : ""}${it.visual ? `<dt>Visual</dt><dd dir="auto">${esc(it.visual)}</dd>` : ""}</dl>
+    ${opts.actions || ""}</article>`;
+}
+function packHTML(r) {
+  const p = r.pack, saved = id => S.library.some(x => x.packItemId === id);
+  return `<section class="pack">
+    <div class="score">${gauge(p.score)}<div style="display:grid;gap:4px;min-width:0"><span class="eyebrow">Content pack · ${p.items.length} posts</span><b style="font-size:17px" dir="auto">${esc(p.title)}</b><span class="muted" style="font-size:13px" dir="auto">${esc(p.scoreWhy || p.summary)}</span></div></div>
+    <div class="row"><button class="btn sm primary" data-act="saveAll" data-id="${r.id}">${ic("save")}Save all</button><button class="btn sm" data-act="scheduleAll" data-id="${r.id}">${ic("cal")}Schedule all</button>
+      ${MCP ? `<button class="btn sm" data-act="emailPack" data-id="${r.id}">${ic("mail")}Email draft</button>` : ""}<button class="btn sm ghost" data-act="revise" data-id="${r.id}">Revise</button></div>
+    <div class="list">${p.items.map(it => postHTML(it, { actions: `<div class="row"><button class="btn sm" data-act="copyItem" data-run="${r.id}" data-item="${it.id}">${ic("copy")}Copy</button>
+      ${it.bodyAr ? `<button class="btn sm ghost" data-act="copyAr" data-run="${r.id}" data-item="${it.id}">Copy AR</button>` : ""}
+      <button class="btn sm ghost" data-act="saveItem" data-run="${r.id}" data-item="${it.id}" ${saved(it.id) ? "disabled" : ""}>${saved(it.id) ? "Saved" : "Save"}</button></div>` })).join("")}</div>
+  </section>`;
+}
+
+function viewFlows() {
+  return `<section class="sec"><span class="eyebrow">Agent pipelines</span><h1 class="h1">Flows</h1><p class="muted">A flow is a team of agents that hand work down the line. Add a review gate anywhere you want the final say.</p></section>
+  ${memoryBanner()}
+  <section class="composer" style="gap:10px"><b style="font-size:14px">Design a flow with Claude</b>
+    <textarea id="flowIdea" style="min-height:64px" placeholder="e.g. Turn customer reviews into testimonial carousels with an Arabic version and a compliance check"></textarea>
+    <div class="row"><button class="btn sm primary" data-act="designFlow" ${SAMPLE ? "" : "disabled"}>${ic("spark")}Design it</button><button class="btn sm ghost" data-act="newFlow">Build by hand</button></div></section>
+  <section class="sec"><h2 class="h2">Your flows</h2>
+  ${!S.ready.flows && !MEMORY ? loading() : S.flows.length ? `<div class="list">${S.flows.map(f => `<button class="card tap" data-act="editFlow" data-id="${f.id}"><b>${esc(f.name)}</b><span class="muted" style="font-size:13px">${esc(f.description || "")}</span><span class="agents">${f.steps.map(s => `<i class="${s.gate ? "g" : ""}">${esc(s.name)}</i>`).join("")}</span></button>`).join("")}</div>`
+    : `<div class="empty"><span class="h2">No flows yet</span><button class="btn primary" data-act="installTemplates">Install starter flows</button></div>`}
+  ${S.flows.length ? `<button class="btn sm ghost" data-act="installTemplates" style="justify-self:start">Add starter flows again</button>` : ""}</section>
+  ${autopilotSection()}`;
+}
+function autopilotSection() {
+  const ap = S.autopilot;
+  return `<section class="sec"><div class="sec-h"><h2 class="h2">Autopilot</h2><button class="btn sm" data-act="newAuto" ${S.flows.length ? "" : "disabled"}>${ic("bolt")}New</button></div>
+    <p class="muted" style="font-size:13px">Recurring briefs that run on their own. ${ap?.lastCheckAt ? `Cloud check runs every morning (last ${ago(ap.lastCheckAt)}${ap.lastNote ? ": " + esc(ap.lastNote) : ""}). Finished packs land in Runs.` : "Turn one on and it runs on its days; anything missed shows up on Create with a Run now button."}</p>
+    ${S.autos.length ? `<div class="list">${S.autos.map(a => { const f = flowById(a.flowId); return `<div class="card"><div class="row"><b class="grow">${esc(a.name)}</b><button class="switch" role="switch" aria-checked="${!!a.enabled}" aria-label="Enabled" data-act="toggleAuto" data-id="${a.id}"></button></div>
+      <span class="muted clamp2" style="font-size:13px" dir="auto">${esc(a.brief)}</span>
+      <span class="meta">${esc(f?.name || "Missing flow")} · ${(a.days || []).map(d => DOW[d]).join(" ") || "no days"} · ${a.lastRunAt ? "last " + ago(a.lastRunAt) : "never run"}</span>
+      <div class="row"><button class="btn sm" data-act="runAuto" data-id="${a.id}" ${SAMPLE && f ? "" : "disabled"}>${ic("play")}Run now</button><button class="btn sm ghost" data-act="editAuto" data-id="${a.id}">Edit</button></div></div>`; }).join("")}</div>`
+      : `<div class="empty" style="padding:22px 16px"><span>No autopilot runs yet. Try "Every Monday: plan the week" with the Content Week flow.</span></div>`}</section>`;
+}
+function lastSlot(a, now = new Date()) {
+  for (let back = 0; back < 8; back++) { const d = new Date(now); d.setDate(d.getDate() - back); d.setHours(...(a.time || "07:00").split(":").map(Number), 0, 0);
+    if ((a.days || []).includes(d.getDay()) && d <= now) return d.getTime(); }
+  return 0;
+}
+function dueAutos() { return S.autos.filter(a => a.enabled && flowById(a.flowId) && lastSlot(a) > (a.lastRunAt || a.createdAt || 0)); }
+
+function viewLibrary() {
+  const q = S.libQuery.toLowerCase();
+  const items = S.library.filter(x => (S.libFilter === "all" || x.status === S.libFilter) && (!q || [x.hook, x.body, x.bodyAr, x.platform].join(" ").toLowerCase().includes(q)));
+  const count = s => S.library.filter(x => s === "all" || x.status === s).length;
+  return `<section class="sec"><span class="eyebrow">Saved content</span><h1 class="h1">Library</h1></section>${memoryBanner()}
+  <input type="search" id="libQ" placeholder="Search posts, hooks, Arabic…" value="${esc(S.libQuery)}" aria-label="Search library">
+  <div class="scroller">${["all", ...LIB_STATUS].map(s => `<button class="chip" data-act="libFilter" data-v="${s}" aria-pressed="${S.libFilter === s}">${s === "all" ? "All" : s[0].toUpperCase() + s.slice(1)} <span class="n">${count(s)}</span></button>`).join("")}</div>
+  ${!S.ready.library && !MEMORY ? loading() : !S.library.length ? `<div class="empty"><span class="h2">Your library is empty</span><span>Save posts from any finished run. They wait here to be approved, scheduled and posted.</span></div>`
+    : !items.length ? `<div class="empty"><span>No posts match.</span></div>`
+    : `<div class="list">${items.map(libCard).join("")}</div>`}`;
+}
+function libCard(x) {
+  return `<button class="card tap" data-act="openItem" data-id="${x.id}"><div class="row"><span class="plat">${esc(x.platform)}${x.format ? " · " + esc(x.format) : ""}</span><div class="grow"></div><span class="pill ${x.status}">${x.status}</span></div>
+    <b class="clamp2" dir="auto" style="font-size:15px">${esc(x.hook || x.body)}</b>
+    <span class="meta">${x.scheduledFor ? esc(fmtWhen(x.scheduledFor)) : "Not scheduled"}${x.bodyAr ? " · EN + AR" : ""}</span></button>`;
+}
+
+function viewPlan() {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const days = [...Array(14)].map((_, i) => { const d = new Date(today); d.setDate(d.getDate() + i); return d; });
+  const sel = S.planDay || dayKey(today);
+  const on = k => S.library.filter(x => x.scheduledFor && x.scheduledFor.slice(0, 10) === k).sort((a, b) => a.scheduledFor.localeCompare(b.scheduledFor));
+  const overdue = S.library.filter(x => x.status === "scheduled" && x.scheduledFor && x.scheduledFor.slice(0, 10) < dayKey(today));
+  const unscheduled = S.library.filter(x => !x.scheduledFor && x.status !== "posted");
+  const items = on(sel);
+  const week = S.flows.find(f => /week/i.test(f.name));
+  return `<section class="sec"><span class="eyebrow">Publishing plan</span><h1 class="h1">Plan</h1></section>${memoryBanner()}
+  <div class="days">${days.map(d => { const k = dayKey(d), n = on(k).length; return `<button class="day" data-act="planDay" data-v="${k}" aria-pressed="${k === sel}"><small>${DOW[d.getDay()]}</small><b>${d.getDate()}</b>${n ? `<span class="pip">${"<i></i>".repeat(Math.min(n, 4))}</span>` : ""}</button>`; }).join("")}</div>
+  <section class="sec"><div class="sec-h"><h2 class="h2">${new Date(sel + "T12:00").toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}</h2><span class="muted" style="font-size:13px">${items.length} post${items.length === 1 ? "" : "s"}</span></div>
+  ${items.length ? `<div class="list">${items.map(libCard).join("")}</div>` : `<div class="empty" style="padding:22px 16px"><span>Nothing scheduled this day.</span></div>`}</section>
+  ${overdue.length ? `<section class="sec"><h2 class="h2">Overdue</h2><div class="list">${overdue.map(libCard).join("")}</div></section>` : ""}
+  <section class="card"><div class="row"><div class="grow" style="display:grid;gap:2px"><b>${unscheduled.length} unscheduled post${unscheduled.length === 1 ? "" : "s"}</b><span class="muted" style="font-size:13px">Saved posts with no date yet.</span></div><button class="btn sm" data-act="libStatus" data-v="draft">Open</button></div></section>
+  ${week ? `<button class="btn primary xl" data-act="planWeek" data-id="${week.id}" ${SAMPLE ? "" : "disabled"}>${ic("spark")}Plan next 7 days with ${esc(week.name)}</button>` : ""}`;
+}
+
+/* ---------- render ---------- */
+let pendingRender = false, SAMPLE_CHECKED = false;
+function render(force) {
+  const a = document.activeElement;
+  if (!force && a && $("#view").contains(a) && /^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName) && a.type !== "file") { pendingRender = true; drawTabs(); return; }
+  pendingRender = false;
+  const y = window.scrollY;
+  $("#view").innerHTML = ({ create: viewCreate, runs: viewRuns, flows: viewFlows, library: viewLibrary, plan: viewPlan })[S.tab]();
+  drawTabs();
+  if (!force) window.scrollTo(0, y);
+}
+document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender) render(); }, 60));
+
+/* ---------- sheets ---------- */
+function openSheet(html, mount) {
+  const root = $("#sheet");
+  root.innerHTML = `<div class="scrim" data-act="closeSheet"></div><div class="panel" role="dialog" aria-modal="true">${html}</div>`;
+  root.hidden = false; document.body.classList.add("lock");
+  mount && mount(root.querySelector(".panel"));
+}
+function closeSheet() { $("#sheet").hidden = true; $("#sheet").innerHTML = ""; document.body.classList.remove("lock"); if (pendingRender) render(); }
+const sheetHead = t => `<div class="panel-h"><h2 class="h2 grow">${t}</h2><button class="icon-btn" data-act="closeSheet" aria-label="Close">${ic("x")}</button></div>`;
+
+function brandSheet() {
+  const b = S.brand || {};
+  const F = (k, label, ph, area) => `<label class="f">${label}${area ? `<textarea id="b-${k}" placeholder="${esc(ph)}" style="min-height:70px">${esc(b[k] || "")}</textarea>` : `<input type="text" id="b-${k}" placeholder="${esc(ph)}" value="${esc(b[k] || "")}">`}</label>`;
+  openSheet(`${sheetHead("Brand profile")}<p class="muted" style="font-size:13px">Every agent reads this before it writes.</p>
+    ${F("name", "Brand name", "RASOLV")}${F("nameAr", "Arabic name", "رازولف")}${F("oneLiner", "What it is", "One sentence", true)}
+    ${F("voice", "Voice", "Confident, warm, short lines", true)}${F("audience", "Audience", "Who you're talking to", true)}
+    ${F("pillars", "Content pillars", "Speed · Real experts · Privacy", true)}${F("tagline", "Tagline", "")}
+    ${F("avoid", "Avoid", "Words, claims or topics agents must not use", true)}${F("notes", "Notes", "Anything else: offers, launches, legal lines", true)}
+    <button class="btn primary xl" data-act="saveBrand">Save brand</button>`);
+}
+function flowSheet(flow) {
+  const f = clone(flow) || { id: "f-" + uid(), name: "", description: "", createdAt: Date.now(), order: S.flows.length, steps: [{ id: uid(), name: "Writer", role: "agent", tier: "default", gate: false, instructions: "" }, { id: uid(), name: "Packager", role: "packager", tier: "default", gate: false, instructions: "" }] };
+  const isNew = !flowById(f.id);
+  const draw = () => {
+    openSheet(`${sheetHead(isNew ? "New flow" : "Edit flow")}
+      <label class="f">Name<input type="text" id="fl-name" value="${esc(f.name)}" placeholder="e.g. Testimonial Carousel"></label>
+      <label class="f">What it does<input type="text" id="fl-desc" value="${esc(f.description)}" placeholder="One line"></label>
+      <div class="sec-h"><b>Agents, in order</b><span class="muted" style="font-size:13px">${f.steps.length}</span></div>
+      ${f.steps.map((s, i) => `<div class="card" style="background:var(--surface-2)">
+        <div class="row"><span class="sn" style="width:26px;height:26px">${i + 1}</span><input type="text" id="st-name-${i}" value="${esc(s.name)}" class="grow" style="width:auto" aria-label="Agent name">
+          <button class="icon-btn" data-act="stepMove" data-i="${i}" data-d="-1" aria-label="Move up" ${i ? "" : "disabled"}>${ic("up")}</button>
+          <button class="icon-btn" data-act="stepMove" data-i="${i}" data-d="1" aria-label="Move down" ${i < f.steps.length - 1 ? "" : "disabled"}>${ic("down")}</button>
+          <button class="icon-btn" data-act="stepDel" data-i="${i}" aria-label="Remove agent">${ic("trash")}</button></div>
+        <div class="row"><select id="st-role-${i}" style="width:auto" aria-label="Role"><option value="agent" ${s.role !== "packager" ? "selected" : ""}>Agent (writes)</option><option value="packager" ${s.role === "packager" ? "selected" : ""}>Packager (posts)</option></select>
+          <select id="st-tier-${i}" style="width:auto" aria-label="Model">${Object.entries(TIERS).map(([k, v]) => `<option value="${k}" ${s.tier === k ? "selected" : ""}>${v}</option>`).join("")}</select>
+          <label class="row" style="gap:6px;font-size:13px"><input type="checkbox" id="st-gate-${i}" ${s.gate ? "checked" : ""}> Review gate</label></div>
+        <textarea id="st-ins-${i}" placeholder="${s.role === "packager" ? "Optional extra packaging instructions" : "What this agent does, in plain words"}" style="min-height:76px">${esc(s.instructions)}</textarea></div>`).join("")}
+      <button class="btn" data-act="stepAdd">+ Add agent</button>
+      <p class="muted" style="font-size:12.5px">End with a Packager to get ready-to-post content with Save, Schedule and Email actions.</p>
+      <button class="btn primary xl" data-act="saveFlow">Save flow</button>
+      ${isNew ? "" : `<div class="row"><button class="btn sm ghost" data-act="dupFlow">Duplicate</button><div class="grow"></div><button class="btn sm ghost danger" data-act="delFlow">${ic("trash")}Delete flow</button></div>`}`);
+  };
+  const read = () => {
+    f.name = $("#fl-name").value.trim(); f.description = $("#fl-desc").value.trim();
+    f.steps = f.steps.map((s, i) => ({ ...s, name: $("#st-name-" + i).value.trim() || "Agent " + (i + 1), role: $("#st-role-" + i).value, tier: $("#st-tier-" + i).value, gate: $("#st-gate-" + i).checked, instructions: $("#st-ins-" + i).value }));
+  };
+  SHEET = { f, draw, read, isNew };
+  draw();
+}
+let SHEET = null;
+function autoSheet(a) {
+  const x = clone(a) || { id: "a-" + uid(), name: "", brief: "", flowId: (S.flows.find(f => /week/i.test(f.name)) || S.flows[0]).id, platforms: S.platforms.slice(), lang: S.lang, days: [1], time: "07:00", enabled: true, createdAt: Date.now() };
+  const isNew = !S.autos.find(y => y.id === x.id);
+  const draw = () => openSheet(`${sheetHead(isNew ? "New autopilot run" : "Edit autopilot")}
+    <label class="f">Name<input type="text" id="au-name" value="${esc(x.name)}" placeholder="Monday week plan"></label>
+    <label class="f">Brief<textarea id="au-brief" placeholder="Plan next week's posts around our pillars; feature one customer story">${esc(x.brief)}</textarea></label>
+    <label class="f">Flow<select id="au-flow">${S.flows.map(f => `<option value="${f.id}" ${f.id === x.flowId ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></label>
+    <div class="f" style="display:grid;gap:6px;font-size:13px;color:var(--muted)">Days<div class="weekdays">${DOW.map((d, i) => `<button data-act="auDay" data-i="${i}" aria-pressed="${x.days.includes(i)}">${d.slice(0, 2)}</button>`).join("")}</div></div>
+    <div class="f" style="display:grid;gap:6px;font-size:13px;color:var(--muted)">Platforms<div class="row">${PLATFORMS.map(p => `<button class="chip" data-act="auPlat" data-v="${esc(p)}" aria-pressed="${x.platforms.includes(p)}">${esc(p)}</button>`).join("")}</div></div>
+    <div class="f" style="display:grid;gap:6px;font-size:13px;color:var(--muted)">Language<div class="seg">${Object.entries({ en: "EN", ar: "AR", both: "EN + AR" }).map(([k, v]) => `<button data-act="auLang" data-v="${k}" aria-pressed="${x.lang === k}">${v}</button>`).join("")}</div></div>
+    <button class="btn primary xl" data-act="saveAuto">Save autopilot</button>
+    ${isNew ? "" : `<button class="btn sm ghost danger" data-act="delAuto" style="justify-self:start">${ic("trash")}Delete</button>`}`);
+  const read = () => { x.name = $("#au-name").value.trim() || "Autopilot"; x.brief = $("#au-brief").value.trim(); x.flowId = $("#au-flow").value; };
+  SHEET = { x, draw: () => { read(); draw(); }, read, isNew };
+  draw();
+}
+function itemSheet(id) {
+  const x = clone(S.library.find(y => y.id === id)); if (!x) return;
+  openSheet(`${sheetHead(esc(x.platform) + (x.format ? " · " + esc(x.format) : ""))}
+    <label class="f">Hook<input type="text" id="it-hook" value="${esc(x.hook)}" dir="auto"></label>
+    <label class="f">Post<textarea id="it-body" dir="auto" style="min-height:160px">${esc(x.body)}</textarea></label>
+    <label class="f">Arabic<textarea id="it-ar" dir="rtl" lang="ar" style="min-height:110px" placeholder="Empty: tap Add Arabic">${esc(x.bodyAr)}</textarea></label>
+    <label class="f">Hashtags<input type="text" id="it-tags" value="${esc((x.hashtags || []).join(" "))}"></label>
+    ${SAMPLE ? `<div class="row"><span class="eyebrow">Polish</span>${[["punchy", "Punchier"], ["short", "Shorter"], ["hook", "New hook"], ["ar", "Add Arabic"]].map(([k, v]) => `<button class="chip" data-act="polish" data-v="${k}" data-id="${x.id}">${v}</button>`).join("")}</div>` : ""}
+    <div class="row"><label class="f grow">Status<select id="it-status">${LIB_STATUS.map(s => `<option ${x.status === s ? "selected" : ""}>${s}</option>`).join("")}</select></label>
+      <label class="f grow">Post at<input type="datetime-local" id="it-when" value="${esc(x.scheduledFor || "")}"></label></div>
+    ${x.visual ? `<dl class="kv"><dt>Visual</dt><dd dir="auto">${esc(x.visual)}</dd>${x.cta ? `<dt>CTA</dt><dd dir="auto">${esc(x.cta)}</dd>` : ""}</dl>` : ""}
+    <button class="btn primary xl" data-act="saveItem2" data-id="${x.id}">Save</button>
+    <div class="row"><button class="btn sm" data-act="copyLib" data-id="${x.id}">${ic("copy")}Copy</button>${x.bodyAr ? `<button class="btn sm ghost" data-act="copyLibAr" data-id="${x.id}">Copy AR</button>` : ""}
+      ${MCP ? `<button class="btn sm" data-act="calItem" data-id="${x.id}">${ic("cal")}Google Calendar</button><button class="btn sm" data-act="mailItem" data-id="${x.id}">${ic("mail")}Gmail draft</button>` : ""}
+      <div class="grow"></div><button class="btn sm ghost danger" data-act="delItem" data-id="${x.id}">${ic("trash")}</button></div>
+    ${x.runId ? `<button class="btn sm ghost" data-act="openRun" data-id="${x.runId}" style="justify-self:start">View the run that made this</button>` : ""}`);
+}
+function readItemSheet(id) {
+  const x = clone(S.library.find(y => y.id === id)); if (!x) return null;
+  x.hook = $("#it-hook").value; x.body = $("#it-body").value; x.bodyAr = $("#it-ar").value;
+  x.hashtags = $("#it-tags").value.split(/\s+/).filter(Boolean); x.status = $("#it-status").value; x.scheduledFor = $("#it-when").value || null;
+  if (x.scheduledFor && x.status === "draft") x.status = "scheduled";
+  return x;
+}
+
+/* ---------- library helpers ---------- */
+function toLib(run, it, scheduledFor) {
+  return { id: "l-" + uid(), packItemId: it.id, runId: run.id, platform: it.platform, format: it.format, hook: it.hook, body: it.body, bodyAr: it.bodyAr,
+    hashtags: it.hashtags, cta: it.cta, visual: it.visual, bestTime: it.bestTime, status: scheduledFor ? "scheduled" : "draft", scheduledFor: scheduledFor || null, createdAt: Date.now() };
+}
+const postText = x => [x.hook, x.body, x.hashtags?.length ? x.hashtags.join(" ") : ""].filter(Boolean).join("\n\n");
+function packText(run) {
+  return run.pack.items.map(it => `${it.platform.toUpperCase()}${it.format ? " · " + it.format : ""}${it.bestTime ? " · " + it.bestTime : ""}\n\n${postText(it)}${it.bodyAr ? "\n\n" + it.bodyAr : ""}${it.cta ? "\n\nCTA: " + it.cta : ""}${it.visual ? "\nVisual: " + it.visual : ""}`).join("\n\n————————\n\n");
+}
+const MCP_ERR = { needs_reauth: s => `Reconnect ${s} in claude.ai Settings → Connectors.`, server_not_connected: s => `Add ${s} in claude.ai Settings → Connectors.`,
+  not_in_manifest: s => `${s} isn't allowed for this page. Turn it on from the artifact's Permissions menu.`, approval_required: s => `${s} needs your approval. Tap again and allow it.` };
+const mcpErr = (e, s) => (MCP_ERR[e && e.code] || (() => `${s} didn't respond. Try again.`))(s);
+async function gmailDraft(subject, body) {
+  try {
+    const res = await MCP.callTool("Gmail", "create_draft", { subject, body }, { cache: false });
+    const url = res?.payload?.viewUrl;
+    toast(`Draft saved in Gmail${url ? ` · <a href="${esc(url)}" target="_blank" rel="noopener">Open</a>` : ""}`, 5000);
+  } catch (e) { toast(esc(mcpErr(e, "Gmail")), 5000); }
+}
+async function calendarEvent(x) {
+  if (!x.scheduledFor) { toast("Set a Post at time first, then save."); return; }
+  const start = new Date(x.scheduledFor), end = new Date(start.getTime() + 15 * 60000);
+  try {
+    await MCP.callTool("Google Calendar", "create_event", { summary: `Post: ${x.platform} · ${(x.hook || x.body).slice(0, 60)}`, startTime: localISO(start) + ":00", endTime: localISO(end) + ":00",
+      description: postText(x) + (x.bodyAr ? "\n\n" + x.bodyAr : ""), overrideReminders: [{ method: "popup", minutes: 10 }] }, { cache: false });
+    toast("Added to Google Calendar with a 10-minute reminder", 4000);
+  } catch (e) { toast(esc(mcpErr(e, "Google Calendar")), 5000); }
+}
+
+/* ---------- actions ---------- */
+const confirmArm = {};
+function armed(key, el, label) {
+  if (confirmArm[key] && Date.now() - confirmArm[key] < 3500) { delete confirmArm[key]; return true; }
+  confirmArm[key] = Date.now(); el.textContent = label; setTimeout(() => { if (confirmArm[key]) { delete confirmArm[key]; } }, 3600); return false;
+}
+const ACT = {
+  tab: el => go(el.dataset.tab),
+  brand: () => brandSheet(),
+  closeSheet: () => closeSheet(),
+  lang: el => { S.lang = el.dataset.v; store.set("lang", S.lang); render(true); },
+  plat: el => { const p = el.dataset.v; S.platforms = S.platforms.includes(p) ? S.platforms.filter(x => x !== p) : [...S.platforms, p]; store.set("platforms", S.platforms); render(true); },
+  pickFlow: el => { S.flowId = el.dataset.id; store.set("flowId", S.flowId); render(true); },
+  idea: el => { S.brief = el.dataset.v; store.set("brief", S.brief); render(true); $("#brief").focus(); },
+  dropImg: () => { if (S.imageURL) URL.revokeObjectURL(S.imageURL); S.image = null; S.imageURL = null; render(true); },
+  run: () => {
+    const brief = ($("#brief")?.value || "").trim(); const flow = currentFlow();
+    if (!brief) { toast("Write a brief first: one line is enough."); $("#brief")?.focus(); return; }
+    if (!S.platforms.length) { toast("Pick at least one platform."); return; }
+    const img = S.image; S.brief = ""; store.set("brief", ""); S.image = null; S.imageURL = null;
+    startRun(flow, brief, S.platforms.slice(), S.lang, img);
+  },
+  installTemplates: async () => { const base = S.flows.length; for (const [i, t] of TEMPLATES.entries()) await put(COL.flows, flowFromTemplate(t, base + i)).catch(() => {}); toast("Starter flows installed"); },
+  openRun: el => { closeSheet(); S.openRun = el.dataset.id; S.tab = "runs"; render(true); window.scrollTo(0, 0); },
+  closeRun: () => { S.openRun = null; render(true); },
+  toggleStep: el => { const k = el.dataset.key; S.expanded[k] = !S.expanded[k]; render(true); },
+  stop: el => stopRun(el.dataset.id),
+  resume: el => resumeRun(el.dataset.id),
+  rerun: el => { const r = runById(el.dataset.id); const f = flowById(r.flowId) || { id: r.flowId, name: r.flowName, steps: r.steps }; startRun(f, r.brief, r.platforms, r.lang, IMAGES[r.id]); },
+  approve: el => { const r = clone(runById(el.dataset.run)); const s = r.steps.find(x => x.id === el.dataset.step); s.status = "done"; r.status = "running"; LOCALRUN[r.id] = r; S.expanded[r.id + s.id] = false; drive(r.id); },
+  redo: el => { const r = clone(runById(el.dataset.run)); const s = r.steps.find(x => x.id === el.dataset.step); const note = $("#note-" + s.id)?.value.trim();
+    if (!note) { toast("Write a note so the agent knows what to change."); $("#note-" + s.id)?.focus(); return; }
+    s.note = note; s.prevOutput = s.output; s.output = ""; s.status = "pending"; LOCALRUN[r.id] = r; drive(r.id); },
+  editStep: el => { const r = runById(el.dataset.run); const s = r.steps.find(x => x.id === el.dataset.step);
+    openSheet(`${sheetHead("Edit " + esc(s.name))}<textarea id="stepEdit" dir="auto" style="min-height:50vh;font-family:var(--mono);font-size:14px">${esc(s.output)}</textarea><button class="btn primary xl" data-act="saveStepEdit" data-run="${r.id}" data-step="${s.id}">Save & continue</button>`); },
+  saveStepEdit: el => { const r = clone(runById(el.dataset.run)); const s = r.steps.find(x => x.id === el.dataset.step); s.output = $("#stepEdit").value; s.status = "done"; r.status = "running"; LOCALRUN[r.id] = r; closeSheet(); drive(r.id); },
+  revise: el => { const id = el.dataset.id;
+    openSheet(`${sheetHead("Revise the pack")}<p class="muted" style="font-size:13px">The Packager rewrites the posts with your note. Earlier agents' work stays.</p><textarea id="revNote" placeholder="e.g. Make the LinkedIn post more founder-voice and drop the emoji"></textarea><button class="btn primary xl" data-act="doRevise" data-id="${id}">Revise</button>`, p => p.querySelector("textarea").focus()); },
+  doRevise: el => { const note = $("#revNote").value.trim(); if (!note) return; const r = clone(runById(el.dataset.id)); const i = r.steps.findIndex(s => s.role === "packager"); if (i < 0) return;
+    r.steps[i].note = note; r.steps[i].status = "pending"; LOCALRUN[r.id] = r; closeSheet(); drive(r.id); },
+  copyItem: el => { const it = runById(el.dataset.run).pack.items.find(x => x.id === el.dataset.item); copy(postText(it)); },
+  copyAr: el => { const it = runById(el.dataset.run).pack.items.find(x => x.id === el.dataset.item); copy(it.bodyAr); },
+  saveItem: async el => { const r = runById(el.dataset.run); const it = r.pack.items.find(x => x.id === el.dataset.item); await put(COL.library, toLib(r, it)); toast("Saved to Library"); },
+  saveAll: async el => { const r = runById(el.dataset.id); let n = 0; for (const it of r.pack.items) if (!S.library.some(x => x.packItemId === it.id)) { await put(COL.library, toLib(r, it)).catch(() => {}); n++; } toast(n ? `${n} posts saved to Library` : "Already saved"); },
+  scheduleAll: async el => { const r = runById(el.dataset.id); let n = 0, t = new Date(), fallback = new Date(); fallback.setDate(fallback.getDate() + 1); fallback.setHours(18, 0, 0, 0);
+    for (const it of r.pack.items) { if (S.library.some(x => x.packItemId === it.id)) continue;
+      const when = nextFromBest(it.bestTime, t) || localISO(fallback); fallback.setDate(fallback.getDate() + 1); await put(COL.library, toLib(r, it, when)).catch(() => {}); n++; }
+    toast(n ? `${n} posts scheduled · see Plan` : "Already saved. Set times from Library."); },
+  emailPack: el => { const r = runById(el.dataset.id); gmailDraft(`${S.brand?.name || "Content"} · ${r.pack.title}`, packText(r)); },
+  libFilter: el => { S.libFilter = el.dataset.v; render(true); },
+  libStatus: el => { S.libFilter = el.dataset.v; go("library"); },
+  openItem: el => itemSheet(el.dataset.id),
+  saveItem2: async el => { const x = readItemSheet(el.dataset.id); if (!x) return; await put(COL.library, x); closeSheet(); toast("Saved"); },
+  copyLib: el => { copy(postText({ hook: $("#it-hook").value, body: $("#it-body").value, hashtags: $("#it-tags").value.split(/\s+/).filter(Boolean) })); },
+  copyLibAr: () => copy($("#it-ar").value),
+  calItem: el => { const x = readItemSheet(el.dataset.id); if (x) calendarEvent(x); },
+  mailItem: el => { const x = readItemSheet(el.dataset.id); if (x) gmailDraft(`${x.platform} post · ${(x.hook || "").slice(0, 60)}`, postText(x) + (x.bodyAr ? "\n\n" + x.bodyAr : "")); },
+  delItem: async el => { if (!armed("del" + el.dataset.id, el, "Tap again")) return; await del(COL.library, el.dataset.id); closeSheet(); toast("Deleted"); },
+  polish: async el => {
+    const kind = el.dataset.v, body = $("#it-body").value, hook = $("#it-hook").value, chips = $$("[data-act=polish]");
+    const ask = { punchy: "Rewrite this post to be punchier and more vivid. Same facts, same platform conventions. Reply with only the new post text.",
+      short: "Cut this post to about half its length, keeping the strongest line. Reply with only the new post text.",
+      hook: "Write one new scroll-stopping opening hook (under 9 words) for this post. Reply with only the hook.",
+      ar: "Adapt this post into natural Modern Standard Arabic (not literal translation), keeping the brand's Arabic name and Western digits. Reply with only the Arabic text." }[kind];
+    chips.forEach(c => c.disabled = true); const old = el.textContent; el.textContent = "Working…";
+    try {
+      const { text } = await SAMPLE(`${brandBlock(S.brand)}\n\n## Post (${$("#sheet .panel-h h2").textContent})\nHook: ${hook}\n\n${body}\n\n## Task\n${ask}`, { modelTier: kind === "hook" ? "quick" : "default", cache: false });
+      const target = kind === "hook" ? $("#it-hook") : kind === "ar" ? $("#it-ar") : $("#it-body");
+      if (target) target.value = text.trim().replace(/^"|"$/g, "");
+      toast("Updated. Save to keep it.");
+    } catch (e) { if (e?.code !== "cancelled") toast(esc(sampleErr(e))); }
+    finally { chips.forEach(c => c.disabled = false); el.textContent = old; }
+  },
+  planDay: el => { S.planDay = el.dataset.v; render(true); },
+  planWeek: el => { const f = flowById(el.dataset.id); startRun(f, `Plan and write next week's content (starting tomorrow, ${new Date(Date.now() + 864e5).toDateString()}). Balance the brand pillars; include at least one bilingual post.`, S.platforms.length ? S.platforms.slice() : ["Instagram", "LinkedIn"], S.lang, null); },
+  saveBrand: async () => { const k = ["name", "nameAr", "oneLiner", "voice", "audience", "pillars", "tagline", "avoid", "notes"]; const b = {}; k.forEach(x => b[x] = $("#b-" + x).value.trim()); b.updatedAt = Date.now();
+    await putDoc("config/brand", b).catch(() => {}); closeSheet(); toast("Brand saved. Agents will use it from the next step."); },
+  newFlow: () => flowSheet(null),
+  editFlow: el => flowSheet(flowById(el.dataset.id)),
+  stepMove: el => { SHEET.read(); const i = +el.dataset.i, j = i + +el.dataset.d; const st = SHEET.f.steps; [st[i], st[j]] = [st[j], st[i]]; SHEET.draw(); },
+  stepDel: el => { SHEET.read(); if (SHEET.f.steps.length < 2) return; SHEET.f.steps.splice(+el.dataset.i, 1); SHEET.draw(); },
+  stepAdd: () => { SHEET.read(); const st = SHEET.f.steps, at = st.length && st[st.length - 1].role === "packager" ? st.length - 1 : st.length; st.splice(at, 0, { id: uid(), name: "Agent", role: "agent", tier: "default", gate: false, instructions: "" }); SHEET.draw(); },
+  saveFlow: async () => { SHEET.read(); const f = SHEET.f; if (!f.name) { toast("Give the flow a name."); $("#fl-name").focus(); return; } await put(COL.flows, f); closeSheet(); toast("Flow saved"); },
+  dupFlow: async () => { SHEET.read(); const f = clone(SHEET.f); f.id = "f-" + uid(); f.name += " copy"; f.createdAt = Date.now(); f.order = S.flows.length; f.steps.forEach(s => s.id = uid()); await put(COL.flows, f); closeSheet(); toast("Duplicated"); },
+  delFlow: async el => { if (!armed("delf", el, "Tap again to delete")) return; await del(COL.flows, SHEET.f.id); closeSheet(); toast("Flow deleted"); },
+  designFlow: async el => {
+    const idea = $("#flowIdea").value.trim(); if (!idea) { toast("Describe the workflow you want."); $("#flowIdea").focus(); return; }
+    el.disabled = true; el.innerHTML = `${ic("spark")}Designing…`;
+    try {
+      const out = await SAMPLE.json(`Design a content-production pipeline of AI agents for this need:\n"${idea}"\n\n${brandBlock(S.brand)}\n\nEach agent receives the brief and all earlier agents' work, and writes Markdown. 3 to 6 agents. Put a review gate on the one step where a human's approval matters most. The last step must be a packager (role "packager") that outputs ready-to-post content. Reply with only JSON: {"name":"2-3 word name","description":"one line","steps":[{"name":"Agent name","role":"agent","tier":"default|complex|quick","gate":false,"instructions":"2-4 precise sentences: what this agent does and what it outputs"}]}`, { modelTier: "default", cache: false });
+      if (!out || !Array.isArray(out.steps) || !out.steps.length) throw { code: "invalid_json" };
+      const steps = out.steps.slice(0, 8).map(s => ({ id: uid(), name: String(s.name || "Agent"), role: s.role === "packager" ? "packager" : "agent", tier: TIERS[s.tier] ? s.tier : "default", gate: !!s.gate, instructions: String(s.instructions || "") }));
+      if (steps[steps.length - 1].role !== "packager") steps.push({ id: uid(), name: "Packager", role: "packager", tier: "default", gate: false, instructions: "" });
+      flowSheet({ id: "f-" + uid(), name: String(out.name || "New flow"), description: String(out.description || ""), createdAt: Date.now(), order: S.flows.length, steps });
+      toast("Review the design, then save it.");
+    } catch (e) { if (e?.code !== "cancelled") toast(esc(sampleErr(e))); }
+    finally { el.disabled = false; el.innerHTML = `${ic("spark")}Design it`; }
+  },
+  newAuto: () => autoSheet(null),
+  editAuto: el => autoSheet(S.autos.find(a => a.id === el.dataset.id)),
+  auDay: el => { const i = +el.dataset.i, d = SHEET.x.days; SHEET.x.days = d.includes(i) ? d.filter(x => x !== i) : [...d, i].sort(); SHEET.draw(); },
+  auPlat: el => { const p = el.dataset.v, a = SHEET.x.platforms; SHEET.x.platforms = a.includes(p) ? a.filter(x => x !== p) : [...a, p]; SHEET.draw(); },
+  auLang: el => { SHEET.x.lang = el.dataset.v; SHEET.draw(); },
+  saveAuto: async () => { SHEET.read(); const x = SHEET.x; if (!x.brief) { toast("Write the brief this autopilot should run."); return; } if (!x.days.length) { toast("Pick at least one day."); return; } if (SHEET.isNew) x.lastRunAt = Date.now();
+    await put(COL.autos, x); closeSheet(); toast("Autopilot saved"); },
+  delAuto: async el => { if (!armed("dela", el, "Tap again to delete")) return; await del(COL.autos, SHEET.x.id); closeSheet(); toast("Deleted"); },
+  toggleAuto: el => { const a = clone(S.autos.find(x => x.id === el.dataset.id)); a.enabled = !a.enabled; if (a.enabled) a.lastRunAt = Date.now(); put(COL.autos, a); },
+  runAuto: el => runAuto(S.autos.find(a => a.id === el.dataset.id)),
+  runDue: () => { const d = dueAutos(); d.slice(0, 2).forEach(runAuto); }
+};
+async function runAuto(a) {
+  const f = flowById(a.flowId); if (!f) return;
+  const x = clone(a); x.lastRunAt = Date.now(); await put(COL.autos, x).catch(() => {});
+  startRun(f, `${a.brief}\n\n(Autopilot "${a.name}", ${new Date().toDateString()})`, a.platforms?.length ? a.platforms : ["Instagram"], a.lang || "both", null);
+}
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if (!el || el.disabled) return;
+  const fn = ACT[el.dataset.act]; if (fn) { e.preventDefault(); fn(el, e); }
+});
+document.addEventListener("input", e => {
+  if (e.target.id === "brief") { S.brief = e.target.value; store.set("brief", S.brief); }
+  if (e.target.id === "libQ") { S.libQuery = e.target.value; clearTimeout(window._lq); window._lq = setTimeout(() => { const pos = e.target.selectionStart; render(true); const q = $("#libQ"); if (q) { q.focus(); try { q.setSelectionRange(pos, pos); } catch {} } }, 180); }
+});
+document.addEventListener("change", e => {
+  if (e.target.id === "imgIn" && e.target.files[0]) { const f = e.target.files[0]; if (S.imageURL) URL.revokeObjectURL(S.imageURL); S.image = f; S.imageURL = URL.createObjectURL(f); render(true); }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#sheet").hidden) closeSheet(); });
+
+/* ---------- boot ---------- */
+$("#logo").innerHTML = `${aperture(26)}<span>RASOLV <small>Studio</small></span>`;
+{ const h = (location.hash || "").slice(1); if (TABS.some(t => t[0] === h)) S.tab = h; }
+render(true);
+setInterval(() => { if (!document.hidden && $("#sheet").hidden) render(); }, 60000);
+(async () => {
+  const C = window.claude;
+  if (!C || !C.use) { MEMORY = true; SAMPLE_CHECKED = true; Object.assign(S.ready, { flows: true, runs: true, library: true, autos: true, brand: true }); render(true); return; }
+  const [db, sample, mcp] = await Promise.all([C.use("db").catch(() => null), C.use("sample").catch(() => null), C.use("mcp").catch(() => null)]);
+  SAMPLE = sample; MCP = mcp; SAMPLE_CHECKED = true;
+  if (sample) { try { const lim = await sample.limits(); CAN_IMG = !!lim.images; } catch {} }
+  if (db) { DB = db; subscribe(); }
+  else { MEMORY = true; Object.assign(S.ready, { flows: true, runs: true, library: true, autos: true, brand: true }); }
+  render(true);
+})();
+</script>
