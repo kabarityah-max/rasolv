@@ -39,7 +39,7 @@ async function open() {
     '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-',
     '-c:v', 'libx264', '-preset', 'slow', '-crf', '12', '-profile:v', 'high', '-level:v', '5.2',
     '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
-    '-x264-params', 'keyint=60:min-keyint=60', out], { stdio: ['pipe', 'inherit', 'inherit'] });
+    '-x264-params', 'keyint=60:min-keyint=60:rc-lookahead=20', out], { stdio: ['pipe', 'inherit', 'inherit'] });
 
   for (let f = start; f < end; f++) {
     await page.evaluate(t => window.seek(t), f / fps);
