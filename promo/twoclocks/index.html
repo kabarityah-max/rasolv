@@ -532,7 +532,7 @@ function scEnd(t) {
   $('endLine').style.height = h + 'px';
   show('endLine', { x: 540, y: ly, o: 1 - prog(t, T.logo + 0.25, T.logo + 0.4) });
   const ap = E.outCubic(prog(t, T.logo + 0.15, T.logo + 0.9));
-  setAp($('logo'), { r: lerp(70, 37, ap), rot: lerp(-60, 0, ap), bp: 0, grow: ap, lines: true, gap: '#0c0703' });
+  setAp($('logo'), { r: lerp(62, 37, ap), rot: lerp(-60, 0, ap), bp: 0, grow: ap, lines: true, gap: '#0c0703' });
   show('logo', { x: 540, y: 640, o: clamp(ap * 3), s: lerp(0.7, 1, E.outBack(ap)) });
   const wm = io(t, T.logo + 0.45, T.logo + 0.9);
   show('wm', { x: 540, y: 845, o: wm.o, blur: wm.blur, s: lerp(1.08, 1, wm.k) });
