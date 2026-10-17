@@ -1,0 +1,55 @@
+1
+00:00:00,100 --> 00:00:01,833
+Nobody animated this video.
+
+2
+00:00:01,800 --> 00:00:05,308
+No After Effects. No keyframes. No motion designer.
+
+3
+00:00:05,500 --> 00:00:06,597
+Kinetic type.
+
+4
+00:00:06,500 --> 00:00:07,568
+3D camera.
+
+5
+00:00:07,500 --> 00:00:08,417
+Particles.
+
+6
+00:00:08,500 --> 00:00:09,286
+Morphs.
+
+7
+00:00:09,500 --> 00:00:10,226
+Data.
+
+8
+00:00:10,500 --> 00:00:11,242
+Glitch.
+
+9
+00:00:12,000 --> 00:00:13,488
+So... how was this made?
+
+10
+00:00:17,000 --> 00:00:18,845
+One prompt. In Claude Code.
+
+11
+00:00:18,900 --> 00:00:22,923
+It wrote the animation, the music, this voice... and rendered every frame.
+
+12
+00:00:23,000 --> 00:00:25,362
+This is how motion graphics get made now.
+
+13
+00:00:25,500 --> 00:00:29,085
+Want the exact prompt? Comment PROMPT, and we'll DM it to you.
+
+14
+00:00:29,300 --> 00:00:30,807
+Follow RASOLV for more.
