@@ -1,0 +1,577 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Rasolv Two Clocks</title>
+<style>
+  @font-face { font-family: 'Rubik'; src: url('../fonts/Rubik.woff2') format('woff2'); font-weight: 300 900; }
+  @font-face { font-family: 'Rubik'; src: url('../fonts/Rubik-Arabic.woff2') format('woff2'); font-weight: 300 900;
+    unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+  .ar { direction: rtl; unicode-bidi: isolate; letter-spacing: 0 !important; }
+  :root { --or: #FF6E05; --or2: #FF9A3D; --ink: #070707; --tx: #EDEDED; --grey: #8E9196; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+  body { font-family: 'Rubik', sans-serif; -webkit-font-smoothing: antialiased; color: var(--tx); }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: var(--ink); }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; pointer-events: none; }
+  #grain { opacity: .06; mix-blend-mode: screen; z-index: 60; }
+  #vig { background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 55%, rgba(0,0,0,.7) 100%); z-index: 59; }
+
+  /* the two halves: each is a clip window; its 540px-wide world sits centred inside it */
+  .half { position: absolute; top: 0; height: 1920px; overflow: hidden; }
+  .world { position: absolute; top: 0; width: 540px; height: 1920px; transform-origin: 50% 22%; }
+  #L { background: linear-gradient(180deg, #121417 0%, #0b0c0e 60%, #08090a 100%); }
+  #R { background: radial-gradient(ellipse 120% 60% at 50% 62%, #1d1209 0%, #0c0805 55%, #070707 100%); }
+  #split { width: 3px; height: 1920px; top: 0; background: linear-gradient(180deg, transparent, rgba(255,140,60,.9) 20%, #fff 50%, rgba(255,140,60,.9) 80%, transparent);
+    box-shadow: 0 0 18px rgba(255,110,5,.8), 0 0 60px rgba(255,110,5,.35); z-index: 20; }
+
+  /* timers */
+  .clk { left: 50%; top: 250px; transform: translate(-50%, -50%); text-align: center; white-space: nowrap; }
+  .clk .lab { font-size: 22px; font-weight: 500; letter-spacing: 6px; margin-bottom: 6px; }
+  .clk .dig { font-size: 132px; font-weight: 500; letter-spacing: -2px; line-height: 1; display: flex; justify-content: center; }
+  .clk .dig span { display: inline-block; width: .6em; text-align: center; }
+  .clk .dig span.c { width: .3em; }
+  #clkL { color: var(--grey); } #clkL .lab { color: rgba(142,145,150,.7); }
+  #clkR { color: var(--or); } #clkR .lab { color: rgba(255,154,61,.85); }
+  #clkR .dig { text-shadow: 0 0 30px rgba(255,110,5,.55); }
+
+  /* left: the window behind the waiting person */
+  #win { left: 70px; top: 470px; width: 400px; height: 520px; border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 0 10px #15171a, 0 0 0 2px #1e2024; }
+  #winSky { position: absolute; inset: 0; }
+  #win::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent calc(50% - 5px), #15171a calc(50% - 5px), #15171a calc(50% + 5px), transparent calc(50% + 5px)),
+    linear-gradient(180deg, transparent calc(45% - 5px), #15171a calc(45% - 5px), #15171a calc(45% + 5px), transparent calc(45% + 5px)); }
+  #skyline { position: absolute; left: 0; right: 0; bottom: 0; height: 170px; }
+
+  /* people (silhouettes lit by their phones) */
+  #glowR { left: 0; top: 520px; width: 540px; height: 700px; background: radial-gradient(ellipse 50% 50% at 50% 45%, rgba(255,120,30,.32), rgba(255,110,5,.08) 55%, transparent 75%); }
+  .who { width: 420px; height: 470px; left: 60px; top: 640px; }
+  .who svg { width: 100%; height: 100%; overflow: visible; }
+
+  /* phones */
+  .phone { width: 360px; height: 640px; left: 90px; top: 1000px; border-radius: 48px; background: #0a0a0a;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,.14), inset 0 0 0 9px #151515, 0 40px 80px rgba(0,0,0,.7); overflow: hidden; transform-origin: 50% 50%; }
+  .scr { position: absolute; inset: 9px; border-radius: 40px; overflow: hidden; }
+  #scrL { background: linear-gradient(180deg, #1b1d21, #101114); }
+  #scrR { background: linear-gradient(180deg, #141414, #0b0b0b); }
+  .notch { position: absolute; left: 50%; top: 14px; width: 92px; height: 24px; margin-left: -46px; border-radius: 12px; background: #000; z-index: 5; }
+
+  /* call screen */
+  #callTop { position: absolute; top: 70px; left: 0; right: 0; text-align: center; }
+  #callTop b { display: block; font-size: 25px; font-weight: 500; color: #d7d9dc; }
+  #callTop i { display: block; font-style: normal; font-size: 19px; color: #7d8086; margin-top: 6px; }
+  #callTime { position: absolute; top: 160px; left: 0; right: 0; text-align: center; font-size: 46px; font-weight: 400; color: #b9bcc1; letter-spacing: 1px; }
+  #wave { position: absolute; top: 255px; left: 50%; width: 220px; height: 70px; margin-left: -110px; display: flex; align-items: center; justify-content: space-between; }
+  #wave i { width: 8px; border-radius: 4px; background: #5d6066; }
+  #holdMsg { position: absolute; top: 345px; left: 20px; right: 20px; text-align: center; font-size: 17px; color: #6c6f75; line-height: 1.4; }
+  #callBtns { position: absolute; bottom: 52px; left: 0; right: 0; display: grid; grid-template-columns: repeat(3, 76px); gap: 18px 26px; justify-content: center; }
+  #callBtns i { width: 76px; height: 76px; border-radius: 50%; background: #26282c; display: flex; align-items: center; justify-content: center; }
+  #callBtns i.on { background: #d9dbde; }
+  #callBtns i.end { background: #c8352b; grid-column: 2; }
+  #callBtns svg { width: 32px; height: 32px; }
+
+  /* chat screen */
+  #chatHead { position: absolute; top: 52px; left: 22px; right: 22px; height: 56px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+  #chatHead svg { width: 34px; height: 34px; }
+  #chatHead b { font-size: 23px; font-weight: 600; letter-spacing: 1px; color: #fff; }
+  #chatHead em { margin-left: auto; font-style: normal; font-size: 15px; color: rgba(255,154,61,.9); }
+  #msgs { position: absolute; top: 122px; left: 18px; right: 18px; bottom: 100px; }
+  #bub { position: absolute; right: 0; max-width: 270px; padding: 14px 18px; border-radius: 22px 22px 6px 22px; background: #2a2a2a; font-size: 21px; line-height: 1.38; color: #fff; }
+  #bub mark { background: transparent; color: inherit; border-radius: 6px; padding: 0 3px; margin: 0 -3px; }
+  #scan { position: absolute; height: 3px; border-radius: 2px; background: linear-gradient(90deg, transparent, #FF8A2A, transparent); box-shadow: 0 0 14px #FF6E05; }
+  .row { position: absolute; left: 0; right: 0; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: rgba(255,255,255,.045); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); }
+  .row .t { font-size: 15px; font-weight: 500; color: rgba(255,154,61,.95); width: 46px; flex: none; font-variant-numeric: tabular-nums; }
+  .row .m { font-size: 18px; color: #f2f2f2; white-space: nowrap; }
+  .row.match { background: rgba(255,110,5,.13); box-shadow: inset 0 0 0 1.5px rgba(255,110,5,.6); }
+  .av { width: 34px; height: 34px; border-radius: 50%; background: var(--or); color: #fff; font-size: 17px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  .row svg { width: 22px; height: 22px; flex: none; }
+  #comp { position: absolute; left: 16px; right: 16px; bottom: 26px; height: 60px; border-radius: 30px; background: #1d1d1d; box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+  #compTxt { position: absolute; left: 20px; right: 70px; top: 50%; transform: translateY(-50%); font-size: 17px; color: #eee; white-space: nowrap; overflow: hidden; }
+  #compTxt.ph { color: #666; }
+  #sendBtn { position: absolute; right: 7px; top: 7px; width: 46px; height: 46px; border-radius: 50%; background: var(--or); display: flex; align-items: center; justify-content: center; }
+  #sendBtn svg { width: 22px; height: 22px; }
+  #thumb { width: 150px; height: 300px; z-index: 6; }
+
+  /* Maya at her desk */
+  #desk { left: 40px; top: 560px; width: 460px; height: 360px; border-radius: 28px; overflow: hidden; background: radial-gradient(ellipse 70% 80% at 30% 20%, #3a2410 0%, #1a1009 45%, #0c0805 100%);
+    box-shadow: inset 0 0 0 1.5px rgba(255,140,60,.35), 0 30px 60px rgba(0,0,0,.6); }
+  #desk svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #deskTag { position: absolute; left: 22px; bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 500; color: #fff; padding: 8px 14px 8px 8px; border-radius: 22px; background: rgba(0,0,0,.55); }
+  #deskTag em { font-style: normal; color: rgba(255,154,61,.95); font-weight: 400; }
+  #deskLive { position: absolute; right: 20px; top: 18px; font-size: 14px; font-weight: 600; letter-spacing: 2px; color: #fff; display: flex; align-items: center; gap: 8px; }
+  #deskLive i { width: 10px; height: 10px; border-radius: 50%; background: #FF3B30; box-shadow: 0 0 10px #FF3B30; }
+
+  /* supers + disclaimer */
+  #sup { left: 540px; top: 1740px; transform: translate(-50%, -50%); z-index: 30; white-space: nowrap; font-size: 62px; font-weight: 600; letter-spacing: -1px; color: #fff;
+    text-shadow: 0 4px 30px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.8); display: flex; gap: 16px; }
+  #sup span { display: inline-block; }
+  #supBand { left: 0; right: 0; top: 1560px; height: 360px; background: linear-gradient(180deg, transparent, rgba(0,0,0,.82) 45%); z-index: 29; }
+  #disc { left: 540px; top: 1850px; transform: translateX(-50%); z-index: 31; font-size: 22px; font-weight: 400; color: rgba(237,237,237,.62); letter-spacing: .5px; white-space: nowrap; }
+
+  /* black card */
+  #black { z-index: 40; background: #000; }
+  #stopTxt { left: 540px; top: 900px; transform: translate(-50%, -50%); z-index: 41; text-align: center; font-size: 84px; font-weight: 600; letter-spacing: -2px; line-height: 1.18; color: #fff; white-space: nowrap; }
+  #stopTxt em { font-style: normal; color: var(--or); text-shadow: 0 0 40px rgba(255,110,5,.45); }
+  #caret { display: inline-block; width: 6px; height: 80px; margin-left: 6px; vertical-align: -10px; background: #fff; }
+
+  /* end card */
+  #end { z-index: 42; background: radial-gradient(ellipse 70% 45% at 50% 40%, #1a0d03 0%, #070707 70%); }
+  #endLine { width: 3px; left: 540px; z-index: 43; background: linear-gradient(180deg, transparent, var(--or) 25%, #fff 50%, var(--or) 75%, transparent); box-shadow: 0 0 20px rgba(255,110,5,.9); transform: translateX(-50%); }
+  #logo { width: 250px; height: 250px; left: 540px; top: 640px; z-index: 44; }
+  #wm { left: 540px; top: 845px; z-index: 44; font-size: 92px; font-weight: 500; letter-spacing: 6px; color: #fff; white-space: nowrap; }
+  #title { left: 540px; top: 1030px; z-index: 44; font-size: 68px; font-weight: 600; letter-spacing: -1.5px; white-space: nowrap; color: #fff; }
+  #title em { font-style: normal; color: var(--or); }
+  #when { left: 540px; top: 1125px; z-index: 44; font-size: 36px; font-weight: 400; white-space: nowrap; color: rgba(237,237,237,.85); letter-spacing: .5px; }
+  #remind { left: 540px; top: 1260px; z-index: 44; height: 96px; padding: 0 46px; border-radius: 48px; background: var(--or); color: #fff; display: flex; align-items: center; gap: 16px;
+    font-size: 36px; font-weight: 600; white-space: nowrap; box-shadow: 0 16px 50px rgba(255,110,5,.4); }
+  #remind svg { width: 38px; height: 38px; }
+  #ring { left: 540px; top: 1260px; z-index: 43; height: 96px; border-radius: 48px; border: 3px solid var(--or); }
+  #getApp { left: 540px; top: 1385px; z-index: 44; font-size: 28px; font-weight: 400; color: rgba(237,237,237,.7); white-space: nowrap; }
+  #getApp b { color: #fff; font-weight: 600; letter-spacing: 1px; }
+  #tag { left: 540px; top: 1720px; z-index: 44; display: flex; gap: 22px; align-items: center; white-space: nowrap; }
+  #tag .en { font-size: 24px; letter-spacing: 8px; color: rgba(237,237,237,.62); }
+  #tag .ar { font-size: 32px; color: var(--or2); }
+  #tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--or); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="L" class="half"><div class="world" id="wL">
+    <div id="win" class="abs"><div id="winSky"></div><svg id="skyline" viewBox="0 0 400 170" preserveAspectRatio="none"></svg></div>
+    <div id="whoL" class="who abs"></div>
+    <div id="phL" class="phone abs"><div class="notch"></div><div class="scr" id="scrL">
+      <div id="callTop"><b>Customer Support</b><i>On hold · speaker</i></div>
+      <div id="callTime">00:00</div>
+      <div id="wave"></div>
+      <div id="holdMsg">Your call is important to us.<br>Please stay on the line.</div>
+      <div id="callBtns"></div>
+    </div></div>
+    <div id="clkL" class="clk abs"><div class="lab">ON HOLD</div><div class="dig"></div></div>
+  </div></div>
+
+  <div id="R" class="half"><div class="world" id="wR">
+    <div id="glowR" class="abs"></div>
+    <div id="whoR" class="who abs"></div>
+    <div id="desk" class="abs"><svg viewBox="0 0 460 360" id="deskArt"></svg><div id="deskLive"><i></i>LIVE</div><div id="deskTag"><span class="av">M</span>Maya <em>· Billing</em></div></div>
+    <div id="phR" class="phone abs"><div class="notch"></div><div class="scr" id="scrR">
+      <div id="chatHead"><svg id="chatLogo" viewBox="-110 -110 220 220"></svg><b>RASOLV</b><em id="chatState">online</em></div>
+      <div id="msgs"><div id="bub"></div><div id="scan"></div><div id="rows"></div></div>
+      <div id="comp"><div id="compTxt"></div><div id="sendBtn"><svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-2.5-6.5z" fill="#fff"/></svg></div></div>
+    </div></div>
+    <svg id="thumb" class="abs" viewBox="0 0 150 300"><defs><linearGradient id="thg" x1="0" x2="1"><stop offset="0" stop-color="#3a2210"/><stop offset=".55" stop-color="#7a4520"/><stop offset="1" stop-color="#c47432"/></linearGradient></defs>
+      <path d="M38 300 C30 220 28 120 46 52 C56 16 104 14 112 52 C124 110 122 210 114 300 Z" fill="url(#thg)"/><path d="M58 40 C62 20 96 20 100 40 C102 62 96 82 79 84 C62 82 56 62 58 40Z" fill="#e7a06a" opacity=".55"/></svg>
+    <div id="clkR" class="clk abs"><div class="lab">RASOLV</div><div class="dig"></div></div>
+  </div></div>
+
+  <div id="split" class="abs"></div>
+  <div id="supBand" class="abs"></div>
+  <div id="sup" class="abs"></div>
+  <div id="disc" class="abs">Example story. Times vary.</div>
+
+  <div id="black" class="layer"></div>
+  <div id="stopTxt" class="abs"></div>
+
+  <div id="end" class="layer"></div>
+  <div id="endLine" class="abs"></div>
+  <svg id="logo" class="abs" viewBox="-110 -110 220 220"></svg>
+  <div id="wm" class="abs">RASOLV</div>
+  <div id="title" class="abs">One picture. <em>Two languages.</em></div>
+  <div id="when" class="abs"></div>
+  <div id="ring" class="abs"></div>
+  <div id="remind" class="abs"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15z M10 21h4" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>Set a reminder</div>
+  <div id="getApp" class="abs">Get the <b>RASOLV</b> app.</div>
+  <div id="tag" class="abs"><span class="en">VISION THAT SOLVES</span><i></i><span class="ar">رؤية تحُلّ</span></div>
+
+  <div id="vig" class="layer"></div>
+  <div id="grain" class="layer"></div>
+</div>
+
+<script>
+// ================= settings =================
+// Premiere slot. Swap "[TZ]" for the market's zone (e.g. "GST", "ET") or pass ?tz=GST — the end card reads it.
+const PREMIERE = { day: 'Thu Oct 22', time: '8pm', tz: new URLSearchParams(location.search).get('tz') || '[TZ]' };
+
+// ================= helpers =================
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const E = {
+  outCubic: k => 1 - Math.pow(1 - k, 3), inCubic: k => k * k * k,
+  inOutCubic: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  outExpo: k => k === 1 ? 1 : 1 - Math.pow(2, -10 * k),
+  inOutExpo: k => k === 0 ? 0 : k === 1 ? 1 : k < .5 ? Math.pow(2, 20 * k - 10) / 2 : (2 - Math.pow(2, -20 * k + 10)) / 2,
+  outBack: k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); },
+  inQuad: k => k * k,
+};
+// fade in a→b, out c→d (opacity, eased progress, blur)
+function io(t, a, b, c = 1e9, d = 1e9, blur = 14) {
+  const ki = E.outCubic(prog(t, a, b)), ko = E.inCubic(prog(t, c, d));
+  return { k: ki, o: clamp(prog(t, a, b) * 1.4) * (1 - ko), blur: lerp(blur, 0, ki) + lerp(0, blur, ko) };
+}
+function show(el, { o = 1, x, y, s = 1, tf = '', blur = 0, center = true } = {}) {
+  if (typeof el === 'string') el = $(el);
+  const st = el.style;
+  st.display = o > 0.001 ? '' : 'none';
+  st.opacity = o;
+  if (x !== undefined) st.left = x + 'px';
+  if (y !== undefined) st.top = y + 'px';
+  st.transform = `${center ? 'translate(-50%, -50%) ' : ''}${tf} scale(${s})`;
+  st.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none';
+}
+const hide = el => { (typeof el === 'string' ? $(el) : el).style.display = 'none'; };
+const rnd = (i, s = 1) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
+// piecewise-linear map through [t, value] keys (smoothstepped inside each segment)
+function keys(t, K) {
+  if (t <= K[0][0]) return K[0][1];
+  for (let i = 1; i < K.length; i++) if (t <= K[i][0]) {
+    const [a, va] = K[i - 1], [b, vb, ease] = K[i];
+    return lerp(va, vb, (ease || (k => k))(prog(t, a, b)));
+  }
+  return K[K.length - 1][1];
+}
+const mmss = s => { s = Math.max(0, Math.floor(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+
+// ================= RASOLV aperture mark =================
+function aperture({ r = 37, rot = 0, bp = 1, grow = 1, color = '#FF6E05', gap = '#000', R = 80, lines = true } = {}) {
+  const P = (a, rad) => [rad * Math.cos(a * Math.PI / 180), rad * Math.sin(a * Math.PI / 180)];
+  const O = [...Array(6)].map((_, i) => P(-90 + 60 * i, R));
+  const I = [...Array(6)].map((_, i) => P(-60 + 60 * i + rot, Math.max(r, 0.01)));
+  const ang = q => (Math.atan2(q[1], q[0]) * 180 / Math.PI + 360) % 360;
+  const hit = (p, d) => {
+    let best = null;
+    for (let k = 0; k < 6; k++) {
+      const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]];
+      const den = d[0] * e[1] - d[1] * e[0]; if (Math.abs(den) < 1e-9) continue;
+      const t = ((a[0] - p[0]) * e[1] - (a[1] - p[1]) * e[0]) / den;
+      const u = ((a[0] - p[0]) * d[1] - (a[1] - p[1]) * d[0]) / den;
+      if (t > 1e-6 && u >= -1e-6 && u <= 1 + 1e-6 && (!best || t < best.t)) best = { t, q: [p[0] + t * d[0], p[1] + t * d[1]] };
+    }
+    return best.q;
+  };
+  const Pt = I.map((q, i) => { const pr = I[(i + 5) % 6]; return hit(q, [q[0] - pr[0], q[1] - pr[1]]); });
+  const f = q => q[0].toFixed(2) + ',' + q[1].toFixed(2);
+  let blades = '', seps = '';
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6, a0 = ang(Pt[i]), span = (ang(Pt[j]) - a0 + 360) % 360;
+    const mids = O.filter(v => { const d = (ang(v) - a0 + 360) % 360; return d > 1e-3 && d < span - 1e-3; })
+                  .sort((u, v) => ((ang(v) - a0 + 360) % 360) - ((ang(u) - a0 + 360) % 360));
+    const poly = [I[i], I[j], Pt[j], ...mids, Pt[i]];
+    const c = poly.reduce((m, q) => [m[0] + q[0] / poly.length, m[1] + q[1] / poly.length], [0, 0]);
+    const g = 0.6 + 0.4 * clamp(grow * 1.6 - i * 0.12);
+    const o = clamp(grow * 2 - i * 0.18);
+    blades += `<polygon points="${poly.map(f).join(' ')}" fill="${color}" opacity="${o}" transform="translate(${f(c)}) scale(${g}) translate(${f([-c[0], -c[1]])})"/>`;
+    seps += `<line x1="${f(I[i]).replace(',', '" y1="')}" x2="${f(Pt[i]).replace(',', '" y2="')}" stroke="${gap}" stroke-width="4.2" stroke-linecap="square"/>`;
+    if (lines && (i === 0 || i === 3)) {
+      const s0 = [I[i][0] + (I[j][0] - I[i][0]) * 0.55, I[i][1] + (I[j][1] - I[i][1]) * 0.55];
+      const d = [Pt[i][0] - I[i][0], Pt[i][1] - I[i][1]];
+      seps += `<line x1="${s0[0] + d[0] * 0.08}" y1="${s0[1] + d[1] * 0.08}" x2="${s0[0] + d[0] * 0.62}" y2="${s0[1] + d[1] * 0.62}" stroke="${gap}" stroke-width="3.6"/>`;
+    }
+    if (lines && (i === 1 || i === 4))
+      seps += `<line x1="${f(I[j]).replace(',', '" y1="')}" x2="${f(O[(i + 2) % 6]).replace(',', '" y2="')}" stroke="${gap}" stroke-width="0.9"/>`;
+  }
+  let bpS = '';
+  if (bp > 0) {
+    for (let k = 0; k < 6; k++) {
+      const a = O[k], b = O[(k + 1) % 6], e = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(...e);
+      const n = [e[1] / L, -e[0] / L]; const off = 13; const kk = clamp(bp * 1.4 - k * 0.07);
+      const a1 = [a[0] + n[0] * off + e[0] * 0.08, a[1] + n[1] * off + e[1] * 0.08];
+      const b1 = [a1[0] + e[0] * 0.84 * kk, a1[1] + e[1] * 0.84 * kk];
+      const tick = (q, s) => `<line x1="${q[0] - n[0] * 4 * s}" y1="${q[1] - n[1] * 4 * s}" x2="${q[0] + n[0] * 4 * s}" y2="${q[1] + n[1] * 4 * s}"/>`;
+      bpS += `<line x1="${f(a1).replace(',', '" y1="')}" x2="${f(b1).replace(',', '" y2="')}"/>` + tick(a1, kk) + tick(b1, kk);
+      const ra = P(-90 + 60 * k, R + 6), rb = P(-90 + 60 * k, R + 6 + 12 * kk);
+      bpS += `<line x1="${f(ra).replace(',', '" y1="')}" x2="${f(rb).replace(',', '" y2="')}"/>`;
+    }
+    bpS = `<g stroke="${color}" stroke-width="1.3" fill="none" opacity="${clamp(bp * 3)}">${bpS}</g>`;
+  }
+  return bpS + `<g>${blades}${seps}</g>`;
+}
+const apCache = {};
+function setAp(el, opts) {
+  const key = JSON.stringify(opts, (k, v) => typeof v === 'number' ? +v.toFixed(3) : v);
+  if (el.dataset.k === key) return;
+  el.dataset.k = key; el.innerHTML = apCache[key] ??= aperture(opts);
+}
+
+// ================= story time (what the clocks read) =================
+// Both clocks start at 00:00 and agree until the right one stops at 04:00. Then the left races on to 40:00.
+const STORY_R = [[0, 0], [8.2, 8.2], [9.3, 31], [11.3, 108], [13.6, 239], [14.9, 240]];
+const STORY_L = [...STORY_R, [19.4, 252], [22.5, 2400, E.inOutCubic], [22.9, 2401]];
+const T = {
+  type0: 0.55, type1: 2.05, send: 2.35,                 // thumb types, then sends
+  scan: 3.45, hi1: 3.95, hi2: 4.45, maya: 6.0,           // read in seconds; Maya · Billing at 00:06
+  desk: 8.0, up: [9.3, 11.3, 13.6], stop: 14.9,          // live updates; 4:00 done
+  putDown: 15.6, expand: 19.0, black: 22.9,
+  stop1: 23.25, stop2: 23.95, endIn: 25.75, logo: 26.2,
+};
+const MSG = 'Charged twice for my order. Need a refund.';
+const UPDATES = [
+  ['00:31', 'av', 'Maya has your case'],
+  ['01:48', 'search', 'Duplicate charge found'],
+  ['03:59', 'check', 'Refund approved'],
+];
+const SUPERS = [
+  [0.15, 2.95, 'Two clocks. Same refund. Only one finishes.'],
+  [3.1, 7.85, 'Read in seconds.'],
+  [8.1, 14.85, 'Maya. A real expert.'],
+  [15.0, 18.9, '4:00. Done.'],
+  [19.1, 22.9, '40:00. Still waiting.'],
+];
+const ICON = {
+  search: c => `<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="${c}" stroke-width="2"/><path d="M15.5 15.5 21 21" stroke="${c}" stroke-width="2" stroke-linecap="round"/></svg>`,
+  check: c => `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="${c}"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  mute: c => `<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="${c}" stroke-width="1.9"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/></svg>`,
+  pad: c => `<svg viewBox="0 0 24 24">${[0, 1, 2].map(r => [0, 1, 2].map(q => `<circle cx="${6 + q * 6}" cy="${6 + r * 6}" r="1.7" fill="${c}"/>`).join('')).join('')}</svg>`,
+  spk: c => `<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="${c}"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/></svg>`,
+  end: c => `<svg viewBox="0 0 24 24"><path d="M3 13.5c5-4.5 13-4.5 18 0l-2.2 2.6-3.6-1.4V12a11 11 0 0 0-6.4 0v2.7l-3.6 1.4z" fill="${c}"/></svg>`,
+};
+
+// silhouette: head + shoulders, rim-lit from below by the phone. `tilt` slumps the head; `breathe` drops the shoulders.
+function person(rim, fill) {
+  return `<svg viewBox="0 0 420 470"><defs>
+    <radialGradient id="g${rim.slice(1)}" cx="50%" cy="100%" r="75%"><stop offset="0" stop-color="${rim}" stop-opacity=".55"/><stop offset=".6" stop-color="${rim}" stop-opacity=".08"/><stop offset="1" stop-color="${rim}" stop-opacity="0"/></radialGradient></defs>
+    <g class="body"><path d="M10 470 C14 380 70 336 150 322 L270 322 C350 336 406 380 410 470 Z" fill="${fill}"/>
+      <path d="M10 470 C14 380 70 336 150 322 L270 322 C350 336 406 380 410 470 Z" fill="url(#g${rim.slice(1)})"/>
+      <path d="M176 270 L244 270 L250 330 C230 344 190 344 170 330 Z" fill="${fill}"/></g>
+    <g class="head"><ellipse cx="210" cy="200" rx="92" ry="112" fill="${fill}"/><ellipse cx="210" cy="200" rx="92" ry="112" fill="url(#g${rim.slice(1)})"/>
+      <path d="M128 230 C140 300 180 318 210 318 C240 318 280 300 292 230" fill="none" stroke="${rim}" stroke-opacity=".55" stroke-width="3"/></g></svg>`;
+}
+
+// ================= build =================
+let wavePh = [];
+function build() {
+  $('wave').innerHTML = [...Array(17)].map(() => '<i></i>').join('');
+  $('callBtns').innerHTML = `<i>${ICON.mute('#cfd1d5')}</i><i>${ICON.pad('#cfd1d5')}</i><i class="on">${ICON.spk('#1a1b1e')}</i><i class="end">${ICON.end('#fff')}</i>`;
+  $('whoL').innerHTML = person('#8fa3b8', '#111316');
+  $('whoR').innerHTML = person('#FF7A1A', '#140c06');
+  $('rows').innerHTML = `<div class="row match" id="rowM"><span class="t">00:06</span><span class="av">M</span><span class="m"><b>Maya</b> · Billing</span></div>` +
+    UPDATES.map((u, i) => `<div class="row" id="up${i}"><span class="t">${u[0]}</span>${u[1] === 'av' ? '<span class="av">M</span>' : ICON[u[1]](u[1] === 'check' ? '#2fbf71' : '#FF8A2A')}<span class="m">${u[2]}</span></div>`).join('');
+  $('bub').innerHTML = MSG.replace('Charged twice', '<mark id="mk1">Charged twice</mark>').replace('refund', '<mark id="mk2">refund</mark>');
+  setAp($('chatLogo'), { r: 30, bp: 0, grow: 1, lines: false, gap: '#121212' });
+  $('when').textContent = `${PREMIERE.day} · ${PREMIERE.time} ${PREMIERE.tz}`;
+  // skyline for the window (dusk → dark), with a few windows that light up as night falls
+  let sk = '<path d="M0 170 V120 h40 V90 h30 V110 h26 V60 h44 V100 h24 V80 h36 V125 h30 V70 h40 V105 h30 V95 h40 V130 h60 V170Z" fill="#07080a"/>';
+  for (let i = 0; i < 26; i++) sk += `<rect class="lw" x="${8 + rnd(i, 4) * 380}" y="${80 + rnd(i, 5) * 80}" width="6" height="8" fill="#e8c27a" opacity="0"/>`;
+  $('skyline').innerHTML = sk;
+  // Maya at her desk: lamp glow, laptop, Maya leaning in
+  $('deskArt').innerHTML = `<defs><radialGradient id="lamp" cx="22%" cy="8%" r="70%"><stop offset="0" stop-color="#FFB060" stop-opacity=".55"/><stop offset="1" stop-color="#FFB060" stop-opacity="0"/></radialGradient>
+      <linearGradient id="lap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE0C0"/><stop offset="1" stop-color="#FF9A3D"/></linearGradient></defs>
+    <rect width="460" height="360" fill="url(#lamp)"/>
+    <path d="M70 20 l50 46 h-62z" fill="#2b1a0c"/><path d="M89 66 v90" stroke="#2b1a0c" stroke-width="6"/>
+    <rect x="0" y="262" width="460" height="98" fill="#120b06"/>
+    <g id="maya"><ellipse cx="300" cy="150" rx="46" ry="56" fill="#24160b"/><path d="M254 140 C250 90 350 86 348 140 C352 120 346 210 360 236 L240 236 C254 210 248 120 254 140z" fill="#1a0f07"/>
+      <path d="M200 300 C210 230 250 214 300 212 C350 214 390 230 400 300z" fill="#2a190c"/>
+      <path d="M262 160 C268 196 284 204 300 204 C316 204 332 196 338 160" fill="none" stroke="#FF9A3D" stroke-opacity=".5" stroke-width="2.5"/></g>
+    <g><path d="M120 270 l26 -92 h120 l-26 92z" fill="#1b1b1d"/><path d="M128 266 l23 -82 h108 l-23 82z" fill="url(#lap)" opacity=".85"/>
+      <rect x="96" y="268" width="170" height="10" rx="3" fill="#2a2a2c"/>
+      <g id="lapLines" opacity=".7">${[0, 1, 2, 3].map(i => `<rect x="${150 - i * 6}" y="${200 + i * 16}" width="70" height="5" rx="2" fill="#7a3a0a"/>`).join('')}</g></g>
+    <g id="hands"><ellipse cx="250" cy="270" rx="20" ry="9" fill="#3a2414"/><ellipse cx="300" cy="272" rx="20" ry="9" fill="#3a2414"/></g>`;
+  for (let i = 0; i < 17; i++) wavePh.push([rnd(i, 7) * 6.28, 0.6 + rnd(i, 8) * 0.9]);
+  const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d'); const img = g.createImageData(256, 256);
+  for (let i = 0; i < img.data.length; i += 4) { const v = rnd(i, 9) * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+  g.putImageData(img, 0, 0); $('grain').style.backgroundImage = `url(${cv.toDataURL()})`;
+}
+
+function setClock(el, secs, digitsShown) {
+  const s = mmss(secs);
+  if (el.dataset.v === s) return; el.dataset.v = s;
+  el.innerHTML = [...s].map(ch => ch === ':' ? '<span class="c">:</span>' : `<span>${ch}</span>`).join('');
+}
+
+// the room warms a little as the case lands
+const exhaleGlow = t => E.outCubic(prog(t, T.stop, T.stop + 0.8)) * (1 - prog(t, T.expand, T.expand + 0.8));
+
+// ================= the split =================
+function scSplit(t) {
+  const sL = keys(t, STORY_L), sR = keys(t, STORY_R);
+  // open mid-motion: the halves are already sliding apart from the seam
+  const op = E.outExpo(prog(t, 0, 0.9));
+  // left takes the frame at 19 s
+  const ex = E.inOutCubic(prog(t, T.expand, T.expand + 1.2));
+  const wL = lerp(540, 1080, ex);
+  $('L').style.left = '0px'; $('L').style.width = wL + 'px';
+  $('R').style.left = wL + 'px'; $('R').style.width = (1080 - wL) + 'px';
+  const zoomL = lerp(1, 1.42, ex) * lerp(1.06, 1, op);
+  $('wL').style.left = (wL - 540) / 2 + 'px';
+  $('wL').style.transform = `translateX(${lerp(-40, 0, op)}px) scale(${zoomL + 0.05 * prog(t, T.expand + 1.2, T.black)})`;
+  $('wR').style.left = '0px';
+  $('wR').style.transform = `translateX(${lerp(40, 0, op)}px) scale(${lerp(1.06, 1, op)})`;
+  show('split', { x: wL, y: 960, o: (1 - ex) * clamp(op * 2) });
+  $('stage').style.filter = t < 0.25 ? `brightness(${prog(t, 0, 0.25)})` : 'none';
+
+  // ---------- left: waiting ----------
+  setClock($('clkL').querySelector('.dig'), sL);
+  const racing = prog(t, T.expand + 0.3, T.black - 0.4);
+  $('clkL').style.color = `rgb(${lerp(142, 200, racing)},${lerp(145, 205, racing)},${lerp(150, 212, racing)})`;
+  $('callTime').textContent = mmss(sL);
+  // dusk → dark: the sky drains as the left clock runs on
+  const night = clamp(0.25 * prog(t, 0, 15) + 0.75 * E.inOutCubic(prog(t, T.expand, T.black - 0.2)));
+  const top = [lerp(74, 8, night), lerp(84, 10, night), lerp(112, 22, night)], mid = [lerp(170, 18, night), lerp(118, 18, night), lerp(104, 32, night)], bot = [lerp(226, 24, night), lerp(146, 22, night), lerp(96, 34, night)];
+  $('winSky').style.background = `linear-gradient(180deg, rgb(${top}) 0%, rgb(${mid}) 55%, rgb(${bot}) 100%)`;
+  document.querySelectorAll('.lw').forEach((w, i) => w.setAttribute('opacity', clamp((night - 0.35 - rnd(i, 6) * 0.5) * 4) * 0.9));
+  // the tired face lit by the phone; head drifts lower as time drags
+  const hL = $('whoL').querySelector('.head');
+  hL.setAttribute('transform', `rotate(${lerp(4, 9, prog(t, 0, T.black))} 210 300) translate(0 ${lerp(0, 14, prog(t, 0, T.black))})`);
+  show('whoL', { o: 1, center: false, tf: '' });
+  $('whoL').style.filter = `brightness(${0.9 + 0.1 * Math.sin(t * 1.3)})`;
+  $('wave').querySelectorAll('i').forEach((b, i) => { const [ph, sp] = wavePh[i]; b.style.height = (10 + 26 * (0.5 + 0.5 * Math.sin(t * 5 * sp + ph)) * (0.6 + 0.4 * Math.sin(t * 1.7 + i))) + 'px'; });
+  show('phL', { center: false, tf: `rotate(-2deg)` });
+
+  // ---------- right: solved ----------
+  setClock($('clkR').querySelector('.dig'), sR);
+  const done = prog(t, T.stop, T.stop + 0.35);
+  const glow = done * (0.7 + 0.3 * Math.cos((t - T.stop) * 3));
+  $('clkR').querySelector('.dig').style.textShadow = `0 0 ${30 + 50 * glow}px rgba(255,110,5,${0.55 + 0.4 * glow})`;
+  show('clkR', { s: 1 + 0.08 * E.outBack(done) - 0.08 * done * 0 });
+  $('clkR').querySelector('.lab').textContent = t >= T.stop ? 'DONE' : 'RASOLV';
+
+  // person on the right: visible until Maya's desk takes over, back for the exhale
+  const deskIn = io(t, T.desk, T.desk + 0.6, T.putDown - 0.4, T.putDown + 0.2);
+  const whoR = clamp(1 - deskIn.o);
+  show('whoR', { o: whoR, center: false, blur: (1 - whoR) * 10 });
+  show('glowR', { o: 0.75 + 0.25 * whoR + 0.3 * exhaleGlow(t), center: false });
+  const exhale = E.inOutCubic(prog(t, T.stop + 0.4, T.stop + 1.6));
+  $('whoR').querySelector('.body').setAttribute('transform', `translate(0 ${12 * exhale}) scale(1 ${1 - 0.02 * exhale})`);
+  $('whoR').querySelector('.head').setAttribute('transform', `rotate(${lerp(0, -4, exhale)} 210 300) translate(0 ${6 * exhale})`);
+  show('desk', { o: deskIn.o, center: false, s: lerp(0.94, 1, deskIn.k), blur: deskIn.blur });
+  // Maya works: head nods to the screen, hands type, laptop lines scroll
+  $('maya').setAttribute('transform', `translate(0 ${2 * Math.sin(t * 2.1)}) rotate(${-3 + 2 * Math.sin(t * 0.9)} 300 220)`);
+  $('hands').setAttribute('transform', `translate(0 ${Math.abs(Math.sin(t * 14)) * -3})`);
+  $('lapLines').setAttribute('transform', `translate(0 ${-((t * 18) % 16)})`);
+
+  // phone: slides down + shrinks under the desk card, then is put down after the stop
+  const dk = E.inOutCubic(prog(t, T.desk, T.desk + 0.7));
+  const pd = E.inOutCubic(prog(t, T.putDown, T.putDown + 1.1));
+  show('phR', { center: false, tf: `translateY(${lerp(0, 90, dk) + 760 * pd}px) rotate(${lerp(2, 0, dk) + 8 * pd}deg)`, s: lerp(1, 0.9, dk) });
+
+  // composer: the thumb types the message, then sends
+  const nType = Math.round(MSG.length * prog(t, T.type0, T.type1));
+  const sent = t >= T.send;
+  const ct = $('compTxt');
+  ct.className = !sent && nType === 0 ? 'ph' : '';
+  ct.textContent = sent ? 'Message' : nType ? MSG.slice(0, nType) : 'Message';
+  if (sent) ct.className = 'ph';
+  if (nType && !sent) ct.scrollLeft = 9999;
+  const press = Math.exp(-Math.pow((t - T.send) / 0.06, 2));
+  $('sendBtn').style.transform = `scale(${1 - 0.15 * press})`;
+  const tap = (t >= T.type0 && t < T.type1) ? Math.abs(Math.sin((t - T.type0) * 26)) : 0;
+  const thumbOut = E.inOutCubic(prog(t, T.send + 0.15, T.send + 0.7));
+  show('thumb', { center: false, x: lerp(220, 330, prog(t, T.type0, T.send)), y: 1555 + 10 * tap - 14 * press + 500 * thumbOut, tf: 'rotate(-14deg)', o: 1 - thumbOut });
+  // the bubble flies up from the composer
+  const bk = E.outBack(prog(t, T.send, T.send + 0.45));
+  show('bub', { center: false, tf: `translateY(${lerp(330, 0, bk)}px)`, s: lerp(0.6, 1, clamp(bk)), o: clamp(prog(t, T.send, T.send + 0.15)) });
+  $('bub').style.transformOrigin = '100% 100%';
+  // read in seconds: a scan line passes, then the key words light up
+  const sc = prog(t, T.scan, T.scan + 0.5);
+  show('scan', { center: false, x: 18 + 0, y: 6 + sc * 120, o: sc > 0 && sc < 1 ? Math.sin(sc * Math.PI) : 0 });
+  $('scan').style.width = '280px'; $('scan').style.left = 'auto'; $('scan').style.right = '-6px';
+  for (const [id, a] of [['mk1', T.hi1], ['mk2', T.hi2]]) {
+    const h = E.outCubic(prog(t, a, a + 0.25));
+    $(id).style.background = `rgba(255,110,5,${0.95 * h})`;
+    $(id).style.boxShadow = h > 0 ? `0 0 ${18 * h}px rgba(255,110,5,${0.6 * h})` : 'none';
+  }
+  $('chatState').textContent = t < T.scan ? 'online' : t < T.maya ? 'reading…' : t < T.stop ? 'Maya is on it' : 'solved';
+  // rows stack under the bubble: Maya match at 00:06, then the three live updates
+  const rowAt = [T.maya, ...T.up];
+  rowAt.forEach((a, i) => {
+    const el = $(i === 0 ? 'rowM' : 'up' + (i - 1));
+    const k = E.outBack(prog(t, a, a + 0.4));
+    show(el, { center: false, y: 150 + i * 74, o: clamp(prog(t, a, a + 0.15)), tf: `translateY(${lerp(24, 0, clamp(k))}px)`, s: lerp(0.92, 1, clamp(k)) });
+    el.style.boxShadow = i === 3 && t > a ? `inset 0 0 0 1.5px rgba(47,191,113,${0.4 + 0.4 * Math.exp(-(t - a) * 2)})` : '';
+  });
+  // the right clock pulses once per landed update
+  const bump = Math.max(...rowAt.map(a => Math.exp(-Math.pow((t - a) / 0.12, 2))));
+  $('clkR').querySelector('.dig').style.transform = `scale(${1 + 0.05 * bump})`;
+}
+
+function scSupers(t) {
+  const cur = SUPERS.find(([a, b]) => t >= a - 0.05 && t < b + 0.05);
+  const sup = $('sup');
+  if (!cur) { hide(sup); hide('supBand'); return; }
+  const [a, b, text] = cur;
+  if (sup.dataset.k !== text) { sup.dataset.k = text; sup.innerHTML = text.split(' ').map(w => `<span>${w}</span>`).join(''); }
+  // the opening super is long: run it on two lines
+  sup.style.flexWrap = text.length > 24 ? 'wrap' : 'nowrap'; sup.style.justifyContent = 'center'; sup.style.width = text.length > 24 ? '720px' : 'auto';
+  sup.style.whiteSpace = text.length > 24 ? 'normal' : 'nowrap';
+  sup.style.fontSize = text.length > 24 ? '58px' : '66px'; sup.style.rowGap = '4px';
+  const out = 1 - prog(t, b - 0.18, b);
+  show(sup, { x: 540, y: text.length > 24 ? 1700 : 1730, o: out });
+  [...sup.children].forEach((sp, i) => {
+    const k = E.outCubic(prog(t, a + i * 0.06, a + i * 0.06 + 0.35));
+    sp.style.opacity = k; sp.style.transform = `translateY(${lerp(22, 0, k)}px)`; sp.style.filter = k < 0.99 ? `blur(${lerp(8, 0, k)}px)` : 'none';
+    sp.style.color = /4:00|Done/.test(sp.textContent) ? '#FF8A2A' : '#fff';
+  });
+  show('supBand', { center: false, o: 1 });
+  const d = io(t, T.stop + 0.3, T.stop + 0.8);
+  show('disc', { center: false, tf: 'translateX(-50%)', o: t < T.black ? d.o : 0, x: 540, y: 1835 });
+}
+
+// ================= black card =================
+function scBlack(t) {
+  show('black', { center: false });
+  const l1 = 'Stop waiting.', l2a = 'Someone real is ', l2b = 'already on it.';
+  const n1 = Math.round(l1.length * prog(t, T.stop1, T.stop1 + 0.55));
+  const n2 = Math.round((l2a + l2b).length * prog(t, T.stop2, T.stop2 + 1.3));
+  const s2 = (l2a + l2b).slice(0, n2);
+  const a = s2.slice(0, l2a.length), b = s2.slice(l2a.length);
+  const caretOn = Math.floor(t * 3.4) % 2 === 0 || (t > T.stop1 && t < T.stop2 + 1.3);
+  const caret = `<i id="caret" style="opacity:${caretOn ? 1 : 0}"></i>`;
+  $('stopTxt').innerHTML = `${l1.slice(0, n1)}${n2 ? '' : caret}<br>${a}${b ? `<em>${b}</em>` : ''}${n2 ? caret : ''}`;
+  const fadeOut = prog(t, T.endIn - 0.25, T.endIn);
+  show('stopTxt', { x: 540, y: 900, o: t < T.stop1 ? 0 : 1 - fadeOut, blur: fadeOut * 10 });
+}
+
+// ================= end card =================
+function scEnd(t) {
+  show('end', { center: false, o: clamp(prog(t, T.endIn, T.endIn + 0.2)) });
+  // the split line slides in, then folds into the aperture
+  const slide = E.outExpo(prog(t, T.endIn, T.endIn + 0.45));
+  const fold = E.inOutCubic(prog(t, T.logo - 0.05, T.logo + 0.35));
+  const h = lerp(1920, 8, fold);
+  const ly = lerp(lerp(-960, 960, slide), 640, fold);
+  $('endLine').style.height = h + 'px';
+  show('endLine', { x: 540, y: ly, o: 1 - prog(t, T.logo + 0.25, T.logo + 0.4) });
+  const ap = E.outCubic(prog(t, T.logo + 0.15, T.logo + 0.9));
+  setAp($('logo'), { r: lerp(70, 37, ap), rot: lerp(-60, 0, ap), bp: 0, grow: ap, lines: true, gap: '#0c0703' });
+  show('logo', { x: 540, y: 640, o: clamp(ap * 3), s: lerp(0.7, 1, E.outBack(ap)) });
+  const wm = io(t, T.logo + 0.45, T.logo + 0.9);
+  show('wm', { x: 540, y: 845, o: wm.o, blur: wm.blur, s: lerp(1.08, 1, wm.k) });
+  $('wm').style.letterSpacing = lerp(30, 6, wm.k) + 'px';
+  const ti = io(t, 26.15, 26.55);
+  show('title', { x: 540, y: 1030, o: ti.o, blur: ti.blur, tf: `translateY(${lerp(20, 0, ti.k)}px)` });
+  const wh = io(t, 27.6, 27.95);
+  show('when', { x: 540, y: 1125, o: wh.o, blur: wh.blur, tf: `translateY(${lerp(16, 0, wh.k)}px)` });
+  const rb = E.outBack(prog(t, 27.9, 28.3));
+  const pulse = Math.exp(-Math.pow((t - 28.75) / 0.14, 2));
+  show('remind', { x: 540, y: 1260, o: clamp(prog(t, 27.9, 28.05)), s: lerp(0.8, 1, clamp(rb)) + 0.07 * pulse });
+  const rp = prog(t, 28.7, 29.5);
+  $('ring').style.width = $('remind').offsetWidth + 'px';
+  show('ring', { x: 540, y: 1260, o: rp > 0 && rp < 1 ? (1 - rp) * 0.9 : 0, s: 1 + 0.35 * E.outCubic(rp) });
+  const ga = io(t, 28.35, 28.7);
+  show('getApp', { x: 540, y: 1385, o: ga.o, blur: ga.blur });
+  const tg = io(t, 28.95, 29.45);
+  show('tag', { x: 540, y: 1720, o: tg.o, blur: tg.blur });
+}
+
+function render(t) {
+  for (const id of ['black', 'stopTxt', 'end', 'endLine', 'logo', 'wm', 'title', 'when', 'remind', 'ring', 'getApp', 'tag', 'sup', 'supBand', 'disc', 'split']) hide(id);
+  const split = t < T.black;
+  $('L').style.display = $('R').style.display = split ? '' : 'none';
+  if (split) { scSplit(t); scSupers(t); }
+  if (t >= T.black && t < T.endIn + 0.3) scBlack(t);
+  if (t >= T.endIn) scEnd(t);
+  if (!split) $('stage').style.filter = 'none';
+  const f = Math.floor(t * 60);
+  $('grain').style.backgroundPosition = `${Math.floor(rnd(f, 2) * 256)}px ${Math.floor(rnd(f, 3) * 256)}px`;
+  $('vig').style.display = t >= T.black && t < T.endIn ? 'none' : '';
+}
+
+window.DURATION = 30.0;
+window.seek = t => render(t);
+window.ready = document.fonts.ready.then(() => { build(); render(0); return true; });
+if (!navigator.webdriver) {
+  window.ready.then(() => { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % window.DURATION); requestAnimationFrame(loop); }; loop(); });
+}
+</script>
+</body>
+</html>
