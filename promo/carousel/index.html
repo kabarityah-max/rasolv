@@ -1,0 +1,600 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>RASOLV — Carousel</title>
+<style>
+  html, body { margin: 0; background: #0c0c0c; }
+  body { display: flex; justify-content: center; }
+  canvas { width: 1080px; height: 1920px; display: block; }
+  @media (max-height: 1920px) { canvas { width: calc(100vh * 9 / 16); height: 100vh; } }
+</style>
+<script src="captions.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+// "Carousel": the Houston baggage-claim story (as reported by the New York Times, 2012), told in the
+// RASOLV explainer style — grey pawns, one orange accent, a mono counter, a "YOU" in the foreground.
+// Everything is a pure function of t: window.seek(t) draws the frame. Scene times come from captions.js (vo.py).
+const W = 1080, H = 1920, OR = '#FF6E05', ORL = '#FF9A4D';
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const DPR = window.devicePixelRatio || 1;
+cv.width = W * DPR; cv.height = H * DPR;
+const DUR = window.DURATION, CUE = window.CUE;
+const S = id => CUE[id][0], E = id => CUE[id][1], WD = (id, k) => CUE[id][2][k];
+
+// ---------- math ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ramp = (t, a, b) => clamp((t - a) / (b - a));
+const io = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const out3 = x => 1 - Math.pow(1 - x, 3);
+const back = x => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const lerp = (a, b, x) => a + (b - a) * x;
+const win = (t, a, b, f = .45) => Math.min(ramp(t, a - f, a), 1 - ramp(t, b, b + f));   // fade in before a, out after b
+function rnd(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+const gray = (l, a = 1) => { const v = Math.round(clamp(l) * 255); return `rgba(${v},${v},${v},${a})`; };
+const fmt = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+
+// ---------- primitives ----------
+function font(w, px, fam = 'Grotesk') { ctx.font = `${w} ${px}px ${fam === 'Mono' ? '"Space Mono"' : '"Space Grotesk"'}`; }
+function text(str, x, y, { w = 600, px = 40, fam = 'Grotesk', color = '#d4d4d4', align = 'center', ls = 0, alpha = 1 } = {}) {
+  font(w, px, fam); ctx.letterSpacing = ls + 'px'; ctx.textAlign = align; ctx.textBaseline = 'middle';
+  const ga = ctx.globalAlpha; ctx.globalAlpha = ga * alpha; ctx.fillStyle = color; ctx.fillText(str, x, y); ctx.globalAlpha = ga;
+  ctx.letterSpacing = '0px';
+}
+function rrect(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function ell(x, y, rx, ry) { ctx.beginPath(); ctx.ellipse(x, y, Math.max(0, rx), Math.max(0, ry), 0, 0, Math.PI * 2); }
+function withAlpha(a, fn) { if (a <= 0.001) return; ctx.save(); ctx.globalAlpha *= a; fn(); ctx.restore(); }
+
+// A pawn: (x, y) is the base centre, s the scale (≈170·s px tall). walk = phase (bob + feet), lite = top shade.
+function pawn(x, y, s, { lite = .82, alpha = 1, walk = null, cap = false, glow = 0 } = {}) {
+  withAlpha(alpha, () => {
+    const bob = walk == null ? 0 : Math.abs(Math.sin(walk * Math.PI)) * 7 * s;
+    ell(x, y + 2 * s, 50 * s, 9 * s); ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fill();
+    if (walk != null) {                                          // feet
+      const f = Math.sin(walk * Math.PI) * 14 * s;
+      for (const [dx, k] of [[-17, 1], [17, -1]]) { ell(x + dx * s + f * k, y + 1 * s, 15 * s, 7 * s); ctx.fillStyle = gray(lite * .95); ctx.fill(); }
+    }
+    y -= bob;
+    if (glow) { ctx.shadowColor = `rgba(255,255,255,${glow})`; ctx.shadowBlur = 40 * s; }
+    const g = ctx.createLinearGradient(0, y - 125 * s, 0, y);
+    g.addColorStop(0, gray(lite)); g.addColorStop(1, gray(lite * .42));
+    ctx.beginPath();
+    ctx.moveTo(x - 15 * s, y - 118 * s);
+    ctx.bezierCurveTo(x - 20 * s, y - 60 * s, x - 44 * s, y - 25 * s, x - 52 * s, y - 2 * s);
+    ctx.quadraticCurveTo(x, y + 6 * s, x + 52 * s, y - 2 * s);
+    ctx.bezierCurveTo(x + 44 * s, y - 25 * s, x + 20 * s, y - 60 * s, x + 15 * s, y - 118 * s);
+    ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+    const hg = ctx.createRadialGradient(x - 8 * s, y - 150 * s, 2 * s, x, y - 140 * s, 30 * s);
+    hg.addColorStop(0, gray(lite * 1.08)); hg.addColorStop(1, gray(lite * .8));
+    ell(x, y - 140 * s, 27 * s, 27 * s); ctx.fillStyle = hg; ctx.fill();
+    ctx.shadowBlur = 0;
+    if (cap) {                                                    // handler's cap
+      ctx.fillStyle = gray(.16);
+      ctx.beginPath(); ctx.ellipse(x, y - 152 * s, 27 * s, 17 * s, 0, Math.PI, 0); ctx.fill();
+      rrect(x - 4 * s, y - 156 * s, 38 * s, 7 * s, 3 * s); ctx.fill();
+    }
+  });
+}
+
+// A suitcase: (x, y) bottom centre.
+function suitcase(x, y, s, { orange = false, lite = .55, alpha = 1 } = {}) {
+  withAlpha(alpha, () => {
+    const w = 76 * s, h = 46 * s, d = 12 * s;
+    ell(x, y + 2 * s, w * .62, 8 * s); ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fill();
+    const front = orange ? OR : gray(lite), top = orange ? ORL : gray(lite * 1.25), side = orange ? '#C94F00' : gray(lite * .7);
+    ctx.fillStyle = top;                                           // top face
+    ctx.beginPath(); ctx.moveTo(x - w / 2, y - h); ctx.lineTo(x - w / 2 + d, y - h - d * .7); ctx.lineTo(x + w / 2 + d, y - h - d * .7); ctx.lineTo(x + w / 2, y - h); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = side;
+    ctx.beginPath(); ctx.moveTo(x + w / 2, y - h); ctx.lineTo(x + w / 2 + d, y - h - d * .7); ctx.lineTo(x + w / 2 + d, y - d * .7); ctx.lineTo(x + w / 2, y); ctx.closePath(); ctx.fill();
+    rrect(x - w / 2, y - h, w, h, 5 * s); ctx.fillStyle = front; ctx.fill();
+    ctx.strokeStyle = orange ? '#C94F00' : gray(lite * .75); ctx.lineWidth = 3 * s;
+    ctx.beginPath(); ctx.moveTo(x - w * .22, y - h + 4 * s); ctx.lineTo(x - w * .22, y - 4 * s); ctx.moveTo(x + w * .22, y - h + 4 * s); ctx.lineTo(x + w * .22, y - 4 * s); ctx.stroke();
+    ctx.strokeStyle = orange ? '#E45F00' : gray(lite * .9); ctx.lineWidth = 4 * s;   // handle
+    ctx.beginPath(); ctx.moveTo(x - 10 * s + d / 2, y - h - d * .35); ctx.lineTo(x - 10 * s + d / 2, y - h - d * .35 - 8 * s); ctx.lineTo(x + 10 * s + d / 2, y - h - d * .35 - 8 * s); ctx.lineTo(x + 10 * s + d / 2, y - h - d * .35); ctx.stroke();
+  });
+}
+
+function bang(x, y, s, alpha) {                                   // "!" over a head
+  withAlpha(alpha, () => {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    text('!', 0, 0, { w: 700, px: 34, fam: 'Mono', color: '#eeeeee' });
+    ctx.restore();
+  });
+}
+
+// ---------- the baggage hall ----------
+const CX = 540, CY = 975, OMEGA = .3;
+const BAGS = (() => {
+  const r = rnd(7), out = [];
+  let t = S('houston') - 1.2;
+  while (t < S('zero') + 6) {
+    const busy = t > S('hire') + .4 && t < S('closer') + .5 || t > S('zero') - 3;
+    out.push({ t0: t, lite: .38 + r() * .3, s: .78 + r() * .22 });
+    t += busy ? 1.0 + r() * .35 : 2.6 + r() * .8;
+  }
+  return out;
+})();
+const CROWD = (() => {
+  const r = rnd(3), out = [];
+  for (let i = 0; i < 26; i++) {                                  // around the belt
+    const th = -Math.PI * .97 + (i / 25) * Math.PI * 1.94 + (r() - .5) * .08;
+    const behind = Math.sin(th) < .15;
+    if (!behind && Math.abs(Math.cos(th)) < .55) continue;          // keep the front of the belt clear
+    const rx = 445 + r() * 40, ry = 178 + r() * 20;
+    const y = CY - 10 + Math.sin(th) * ry, k = (y - 700) / 600;
+    out.push({ x: CX + Math.cos(th) * rx, y, s: .52 + k * .5, lite: .42 + k * .35 + r() * .08 });
+  }
+  for (let i = 0; i < 16; i++) {                                  // front rows, left and right of YOU
+    const side = i % 2 ? 1 : -1, x = CX + side * (250 + r() * 300), y = 1260 + r() * 380;
+    out.push({ x, y, s: 1.05 + (y - 1260) / 380 * .7, lite: .5 + r() * .25 });
+  }
+  out.forEach((p, i) => { p.order = r(); p.angry = i % 3 !== 2; p.ph = r() * 2; });
+  return out.sort((a, b) => a.y - b.y);
+})();
+
+function storyMinutes(t) {                                         // the hall clock, in story minutes
+  if (t < S('eight')) return 40 * Math.max(0, t - .3) / 60;
+  return lerp(40 * (S('eight') - .3) / 60, 8, io(ramp(t, S('eight'), S('eight') + .9)));
+}
+
+function hall(t, opts = {}) {
+  const ret = opts.ret;                                            // the return visit (after the fix)
+  // camera: start tight on the suitcase, pull out as the story opens
+  const pull = io(ramp(t, S('houston') - .3, S('houston') + 1.6));
+  const k = ret ? 1 : lerp(1.42, 1, pull) * (1 + .04 * ramp(t, S('houston'), S('closer')));
+  ctx.save();
+  ctx.translate(lerp(560, 540, ret ? 1 : pull), lerp(950, 900, ret ? 1 : pull)); ctx.scale(k, k); ctx.translate(-540, -900);
+
+  // wall
+  const wg = ctx.createLinearGradient(0, 520, 0, 810); wg.addColorStop(0, '#202020'); wg.addColorStop(1, '#181818');
+  rrect(90, 520, 900, 290, 10); ctx.fillStyle = wg; ctx.fill();
+  rrect(360, 545, 360, 48, 6); ctx.fillStyle = '#cfcfcf'; ctx.fill();
+  text('BAGGAGE CLAIM', 540, 570, { w: 700, px: 30, fam: 'Mono', color: '#141414', ls: 1 });
+  // chute with flaps
+  rrect(440, 660, 200, 150, 8); ctx.fillStyle = '#0b0b0b'; ctx.fill();
+  for (let i = 0; i < 8; i++) {
+    const sway = Math.sin(t * 3 + i) * 2 * (t > S('hire') && !ret ? 2 : 1);
+    ctx.fillStyle = i % 2 ? '#191919' : '#151515'; ctx.fillRect(446 + i * 23.5 + sway, 666, 21, 140);
+  }
+  // clock (story time)
+  const m = storyMinutes(t);
+  ell(205, 650, 50, 50); ctx.fillStyle = '#0e0e0e'; ctx.fill(); ctx.strokeStyle = '#8a8a8a'; ctx.lineWidth = 3; ctx.stroke();
+  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; ctx.beginPath(); ctx.moveTo(205 + Math.cos(a) * 40, 650 + Math.sin(a) * 40); ctx.lineTo(205 + Math.cos(a) * 45, 650 + Math.sin(a) * 45); ctx.strokeStyle = '#666'; ctx.lineWidth = 2; ctx.stroke(); }
+  const ma = (ret ? 0 : m) / 60 * Math.PI * 2 - Math.PI / 2, ha = (ret ? 0 : m) / 720 * Math.PI * 2 + Math.PI * 1.3;
+  ctx.lineCap = 'round'; ctx.strokeStyle = '#d0d0d0';
+  ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(205, 650); ctx.lineTo(205 + Math.cos(ma) * 36, 650 + Math.sin(ma) * 36); ctx.stroke();
+  ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(205, 650); ctx.lineTo(205 + Math.cos(ha) * 22, 650 + Math.sin(ha) * 22); ctx.stroke();
+  ctx.lineCap = 'butt';
+  // arrivals board
+  rrect(790, 612, 160, 112, 6); ctx.fillStyle = '#0f0f0f'; ctx.fill();
+  text('ARRIVALS', 870, 633, { w: 700, px: 13, fam: 'Mono', color: '#777', ls: 2 });
+  for (let i = 0; i < 4; i++) {
+    ctx.fillStyle = i === 1 ? '#9a9a9a' : '#3a3a3a'; ctx.fillRect(806, 655 + i * 17, 46, 6); ctx.fillRect(864, 655 + i * 17, 70, 6);
+  }
+
+  // handlers behind the belt
+  if (!ret) for (let i = 0; i < 6; i++) {
+    const a = out3(ramp(t, S('hire') + i * .16, S('hire') + i * .16 + .5));
+    if (a > 0) pawn(395 + i * 58, 832 + (i % 2) * 6 - (1 - a) * 20, .5, { lite: .5, cap: true, alpha: a, walk: t * 1.7 + i * .7 });
+  }
+
+  // carousel
+  ell(CX, CY + 40, 420, 150); ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fill();
+  ell(CX, CY + 20, 372, 136); ctx.fillStyle = '#151515'; ctx.fill();
+  ell(CX, CY, 372, 136); ctx.fillStyle = '#272727'; ctx.fill();
+  ell(CX, CY, 358, 126); ctx.fillStyle = '#313131'; ctx.fill();
+  const ph = t * OMEGA;
+  ctx.strokeStyle = '#272727'; ctx.lineWidth = 2;
+  for (let i = 0; i < 56; i++) {
+    const a = i / 56 * Math.PI * 2 + ph;
+    ctx.beginPath(); ctx.moveTo(CX + Math.cos(a) * 252, CY + Math.sin(a) * 80); ctx.lineTo(CX + Math.cos(a) * 356, CY + Math.sin(a) * 125); ctx.stroke();
+  }
+  // bags on the belt (back half before the island, front half after)
+  const items = [];
+  const lonely = { th: .25 + OMEGA * t, s: 1.05, orange: true };
+  if (!ret) items.push(lonely);
+  for (const b of BAGS) {
+    if (t < b.t0 || (ret ? t < S('zero') - 4 : b.t0 > S('zero') - 4)) continue;
+    const age = t - b.t0, life = 9;
+    const a = ramp(age, 0, .4) * (1 - ramp(age, life, life + .6));
+    if (a <= 0) continue;
+    items.push({ th: -Math.PI / 2 + OMEGA * age, s: b.s, lite: b.lite, alpha: a });
+  }
+  if (ret) items.push({ th: .25 + OMEGA * t, s: 1.05, orange: true });
+  const bagAt = it => suitcase(CX + Math.cos(it.th) * 305, CY + Math.sin(it.th) * 103 + 10, it.s, it);
+  items.filter(it => Math.sin(it.th) < 0).sort((a, b) => Math.sin(a.th) - Math.sin(b.th)).forEach(bagAt);
+  ell(CX, CY + 12, 242, 76); ctx.fillStyle = '#1d1d1d'; ctx.fill();
+  const ig = ctx.createLinearGradient(0, CY - 76, 0, CY + 76); ig.addColorStop(0, '#3b3b3b'); ig.addColorStop(1, '#2b2b2b');
+  ell(CX, CY, 242, 74); ctx.fillStyle = ig; ctx.fill();
+  items.filter(it => Math.sin(it.th) >= 0).sort((a, b) => Math.sin(a.th) - Math.sin(b.th)).forEach(bagAt);
+
+  // crowd + complaints
+  const arrive = ret ? 1 : 0;
+  CROWD.forEach((p, i) => {
+    const a = ret ? 1 : out3(ramp(t, S('houston') + .6 + p.order * 2.2, S('houston') + 1.2 + p.order * 2.2));
+    if (a <= 0) return;
+    const walking = ret && t < S('zero') + .4 ? t * 2.2 + p.ph : null;
+    pawn(p.x, p.y + (1 - a) * 30, p.s, { lite: p.lite, alpha: a, walk: walking });
+    if (!p.angry) return;
+    let m;
+    if (!ret) {
+      const pop = ramp(t, S('complain') + p.order * .9, S('complain') + p.order * .9 + .3);
+      const again = Math.max(0, Math.sin(clamp((t - S('still')) / .5) * Math.PI)) * .5;   // they flare up again
+      m = pop > 0 ? back(pop) + again : 0;
+    } else m = 1 - io(ramp(t, S('zero') + .2 + p.order * 1.3, S('zero') + .5 + p.order * 1.3));
+    if (m > 0) bang(p.x + 14 * p.s, p.y - 205 * p.s + Math.sin(t * 6 + p.ph * 3) * 2, p.s * m * 1.3, Math.min(1, m));
+  });
+  ctx.restore();
+}
+
+// ---------- the trip, measured ----------
+function timeline(t) {
+  const x0 = 150, x1 = 930, u = (x1 - x0) / 8, y = 1010;
+  const walk = io(ramp(t, S('walk1'), E('walk1')));
+  const stand = io(ramp(t, S('stand7'), E('stand7') + .3));
+  // gate
+  rrect(x0 - 50, y - 250, 100, 170, 8); ctx.fillStyle = '#1e1e1e'; ctx.fill();
+  rrect(x0 - 30, y - 220, 60, 140, 30); ctx.fillStyle = '#0c0c0c'; ctx.fill();
+  text('GATE', x0, y - 275, { w: 700, px: 18, fam: 'Mono', color: '#777', ls: 3 });
+  // small belt
+  const bx = x0 + u * 5, by = y - 130;
+  ell(bx, by + 8, 250, 48); ctx.fillStyle = '#161616'; ctx.fill();
+  ell(bx, by, 250, 48); ctx.fillStyle = '#2d2d2d'; ctx.fill();
+  ell(bx, by, 170, 26); ctx.fillStyle = '#383838'; ctx.fill();
+  text('BELT', bx, by - 90, { w: 700, px: 18, fam: 'Mono', color: '#777', ls: 3 });
+  for (let i = 0; i < 4; i++) {
+    const th = t * OMEGA * 1.6 + i * Math.PI / 2;
+    if (Math.sin(th) > 0) continue;
+    suitcase(bx + Math.cos(th) * 210, by + Math.sin(th) * 37 + 6, .55, { lite: .5 });
+  }
+  for (let i = 0; i < 4; i++) {
+    const th = t * OMEGA * 1.6 + i * Math.PI / 2;
+    if (Math.sin(th) <= 0) continue;
+    suitcase(bx + Math.cos(th) * 210, by + Math.sin(th) * 37 + 6, .55, { lite: .5 });
+  }
+  // the traveller: walks one unit, then stands (and taps)
+  const px = x0 + 40 + walk * (u + 40);
+  const moving = t > S('walk1') && t < E('walk1') + .1;
+  const fidget = stand > 0 && stand < 1 ? Math.sin(t * 9) * 2 : 0;
+  pawn(px + fidget, y - 40, .95, { lite: .85, walk: moving ? t * 2.6 : null });
+  // the bar
+  rrect(x0, y + 30, x1 - x0, 34, 17); ctx.fillStyle = '#1b1b1b'; ctx.fill();
+  if (walk > 0) { rrect(x0, y + 30, u * walk, 34, 17); ctx.fillStyle = '#d6d6d6'; ctx.fill(); }
+  if (stand > 0) {
+    ctx.save(); rrect(x0 + u, y + 30, 7 * u * stand, 34, 17); ctx.clip();
+    ctx.fillStyle = '#4a4a4a'; ctx.fillRect(x0 + u, y + 30, 7 * u, 34);
+    ctx.strokeStyle = '#3a3a3a'; ctx.lineWidth = 6;
+    for (let i = -2; i < 60; i++) { ctx.beginPath(); ctx.moveTo(x0 + u + i * 16, y + 64); ctx.lineTo(x0 + u + i * 16 + 34, y + 30); ctx.stroke(); }
+    ctx.restore();
+  }
+  text('WALK 1:00', x0 + u / 2, y + 100, { w: 700, px: 18, fam: 'Mono', color: '#bbb', ls: 1, alpha: walk });
+  text('STANDING 7:00', x0 + u + 3.5 * u, y + 100, { w: 700, px: 18, fam: 'Mono', color: '#888', ls: 1, alpha: ramp(stand, .6, 1) });
+  const pc = ramp(t, S('pct'), S('pct') + .5);
+  withAlpha(pc, () => {
+    ctx.save(); ctx.translate(x0 + 4.5 * u, y + 47); const z = back(pc) * .9 + .1; ctx.scale(z, z);
+    rrect(-70, -28, 140, 56, 28); ctx.fillStyle = '#e8e8e8'; ctx.fill();
+    text('88%', 0, 2, { w: 700, px: 34, fam: 'Mono', color: '#111' });
+    ctx.restore();
+  });
+}
+
+// ---------- the floor plan ----------
+function plan(t) {
+  const move = io(ramp(t, S('gates') + .3, S('gates') + 2.2));
+  const outer = ramp(t, S('outer') + .8, S('outer') + 1.6);
+  // terminal
+  rrect(220, 1010, 640, 170, 14); ctx.fillStyle = '#1f1f1f'; ctx.fill(); ctx.strokeStyle = '#3a3a3a'; ctx.lineWidth = 2; ctx.stroke();
+  text('MAIN TERMINAL', 240, 1036, { w: 700, px: 16, fam: 'Mono', color: '#777', ls: 3, align: 'left' });
+  const cars = [[360, 1110], [540, 1110], [720, 1110]];
+  cars.forEach(([x, y], i) => {
+    ell(x, y, 66, 30); ctx.fillStyle = '#2f2f2f'; ctx.fill();
+    ell(x, y, 40, 14); ctx.fillStyle = '#242424'; ctx.fill();
+    if (i === 2 && outer > 0) { ell(x, y, 66 + 6 * (1 - outer), 30 + 3 * (1 - outer)); ctx.strokeStyle = `rgba(255,110,5,${outer})`; ctx.lineWidth = 4; ctx.stroke(); }
+  });
+  text('OUTERMOST', 720, 1160, { w: 700, px: 14, fam: 'Mono', color: OR, ls: 3, alpha: outer });
+  // gates: next to the terminal, then pushed away
+  const gx = lerp(360, 220, move), gy = lerp(905, 610, move);
+  rrect(gx - 120, gy - 50, 240, 100, 12); ctx.fillStyle = '#262626'; ctx.fill(); ctx.strokeStyle = '#444'; ctx.lineWidth = 2; ctx.stroke();
+  for (let i = 0; i < 4; i++) { rrect(gx - 100 + i * 52, gy - 32, 40, 30, 4); ctx.fillStyle = '#121212'; ctx.fill(); }
+  text('ARRIVAL GATES', gx, gy + 28, { w: 700, px: 14, fam: 'Mono', color: '#888', ls: 3 });
+  // the walk: gate → carousel
+  const ax = gx, ay = gy + 50;
+  const pts = move < 1 ? [[ax, ay], [ax, 1110 - 34]] : [[ax, ay], [ax, 980], [720, 980], [720, 1110 - 34]];
+  const target = move < 1 ? null : 1;
+  let L = 0; const seg = [];
+  for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); L += d; }
+  const draw = move < 1 ? 1 : ramp(t, S('outer') + .2, S('outer') + 1.6);
+  const pathPt = f => { let d = f * L; for (let i = 0; i < seg.length; i++) { if (d <= seg[i] || i === seg.length - 1) { const k = clamp(d / seg[i]); return [lerp(pts[i][0], pts[i + 1][0], k), lerp(pts[i][1], pts[i + 1][1], k)]; } d -= seg[i]; } };
+  const dots = Math.floor(L / 22);
+  for (let i = 0; i <= dots; i++) {
+    const f = i / dots; if (f > draw) break;
+    const [x, y] = pathPt(f);
+    ell(x, y, 4, 4); ctx.fillStyle = move < 1 ? '#9a9a9a' : OR; ctx.fill();
+  }
+  text(move < .5 ? '1 MIN' : '', ax + 60, (ay + 1076) / 2, { w: 700, px: 16, fam: 'Mono', color: '#aaa', ls: 2, alpha: 1 - ramp(move, 0, .3) });
+  // the walker
+  const six = ramp(t, S('six'), E('six') + .4);
+  if (target && six > 0) {
+    const [x, y] = pathPt(io(six));
+    ell(x, y, 13, 13); ctx.fillStyle = '#e6e6e6'; ctx.fill();
+    text('6 MIN', 470, 950, { w: 700, px: 16, fam: 'Mono', color: OR, ls: 2, alpha: ramp(six, .6, 1) });
+  }
+  // the bags' route
+  withAlpha(outer, () => {
+    rrect(880, 1190, 120, 60, 8); ctx.fillStyle = '#1b1b1b'; ctx.fill();
+    text('BAG ROOM', 940, 1220, { w: 700, px: 13, fam: 'Mono', color: '#777', ls: 2 });
+    ctx.setLineDash([10, 8]); ctx.lineDashOffset = -t * 30; ctx.strokeStyle = OR; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(880, 1215); ctx.lineTo(790, 1215); ctx.lineTo(760, 1135); ctx.stroke(); ctx.setLineDash([]);
+  });
+}
+
+// ---------- standing vs walking ----------
+function split(t) {
+  const a = ramp(t, S('hate') - .2, S('hate') + .4), b = ramp(t, S('stand'), S('stand') + .4);
+  // standing still
+  pawn(330, 1080, 1.25, { lite: .8 });
+  ell(330, 780, 40, 40); ctx.strokeStyle = '#777'; ctx.lineWidth = 3; ctx.stroke();
+  const ang = t * 4 - Math.PI / 2;
+  ctx.beginPath(); ctx.moveTo(330, 780); ctx.lineTo(330 + Math.cos(ang) * 30, 780 + Math.sin(ang) * 30); ctx.strokeStyle = '#ccc'; ctx.stroke();
+  text('STANDING', 330, 1140, { w: 700, px: 18, fam: 'Mono', color: '#999', ls: 3 });
+  bang(380, 870, 1.5 * back(b), b);
+  // walking (the floor slides)
+  ctx.save(); rrect(560, 1050, 380, 40, 8); ctx.clip();
+  for (let i = -1; i < 12; i++) { ell(560 + ((i * 44 - t * 140) % 528 + 528) % 528 - 44, 1078, 9, 4); ctx.fillStyle = OR; ctx.fill(); }
+  ctx.restore();
+  pawn(750, 1080, 1.25, { lite: .8, walk: t * 2.4 });
+  text('WALKING', 750, 1140, { w: 700, px: 18, fam: 'Mono', color: '#999', ls: 3 });
+  text('SAME MINUTES', 540, 700, { w: 700, px: 18, fam: 'Mono', color: '#666', ls: 4, alpha: a });
+}
+
+// ---------- the video, replayed ----------
+function meta(t) {
+  const fx = 405, fy = 560, fw = 270, fh = 480;
+  const never = S('never'), stayed = S('stayed');
+  let tt, label;
+  if (t < never) { tt = ((t - S('video')) % 3.4 + 3.4) % 3.4; label = fmt(tt); }
+  else if (t < stayed) {
+    const thumbs = [S('hire') + 1, S('walk1') + 1.2, S('six') + 1.5, S('hate') + 1];
+    tt = thumbs[Math.min(3, Math.floor((t - never) / ((stayed - never) / 4)))]; label = fmt(tt);
+  } else { tt = .8 + (t - stayed) * .25; label = fmt(t); }
+  rrect(fx - 4, fy - 4, fw + 8, fh + 8, 18); ctx.fillStyle = '#cfcfcf'; ctx.fill();
+  ctx.save(); rrect(fx, fy, fw, fh, 14); ctx.clip();
+  ctx.translate(fx, fy); ctx.scale(fw / W, fh / H);
+  backdrop(tt); world(tt, true); you(tt, 1);
+  ctx.restore();
+  // scrub bar
+  const prog = t < stayed ? (t < never ? tt / 3.4 * .06 : .1 + .7 * ramp(t, never, stayed)) : clamp(t / DUR);
+  rrect(fx, fy + fh + 22, fw, 4, 2); ctx.fillStyle = '#333'; ctx.fill();
+  rrect(fx, fy + fh + 22, fw * prog, 4, 2); ctx.fillStyle = '#ddd'; ctx.fill();
+  ell(fx + fw * prog, fy + fh + 24, 7, 7); ctx.fill();
+  text(label, fx, fy + fh + 50, { w: 700, px: 16, fam: 'Mono', color: '#bbb', align: 'left' });
+  text('NARRATION: NONE', fx + fw, fy + fh + 50, { w: 700, px: 16, fam: 'Mono', color: '#bbb', align: 'right', alpha: ramp(t, S('nowords'), S('nowords') + .3) * (1 - ramp(t, never, never + .2)) });
+  text(`YOU, STILL HERE AT ${fmt(t)}`, 540, fy + fh + 92, { w: 700, px: 20, fam: 'Mono', color: '#e0e0e0', ls: 2, alpha: ramp(t, stayed, stayed + .3) });
+}
+
+// ---------- your bag ----------
+function bagScene(t) {
+  const a = out3(ramp(t, S('bag') - .2, S('bag') + 1.1));
+  ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(60, 1160); ctx.lineTo(1020, 1160); ctx.stroke();
+  suitcase(lerp(-120, 540, a), 1155, 2.1, { orange: true });
+  text('YOUR BAG', 540, 1210, { w: 700, px: 18, fam: 'Mono', color: '#999', ls: 4, alpha: ramp(a, .85, 1) });
+}
+
+// ---------- the choice + wordmark ----------
+function choice(t) {
+  const w0 = S('which'), logo = E('which') + 1.6;
+  const k = 1 - io(ramp(t, logo - .1, logo + .5));
+  withAlpha(k, () => {
+    const l = out3(ramp(t, w0 - .1, w0 + .5)), r = out3(ramp(t, WD('which', 8) - .2, WD('which', 8) + .4));
+    withAlpha(l, () => {
+      for (let i = 0; i < 3; i++) { ctx.fillStyle = gray(.6, .6 - i * .15); rrect(170 - i * 40 - (1 - l) * 40, 900 - 40 + i * 22, 70 - i * 14, 5, 2.5); ctx.fill(); }
+      suitcase(330, 940, 2.1, { orange: true });
+      text('THE FASTER BAGS', 330, 1000, { w: 700, px: 18, fam: 'Mono', color: '#bbb', ls: 2 });
+    });
+    withAlpha(r, () => {
+      for (let i = 0; i < 6; i++) { ell(620 + i * 26, 935 - (i % 2) * 10, 7, 4); ctx.fillStyle = OR; ctx.globalAlpha = r * (.35 + i * .1); ctx.fill(); }
+      ctx.globalAlpha = r;
+      pawn(800, 940, 1.0, { lite: .85, walk: t * 2.4 });
+      text('THE LONGER WALK', 760, 1000, { w: 700, px: 18, fam: 'Mono', color: '#bbb', ls: 2 });
+    });
+    text('or', 555, 890, { w: 500, px: 30, color: '#999', alpha: ramp(t, WD('which', 7) - .1, WD('which', 7) + .2) });
+  });
+  const m = io(ramp(t, logo + .2, logo + .9));
+  withAlpha(m, () => {
+    ctx.save(); ctx.translate(540, 900); const z = lerp(.94, 1, m); ctx.scale(z, z);
+    ctx.font = 'bold 76px Arial, Helvetica, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#cfcfcf';
+    ctx.fillText('DM RASOLV', 0, 0);
+    text('Vision That Solves', 0, 78, { w: 400, px: 20, fam: 'Mono', color: OR, ls: 1 });
+    ctx.restore();
+  });
+}
+
+// ---------- foreground: YOU ----------
+function you(t, a = 1) {
+  const gone = 1 - ramp(t, E('which') + 1.3, E('which') + 2);
+  withAlpha(a * gone * .9, () => {
+    const g = ctx.createLinearGradient(0, 1250, 0, 1640);
+    g.addColorStop(0, '#5c5c5c'); g.addColorStop(1, '#2a2a2a');
+    const x = 540, y = 1635, s = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(x - 15 * s, y - 118 * s);
+    ctx.bezierCurveTo(x - 20 * s, y - 60 * s, x - 44 * s, y - 25 * s, x - 52 * s, y - 2 * s);
+    ctx.quadraticCurveTo(x, y + 6 * s, x + 52 * s, y - 2 * s);
+    ctx.bezierCurveTo(x + 44 * s, y - 25 * s, x + 20 * s, y - 60 * s, x + 15 * s, y - 118 * s);
+    ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+    ell(x, y - 140 * s, 27 * s, 27 * s); ctx.fillStyle = '#5a5a5a'; ctx.fill();
+  });
+}
+
+// ---------- scene composition ----------
+function world(t, thumb = false) {
+  withAlpha(win(t, -1, S('closer') + .1, .5), () => hall(t));
+  withAlpha(win(t, S('closer') + .3, S('fix') - .1, .4), () => timeline(t));
+  withAlpha(win(t, S('fix') + .3, S('zero') - .5, .4), () => { ctx.save(); ctx.translate(540, 930); ctx.scale(1.18, 1.18); ctx.translate(-540, -930); plan(t); ctx.restore(); });
+  withAlpha(win(t, S('zero') - .2, E('nobody') + .1, .4), () => hall(t, { ret: true }));
+  withAlpha(win(t, S('hate') - .1, E('stand') + .2, .4), () => split(t));
+  if (thumb) return;
+  withAlpha(win(t, S('video') - .1, E('stayed') + .5, .4), () => meta(t));
+  withAlpha(win(t, S('bag') - .2, S('which') - .4, .3), () => bagScene(t));
+  withAlpha(win(t, S('which') - .2, DUR + 1, .3), () => choice(t));
+}
+
+function backdrop(t) {
+  ctx.fillStyle = '#141414'; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(540, 980, 100, 540, 980, 1250);
+  g.addColorStop(0, 'rgba(48,48,48,.55)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+// ---------- titles, counter, captions ----------
+const TITLES = [  // [cue id, title lines, source line]
+  ['houston', ['Why were they so angry?'], 'A HOUSTON AIRPORT, AS REPORTED BY THE NEW YORK TIMES'],
+  ['long', ['Too long at baggage claim'], "THE PASSENGERS' COMPLAINT"],
+  ['obvious', ['The obvious fix'], 'MORE BAGGAGE HANDLERS'],
+  ['eight', ['Eight minutes'], 'WELL WITHIN INDUSTRY BENCHMARKS'],
+  ['still', ['The complaints', "didn't stop"], ''],
+  ['closer', ['What were they missing?'], ''],
+  ['walk1', ['One minute walking'], ''],
+  ['stand7', ['One minute walking,', 'seven standing'], ''],
+  ['pct', ['Roughly 88% standing still'], 'THE AIRPORT LOOKED AGAIN, ON SITE'],
+  ['fix', ['The opposite fix'], 'MAKE THE WALK LONGER'],
+  ['six', ['Six times the walk'], 'GATES MOVED, BAGS SENT TO THE OUTERMOST CAROUSEL'],
+  ['zero', ['Complaints: near zero'], ''],
+  ['nobody', ['Same bags'], 'NOBODY SPED UP THE BELT'],
+  ['hate', ["People don't hate waiting"], ''],
+  ['stand', ['They hate standing still'], 'THE SAME MINUTES, FELT DIFFERENTLY'],
+  ['video', ['This video did', 'the same thing'], '0:00 TO 0:03: A SUITCASE, A BELT, NO WORDS'],
+  ['stayed', ['You stayed.'], ''],
+  ['bag', [], ''],
+  ['which', ['Which one', 'gets you?'], 'THE FASTER BAGS OR THE LONGER WALK'],
+];
+function titles(t) {
+  for (let i = 0; i < TITLES.length; i++) {
+    const [id, lines, src] = TITLES[i];
+    const a = S(id) - .15, b = i + 1 < TITLES.length ? S(TITLES[i + 1][0]) - .15 : DUR + 1;
+    const keepFirst = i > 0 && lines.length > 1 && TITLES[i - 1][1][0] === lines[0];
+    const al = win(t, a + .3, b - .25, .3);
+    if (al <= 0) continue;
+    const big = id === 'stayed';
+    const rise = (1 - out3(ramp(t, a, a + .4))) * 14;
+    withAlpha(al, () => {
+      lines.forEach((ln, j) => {
+        const la = keepFirst && j === 0 ? 1 : 1;
+        text(ln, 540, 282 + j * 66 + (keepFirst && j === 0 ? 0 : rise), { w: 600, px: big ? 76 : 60, color: '#d6d6d6', alpha: la });
+      });
+      if (src) text(src, 540, 282 + lines.length * 66 + 4, { w: 400, px: 19, fam: 'Mono', color: '#5c5c5c', ls: 2, alpha: ramp(t, a + .3, a + .8) });
+    });
+  }
+}
+
+function counter(t) {
+  let s = null, a = 0;
+  if (t < S('closer')) {
+    a = win(t, .6, S('closer') - .2, .35);
+    s = t < S('eight') ? 'WAITING: ' + fmt(storyMinutes(t) * 60) : 'AVG WAIT: ' + fmt(storyMinutes(t) * 60);
+  } else if (t < S('fix')) {
+    a = win(t, S('walk1'), S('fix') - .3, .3);
+    if (t < S('stand7')) s = 'WALKING: ' + fmt(60 * ramp(t, S('walk1'), E('walk1')));
+    else if (t < S('pct')) s = 'STANDING: ' + fmt(420 * ramp(t, S('stand7'), E('stand7') + .3));
+    else s = 'STANDING: 88%';
+  } else if (t < S('zero')) {
+    a = win(t, S('gates'), S('zero') - .5, .3);
+    s = 'WALKING: ' + fmt(60 + 300 * io(ramp(t, S('six'), E('six') + .4)));
+  }
+  if (!s || a <= 0) return;
+  const y = 282 + 66 * 2 + 70;
+  text(s, 540, y + 20, { w: 700, px: 30, fam: 'Mono', color: '#e6e6e6', ls: 1, alpha: a });
+}
+
+// split a line into on-screen chunks of ≤ 26 chars, preferring breaks after punctuation
+const CHUNKS = (() => {
+  const out = [];
+  CAPTIONS.forEach(c => {
+    // split at punctuation first, then cut long phrases into evenly sized pieces of ≤ 26 chars
+    const phrases = [[]];
+    c.words.forEach((w, i) => { phrases[phrases.length - 1].push(w); if (/[,:]$/.test(w[0]) && i < c.words.length - 1) phrases.push([]); });
+    phrases.forEach(ph => {
+      const len = ph.map(x => x[0]).join(' ').length, n = Math.ceil(len / 26), target = len / n;
+      let cur = [];
+      ph.forEach(w => {
+        const cl = cur.map(x => x[0]).join(' ').length;
+        if (cur.length && cl + w[0].length / 2 > target && out.length < 1e9 && cl > 0 && (cl + w[0].length + 1 > 26 || cl >= target)) { out.push({ words: cur, start: cur[0][1], line: c }); cur = []; }
+        cur.push(w);
+      });
+      if (cur.length) out.push({ words: cur, start: cur[0][1], line: c });
+    });
+  });
+  out.forEach((ch, i) => { const nx = out[i + 1]; ch.end = nx && nx.line === ch.line ? nx.start - .02 : ch.line.end; });
+  return out;
+})();
+
+function captions(t) {
+  const ch = CHUNKS.find(c => t >= c.start - .06 && t < c.end);
+  if (!ch) return;
+  const a = ramp(t, ch.start - .06, ch.start + .06) * (1 - ramp(t, ch.end - .08, ch.end));
+  font(600, 44); ctx.letterSpacing = '0px';
+  const sp = ctx.measureText(' ').width;
+  const widths = ch.words.map(w => ctx.measureText(w[0]).width);
+  const tw = widths.reduce((x, y) => x + y, 0) + sp * (widths.length - 1);
+  const y = 1376;
+  withAlpha(a, () => {
+    rrect(540 - tw / 2 - 26, y - 35, tw + 52, 70, 35); ctx.fillStyle = 'rgba(196,196,196,.94)'; ctx.fill();
+    let x = 540 - tw / 2;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ch.words.forEach((w, i) => {
+      ctx.fillStyle = t >= w[1] - .03 ? '#111111' : '#6d6d6d';
+      ctx.fillText(w[0], x, y + 2); x += widths[i] + sp;
+    });
+  });
+}
+
+function youLabel(t) {
+  const a = Math.max(win(t, S('you') - .2, S('houston') + 1, .3), win(t, S('stayed'), E('bag') + .3, .3));
+  text('YOU', 540, 1300, { w: 700, px: 18, fam: 'Mono', color: '#cfcfcf', ls: 2, alpha: a });
+}
+
+// ---------- grain + vignette ----------
+const GRAIN = [0, 1, 2].map(i => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'), d = g.createImageData(256, 256), r = rnd(100 + i);
+  for (let p = 0; p < d.data.length; p += 4) { const v = r() * 255; d.data[p] = d.data[p + 1] = d.data[p + 2] = v; d.data[p + 3] = 255; }
+  g.putImageData(d, 0, 0); return c;
+});
+function finish(t) {
+  const v = ctx.createRadialGradient(540, 960, 500, 540, 960, 1250);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.55)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+  const f = Math.floor(t * 24);
+  ctx.save(); ctx.globalAlpha = .045; ctx.globalCompositeOperation = 'overlay';
+  ctx.fillStyle = ctx.createPattern(GRAIN[f % 3], 'repeat');
+  ctx.translate((f * 73) % 256, (f * 151) % 256); ctx.fillRect(-256, -256, W + 512, H + 512);
+  ctx.restore();
+  // fade from / to black
+  const fb = Math.max(1 - ramp(t, 0, .5), ramp(t, DUR - .5, DUR));
+  if (fb > 0) { ctx.fillStyle = `rgba(0,0,0,${fb})`; ctx.fillRect(0, 0, W, H); }
+}
+
+function frame(t) {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.globalAlpha = 1;
+  backdrop(t);
+  you(t);
+  world(t);
+  youLabel(t);
+  titles(t);
+  counter(t);
+  captions(t);
+  finish(t);
+}
+
+window.DURATION = DUR;
+window.seek = t => frame(t);
+const faces = [['Space Grotesk', 500], ['Space Grotesk', 600], ['Space Grotesk', 700], ['Space Mono', 400], ['Space Mono', 700]]
+  .map(([f, w]) => new FontFace(f, `url(../fonts/${f.replace(' ', '')}-${w}.woff2)`, { weight: String(w) }));
+window.ready = Promise.all(faces.map(f => f.load().then(x => document.fonts.add(x)))).then(() => frame(0));
+if (!navigator.webdriver) window.ready.then(() => { const t0 = performance.now(); const loop = () => { frame(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); }; loop(); });
+</script>
+</body>
+</html>
